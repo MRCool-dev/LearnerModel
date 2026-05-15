@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #000000;
+  --on-surface: #0b1c30;
+  --surface: #f8f9ff;
+  --surface-dim: #cbdbf5;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #eff4ff;
+  --surface-container-high: #dce9ff;
+  --surface-container-highest: #d3e4fe;
+  --secondary: #006d35;
+  --secondary-container: #8df9a8;
+  --on-secondary-container: #007439;
+  --tertiary: #ffb77d;
+  --error: #ba1a1a;
+  --on-surface-variant: #444748;
+  --outline-variant: #c4c7c7;
+
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'Courier New', monospace;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.25rem;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--surface);
+  color: var(--on-surface);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 3px; }

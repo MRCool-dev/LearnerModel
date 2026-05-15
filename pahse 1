@@ -1,0 +1,2224 @@
+
+import { useState, useRef, useEffect } from "react";
+
+const T = {
+  bg: "#05070f", surface: "#090d1a", border: "#141c2e",
+  muted: "#5a6680", text: "#d8e0f0",
+  green: "#2dd4bf", yellow: "#f59e0b", red: "#f43f5e",
+  blue: "#3b82f6", purple: "#8b5cf6", cyan: "#06b6d4",
+  orange: "#f97316", pink: "#ec4899", indigo: "#6366f1",
+  teal: "#14b8a6", lime: "#84cc16", rose: "#fb7185",
+  violet: "#7c3aed",
+};
+const mono = "'Courier New', monospace";
+const serif = "Georgia, serif";
+const para = { margin: "0 0 12px", fontSize: 13, color: T.muted, lineHeight: 1.95, fontFamily: serif };
+
+function CodeBlock({ label, code }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div style={{ margin: "10px 0" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+        <span style={{ fontSize: 10, color: "#1e2840", letterSpacing: 2, textTransform: "uppercase", fontFamily: mono }}>{label}</span>
+        <button onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1800); }}
+          style={{ background: "transparent", border: `1px solid ${copied ? T.green : "#1a2235"}`, color: copied ? T.green : "#2a3550", borderRadius: 3, padding: "2px 9px", fontSize: 10, cursor: "pointer", fontFamily: mono }}>
+          {copied ? "✓ copied" : "copy"}
+        </button>
+      </div>
+      <pre style={{ margin: 0, padding: "12px 14px", background: "#03050c", border: "1px solid #0e1420", borderRadius: 7, fontSize: 11, lineHeight: 1.9, overflowX: "auto", color: "#a8b8d8", fontFamily: mono, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function Tip({ icon = "💡", color = T.yellow, title, children }) {
+  return (
+    <div style={{ margin: "10px 0", padding: "10px 14px", background: color + "10", border: `1px solid ${color}40`, borderLeft: `4px solid ${color}`, borderRadius: "0 7px 7px 0" }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color, marginBottom: 3, fontFamily: mono }}>{icon} {title}</div>
+      <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.75, fontFamily: serif }}>{children}</div>
+    </div>
+  );
+}
+
+function EasyBox({ emoji, title, color, children }) {
+  return (
+    <div style={{ margin: "12px 0", padding: "13px 16px", background: color + "09", border: `1px solid ${color}35`, borderRadius: 10 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color, fontFamily: mono, marginBottom: 7 }}>{emoji} {title}</div>
+      <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.95, fontFamily: serif }}>{children}</div>
+    </div>
+  );
+}
+
+function BigIdea({ number, title, color, children }) {
+  return (
+    <div style={{ margin: "12px 0", padding: "14px 16px", background: T.surface, border: `1px solid ${color}33`, borderRadius: 10, borderLeft: `4px solid ${color}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+        <div style={{ width: 28, height: 28, borderRadius: "50%", background: color + "22", border: `1px solid ${color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900, color, fontFamily: mono, flexShrink: 0 }}>{number}</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color, fontFamily: mono }}>{title}</div>
+      </div>
+      <div style={{ fontSize: 12, color: T.muted, lineHeight: 1.9, fontFamily: serif }}>{children}</div>
+    </div>
+  );
+}
+
+function QuizCard({ question, options, correct, explain }) {
+  const [chosen, setChosen] = useState(null);
+  return (
+    <div style={{ margin: "12px 0", padding: "13px 16px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 9 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: T.text, fontFamily: serif, marginBottom: 10 }}>❓ {question}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        {options.map((opt, i) => {
+          const isChosen = chosen === i;
+          const isCorrect = i === correct;
+          const showResult = chosen !== null;
+          let bg = "transparent", border = T.border, color = T.muted;
+          if (showResult && isCorrect) { bg = T.green + "18"; border = T.green + "55"; color = T.green; }
+          else if (showResult && isChosen && !isCorrect) { bg = T.red + "18"; border = T.red + "55"; color = T.red; }
+          return (
+            <button key={i} onClick={() => chosen === null && setChosen(i)}
+              style={{ padding: "7px 12px", background: bg, border: `1px solid ${border}`, borderRadius: 5, cursor: chosen === null ? "pointer" : "default", textAlign: "left", fontSize: 12, color, fontFamily: serif, transition: "all 0.2s" }}>
+              {showResult && isCorrect ? "✅ " : showResult && isChosen ? "❌ " : "○ "}{opt}
+            </button>
+          );
+        })}
+      </div>
+      {chosen !== null && (
+        <div style={{ marginTop: 10, padding: "8px 10px", background: T.green + "08", border: `1px solid ${T.green}22`, borderRadius: 5, fontSize: 11, color: T.muted, fontFamily: serif, lineHeight: 1.7 }}>
+          💬 {explain}
+        </div>
+      )}
+      {chosen !== null && <button onClick={() => setChosen(null)} style={{ marginTop: 8, padding: "3px 10px", background: "transparent", border: `1px solid ${T.border}`, borderRadius: 4, cursor: "pointer", fontSize: 10, color: T.muted, fontFamily: mono }}>reset</button>}
+    </div>
+  );
+}
+
+function CaseStudy({ title, color, scenario, problem, solution, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ margin: "12px 0", border: `1px solid ${color}33`, borderRadius: 9, overflow: "hidden" }}>
+      <button onClick={() => setOpen(p => !p)} style={{ width: "100%", padding: "11px 14px", background: color + "0d", border: "none", cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 16 }}>📖</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color, fontFamily: mono }}>{title}</div>
+          <div style={{ fontSize: 11, color: T.muted, fontFamily: serif }}>{scenario}</div>
+        </div>
+        <span style={{ color, fontSize: 11, fontFamily: mono }}>{open ? "▲ close" : "▼ open"}</span>
+      </button>
+      {open && (
+        <div style={{ padding: "14px 16px", borderTop: `1px solid ${color}22` }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+            <div style={{ flex: 1, minWidth: 140, padding: "10px 12px", background: T.red + "0a", border: `1px solid ${T.red}22`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: T.red, fontFamily: mono, marginBottom: 4 }}>❌ PROBLEM</div>
+              <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, lineHeight: 1.7 }}>{problem}</div>
+            </div>
+            <div style={{ flex: 1, minWidth: 140, padding: "10px 12px", background: T.green + "0a", border: `1px solid ${T.green}22`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: T.green, fontFamily: mono, marginBottom: 4 }}>✅ SOLUTION</div>
+              <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, lineHeight: 1.7 }}>{solution}</div>
+            </div>
+          </div>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════ LIVE DEMOS ══════════════
+
+function EventLoopDemo() {
+  const [step, setStep] = useState(-1);
+  const [running, setRunning] = useState(false);
+  const [output, setOutput] = useState([]);
+
+  const steps = [
+    { label: "console.log('1 — sync') executes", phase: "sync", color: T.blue, out: "1 — sync", desc: "Synchronous code always runs first. It goes straight onto the Call Stack and executes immediately." },
+    { label: "setTimeout(fn, 0) is registered", phase: "sync", color: T.blue, out: null, desc: "Node hands the timer to the OS. It says 'run this callback after 0ms'. Node does NOT wait — it moves on immediately." },
+    { label: "Promise.resolve().then(fn) queued", phase: "sync", color: T.blue, out: null, desc: "The Promise callback is added to the Microtask Queue — a high-priority queue that runs before any timers." },
+    { label: "console.log('2 — sync') executes", phase: "sync", color: T.blue, out: "2 — sync", desc: "Still synchronous. All sync code on the Call Stack finishes before ANY async callback can run." },
+    { label: "▶ Call Stack empty — check Microtask Queue", phase: "micro", color: T.purple, out: null, desc: "The Call Stack is now empty. The Event Loop checks: are there any Microtasks (Promises, nextTick)? Yes!" },
+    { label: "Promise .then callback fires", phase: "micro", color: T.purple, out: "3 — promise", desc: "ALL microtasks drain completely. Promises always beat setTimeout. This is critical to understand." },
+    { label: "▶ Microtasks empty — check Timer Queue", phase: "macro", color: T.orange, out: null, desc: "No more microtasks. The Event Loop moves to the Timer phase — checking for expired setTimeouts." },
+    { label: "setTimeout callback finally fires", phase: "macro", color: T.orange, out: "4 — timeout", desc: "Only now does the setTimeout run. Even though we said 0ms, it had to wait for all sync code AND all microtasks first." },
+  ];
+
+  const run = async () => {
+    setRunning(true); setStep(-1); setOutput([]);
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 800));
+      setStep(i);
+      if (steps[i].out) setOutput(p => [...p, { text: steps[i].out, color: steps[i].color }]);
+    }
+    setRunning(false);
+  };
+
+  return (
+    <div style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: T.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — watch exactly what runs and when</div>
+      <div style={{ background: "#03050c", borderRadius: 7, padding: "10px 14px", marginBottom: 12, fontFamily: mono, fontSize: 11 }}>
+        <div style={{ color: "#334" }}>{"// What does this print? And in what order?"}</div>
+        {[
+          { t: "console.log('1 — sync');",                                        c: T.blue },
+          { t: "setTimeout(() => console.log('4 — timeout'), 0);",               c: T.orange },
+          { t: "Promise.resolve().then(() => console.log('3 — promise'));",       c: T.purple },
+          { t: "console.log('2 — sync');",                                        c: T.blue },
+        ].map((l, i) => <div key={i} style={{ color: l.c, padding: "1px 0" }}>{l.t}</div>)}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, padding: "7px 10px", background: step === i ? s.color + "15" : step > i ? s.color + "07" : "#03050c", border: `1px solid ${step >= i ? s.color + "40" : T.border}`, borderRadius: 6, transition: "all 0.35s" }}>
+            <span style={{ fontSize: 14, width: 20, flexShrink: 0 }}>{step > i ? "✅" : step === i ? "⏳" : "○"}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, color: step >= i ? s.color : T.muted, fontFamily: mono, fontWeight: step === i ? 700 : 400 }}>{s.label}</div>
+              {step === i && <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, marginTop: 4, lineHeight: 1.6 }}>{s.desc}</div>}
+            </div>
+            <span style={{ fontSize: 9, padding: "2px 7px", background: (step >= i ? s.color : T.muted) + "18", borderRadius: 3, color: step >= i ? s.color : T.muted, fontFamily: mono, flexShrink: 0, alignSelf: "flex-start" }}>{s.phase}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <button onClick={run} disabled={running}
+          style={{ padding: "6px 16px", background: running ? T.muted + "18" : T.green + "22", border: `1px solid ${running ? T.border : T.green + "55"}`, color: running ? T.muted : T.green, borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono }}>
+          {running ? "● running..." : "▶ Run it"}
+        </button>
+        <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 10, color: T.muted, fontFamily: mono }}>console output:</span>
+          {output.length === 0 ? <span style={{ fontSize: 10, color: "#1a2035", fontFamily: mono }}>press Run ▶</span>
+            : output.map((o, i) => <span key={i} style={{ fontSize: 11, fontWeight: 700, color: o.color, fontFamily: mono, padding: "2px 8px", background: o.color + "18", borderRadius: 3 }}>{o.text}</span>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StreamDemo() {
+  const [mode, setMode] = useState("stream");
+  const [chunks, setChunks] = useState([]);
+  const [running, setRunning] = useState(false);
+  const total = 8;
+  const run = async () => {
+    setRunning(true); setChunks([]);
+    if (mode === "buffer") {
+      for (let i = 0; i < total; i++) await new Promise(r => setTimeout(r, 120));
+      setChunks(Array.from({ length: total }, (_, i) => i));
+    } else {
+      for (let i = 0; i < total; i++) { await new Promise(r => setTimeout(r, 300)); setChunks(p => [...p, i]); }
+    }
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: T.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — compare: buffer (load all) vs stream (chunk by chunk)</div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+        {["stream", "buffer"].map(m => (
+          <button key={m} onClick={() => { setMode(m); setChunks([]); }}
+            style={{ padding: "4px 12px", background: mode === m ? T.teal + "22" : "transparent", border: `1px solid ${mode === m ? T.teal : T.border}`, color: mode === m ? T.teal : T.muted, borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: mono }}>{m}</button>
+        ))}
+        <button onClick={run} disabled={running}
+          style={{ padding: "4px 14px", background: running ? T.muted + "18" : T.green + "22", border: `1px solid ${running ? T.border : T.green + "55"}`, color: running ? T.muted : T.green, borderRadius: 4, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono }}>
+          {running ? "● loading..." : "▶ Run"}
+        </button>
+      </div>
+      <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, marginBottom: 8 }}>
+        {mode === "stream" ? "Each chunk appears as it arrives — you can start processing immediately ↓" : "Nothing appears until ALL chunks are loaded — then everything at once ↓"}
+      </div>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap", minHeight: 44, marginBottom: 10 }}>
+        {mode === "stream"
+          ? chunks.map(c => <div key={c} style={{ width: 38, height: 38, background: T.teal + "22", border: `1px solid ${T.teal}55`, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: T.teal, fontFamily: mono }}>{c + 1}</div>)
+          : running
+            ? <div style={{ fontSize: 12, color: T.yellow, fontFamily: mono, padding: "8px 0" }}>⏳ loading all {total} chunks... you're stuck waiting</div>
+            : chunks.map(c => <div key={c} style={{ width: 38, height: 38, background: T.orange + "22", border: `1px solid ${T.orange}55`, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: T.orange, fontFamily: mono }}>{c + 1}</div>)}
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 160, padding: "8px 10px", background: T.teal + "08", border: `1px solid ${T.teal}22`, borderRadius: 6 }}>
+          <div style={{ fontSize: 10, color: T.teal, fontFamily: mono, marginBottom: 3 }}>✅ STREAM — always use for large data</div>
+          <div style={{ fontSize: 11, color: T.muted, fontFamily: serif }}>64KB at a time. A 4GB file uses ~100KB RAM. Can start processing immediately.</div>
+        </div>
+        <div style={{ flex: 1, minWidth: 160, padding: "8px 10px", background: T.red + "08", border: `1px solid ${T.red}22`, borderRadius: 6 }}>
+          <div style={{ fontSize: 10, color: T.red, fontFamily: mono, marginBottom: 3 }}>❌ BUFFER — dangerous for large files</div>
+          <div style={{ fontSize: 11, color: T.muted, fontFamily: serif }}>Loads everything into RAM first. A 4GB file needs 4GB RAM — process crashes.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: WHAT IS NODE.JS
+// ════════════════════════════════════════════════════════════════
+function SectionWhatIsNode() {
+  const [tab, setTab] = useState("story");
+  const tabs = [
+    { id: "story",    label: "📖 The Story" },
+    { id: "how",      label: "⚙️ How it works" },
+    { id: "browser",  label: "🔀 Browser vs Node" },
+    { id: "why",      label: "🎯 Why use it?" },
+    { id: "quiz",     label: "🧠 Quick Quiz" },
+  ];
+
+  return (
+    <div>
+      <p style={para}>
+        Before we write a single line of Node.js code, you need to understand <em>what it actually is</em>, <em>how it came to exist</em>, and <em>why it works the way it does</em>. This section builds that foundation from nothing.
+      </p>
+
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? T.green + "22" : "transparent", border: `1px solid ${tab === t.id ? T.green : T.border}`, color: tab === t.id ? T.green : T.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+      </div>
+
+      {tab === "story" && (
+        <div>
+          <BigIdea number="1" title="JavaScript was only for browsers" color={T.blue}>
+            When JavaScript was invented in 1995, it had one job: run inside web browsers to make web pages interactive. If you wanted to do anything on a <em>server</em> — read files, handle HTTP requests, talk to a database — you used a completely different language. Python. Ruby. Java. PHP. JavaScript couldn't do any of that. It was trapped inside the browser.
+          </BigIdea>
+
+          <BigIdea number="2" title="Ryan Dahl had a problem in 2009" color={T.orange}>
+            A developer named Ryan Dahl was frustrated. Traditional server languages handled each incoming request by creating a new thread — imagine a bank with one teller per customer. Threads are expensive (each costs ~1MB of RAM). When traffic spikes, you run out of threads and new requests wait in line. The server slows to a crawl.
+          </BigIdea>
+
+          <BigIdea number="3" title="His insight: JavaScript was already async" color={T.purple}>
+            Ryan noticed that JavaScript in the browser was already designed around asynchronous, non-blocking patterns. You don't freeze the page waiting for an image to load — you set a callback and move on. What if you took that model and put it on a server? Instead of one teller per customer, you'd have one very fast teller who never waits — they hand each task to the bank vault and immediately serve the next customer.
+          </BigIdea>
+
+          <BigIdea number="4" title="Node.js was born" color={T.green}>
+            In 2009, Ryan Dahl took Google's V8 engine (the part of Chrome that executes JavaScript), combined it with a C library called libuv (which handles async I/O at the OS level), added built-in modules for file system, networking, and HTTP, and called it <strong>Node.js</strong>. JavaScript could now run on servers — and it was <em>fast</em>.
+          </BigIdea>
+
+          <EasyBox emoji="🎯" title="What Node.js actually is — one sentence" color={T.green}>
+            <strong>Node.js is a runtime environment</strong> — a program on your computer that can read and execute JavaScript files, giving that JavaScript access to your computer's file system, network, and other operating system features that browsers would never allow.
+          </EasyBox>
+
+          <Tip icon="🔑" color={T.yellow} title="Key insight">
+            Node.js is NOT a framework and NOT a programming language. It's a runtime — like how the JVM lets you run Java on your computer, Node.js lets you run JavaScript on your computer (or server) outside of any browser.
+          </Tip>
+        </div>
+      )}
+
+      {tab === "how" && (
+        <div>
+          <p style={para}>Node.js has three main layers working together. Understanding each layer helps you understand every Node.js concept that comes later.</p>
+
+          <div style={{ marginBottom: 14 }}>
+            {[
+              {
+                layer: "Layer 1 — V8 Engine", color: T.green, icon: "⚙️",
+                what: "Google's JavaScript engine, written in C++. This is the exact same engine inside Chrome. It takes your JavaScript code and compiles it to machine code that your CPU can run directly.",
+                analogy: "Analogy: V8 is like a translator who takes your JavaScript words and speaks them in the CPU's native language (machine code) in real time.",
+                facts: ["Written in C++ for maximum performance", "Uses JIT (Just-In-Time) compilation — watches which code runs often and optimises it", "Handles garbage collection — automatically frees memory you no longer use", "You never interact with V8 directly — it runs silently underneath"]
+              },
+              {
+                layer: "Layer 2 — libuv", color: T.orange, icon: "🔄",
+                what: "A C library that gives Node its async superpowers. It provides the Event Loop (the heart of Node), a thread pool for expensive I/O operations, and cross-platform support so Node works the same on Linux, macOS, and Windows.",
+                analogy: "Analogy: libuv is the factory floor manager. When a task like reading a file comes in, libuv hands it to a worker (OS thread) and keeps a note. When the worker finishes, libuv delivers the result back to your JavaScript.",
+                facts: ["The thread pool has 4 threads by default (set UV_THREADPOOL_SIZE=8 to increase)", "File reads, DNS lookups, and crypto operations all use the thread pool", "The Event Loop itself runs on the main thread — always", "Network I/O uses OS-level async (epoll/kqueue) — not threads"]
+              },
+              {
+                layer: "Layer 3 — Node.js APIs", color: T.blue, icon: "📦",
+                what: "The built-in modules you use daily — fs, http, path, crypto, os, events, stream, child_process. These are JavaScript wrappers around V8 and libuv that give you a clean API to do system-level work.",
+                analogy: "Analogy: If V8 is the engine and libuv is the transmission, Node.js APIs are the steering wheel and pedals — the interface you actually touch.",
+                facts: ["All built-in — no npm install needed", "fs wraps libuv file operations", "http wraps libuv TCP/networking", "crypto wraps OpenSSL", "child_process wraps OS process creation"]
+              }
+            ].map((item, i) => (
+              <div key={i} style={{ marginBottom: 12, padding: "14px 16px", background: item.color + "08", border: `1px solid ${item.color}25`, borderRadius: 10 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 8 }}>{item.icon} {item.layer}</div>
+                <p style={{ ...para, marginBottom: 8 }}>{item.what}</p>
+                <div style={{ padding: "7px 10px", background: item.color + "0a", border: `1px solid ${item.color}22`, borderRadius: 6, marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, color: item.color, fontFamily: mono, marginBottom: 3 }}>🧠 Mental model</div>
+                  <div style={{ fontSize: 12, color: T.muted, fontFamily: serif, lineHeight: 1.7 }}>{item.analogy}</div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 4 }}>
+                  {item.facts.map((f, j) => (
+                    <div key={j} style={{ display: "flex", gap: 7 }}>
+                      <span style={{ color: item.color, fontSize: 10, marginTop: 3, flexShrink: 0 }}>▸</span>
+                      <span style={{ fontSize: 11, color: T.muted, fontFamily: serif, lineHeight: 1.6 }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <CodeBlock label="the full architecture — from your code to the CPU" code={`Your JavaScript Code (app.js)
+         ↓
+Node.js Built-in APIs  ← fs, http, crypto, path, os...
+         ↓
+V8 Engine              ← parses + compiles your JavaScript
+         ↓
+libuv                  ← Event Loop + thread pool + async I/O
+         ↓
+Operating System       ← Linux / macOS / Windows kernel
+
+// Example: what happens when you call fs.readFile():
+// 1. Your JS calls fs.readFile('./data.txt', callback)
+// 2. Node.js API receives the call
+// 3. libuv puts the file read on the thread pool
+// 4. V8 continues running your next lines of JS immediately
+// 5. OS reads the file on a background thread
+// 6. When done, libuv puts callback in the Event Loop queue
+// 7. Event Loop picks it up and runs your callback
+// Total time your JS was blocked: 0ms`} />
+        </div>
+      )}
+
+      {tab === "browser" && (
+        <div>
+          <p style={para}>JavaScript runs in two very different environments. The <em>language itself</em> (variables, functions, arrays, promises) is identical in both. But the environment they run in gives them completely different powers.</p>
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+            <div style={{ flex: 1, minWidth: 200, padding: "14px 16px", background: T.blue + "08", border: `1px solid ${T.blue}25`, borderRadius: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.blue, fontFamily: mono, marginBottom: 10 }}>🌐 Browser JavaScript</div>
+              <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, marginBottom: 8, lineHeight: 1.7 }}>The browser gives JS access to the visual layer of a web page and the user's interactions.</div>
+              {[
+                { api: "window", desc: "The browser tab itself — size, URL, history" },
+                { api: "document", desc: "The HTML page — create/change/delete elements" },
+                { api: "localStorage", desc: "Store small data in the user's browser" },
+                { api: "fetch()", desc: "Make HTTP requests to servers" },
+                { api: "navigator", desc: "Browser info, GPS, camera, microphone" },
+                { api: "alert(), prompt()", desc: "Browser dialog boxes" },
+                { api: "addEventListener", desc: "React to clicks, keys, scroll events" },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, padding: "4px 0", borderBottom: `1px solid ${T.border}` }}>
+                  <code style={{ fontSize: 11, color: T.blue, fontFamily: mono, minWidth: 130, flexShrink: 0 }}>{item.api}</code>
+                  <span style={{ fontSize: 11, color: T.muted, fontFamily: serif }}>{item.desc}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: 8, fontSize: 11, color: T.red + "aa", fontFamily: serif }}>❌ Cannot access files, cannot create servers, cannot run system commands</div>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 200, padding: "14px 16px", background: T.green + "08", border: `1px solid ${T.green}25`, borderRadius: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: T.green, fontFamily: mono, marginBottom: 10 }}>🟢 Node.js JavaScript</div>
+              <div style={{ fontSize: 11, color: T.muted, fontFamily: serif, marginBottom: 8, lineHeight: 1.7 }}>Node gives JS access to the machine it runs on — the file system, network, and OS.</div>
+              {[
+                { api: "fs", desc: "Read, write, delete files on disk" },
+                { api: "http / https", desc: "Create servers that handle requests" },
+                { api: "path", desc: "Build file paths that work on any OS" },
+                { api: "os", desc: "CPU info, RAM, hostname, platform" },
+                { api: "crypto", desc: "Hashing, encryption, random bytes" },
+                { api: "child_process", desc: "Run shell commands and other programs" },
+                { api: "stream", desc: "Process large data chunk by chunk" },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, padding: "4px 0", borderBottom: `1px solid ${T.border}` }}>
+                  <code style={{ fontSize: 11, color: T.green, fontFamily: mono, minWidth: 130, flexShrink: 0 }}>{item.api}</code>
+                  <span style={{ fontSize: 11, color: T.muted, fontFamily: serif }}>{item.desc}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: 8, fontSize: 11, color: T.red + "aa", fontFamily: serif }}>❌ No window, no document, no DOM — it's not a browser</div>
+            </div>
+          </div>
+
+          <EasyBox emoji="🎭" title="What they share — the JavaScript language itself" color={T.purple}>
+            Variables, functions, objects, arrays, classes, Promises, async/await, destructuring, spread operators, template literals — all of this is JavaScript the language, and it works <strong>identically</strong> in both environments. If you know JavaScript from the browser, you already know the language of Node.js. You're just learning new APIs (fs, http, etc.) instead of old ones (document, window).
+          </EasyBox>
+
+          <CodeBlock label="same JS language — different APIs" code={`// This works EVERYWHERE (browser + Node):
+const nums   = [1, 2, 3, 4, 5];
+const doubled = nums.map(n => n * 2);
+const sum     = nums.reduce((a, b) => a + b, 0);
+
+async function fetchData() {
+  const data = await someAsyncOperation();
+  return data;
+}
+
+// This is BROWSER ONLY:
+document.getElementById('btn').addEventListener('click', () => {
+  localStorage.setItem('clicked', 'true');
+});
+
+// This is NODE.JS ONLY:
+import fs from 'fs';
+const data = await fs.promises.readFile('./data.txt', 'utf8');
+console.log(data);
+
+// Same language. Different superpowers.`} />
+        </div>
+      )}
+
+      {tab === "why" && (
+        <div>
+          <p style={para}>Why did Node.js become so popular? What problems does it solve better than other options?</p>
+
+          {[
+            {
+              title: "One language for everything",
+              color: T.cyan,
+              icon: "🔗",
+              desc: "Before Node.js, you'd write Python or Ruby on the server and JavaScript in the browser. Two languages, two mental contexts, two sets of libraries to maintain. With Node.js, your entire stack — browser UI, server logic, database scripts, CLI tools, build tools — can all be JavaScript. This is huge for small teams and solo developers."
+            },
+            {
+              title: "Non-blocking I/O — handles enormous traffic",
+              color: T.orange,
+              icon: "⚡",
+              desc: "A Node.js server with a single thread can handle 10,000+ simultaneous connections. A traditional threaded server might create 10,000 threads (each using ~1MB RAM = 10GB just for threads). Node hands each connection's I/O to the OS and immediately moves on, so one thread can juggle thousands of connections efficiently."
+            },
+            {
+              title: "npm — the world's largest package ecosystem",
+              color: T.purple,
+              icon: "📦",
+              desc: "npm (Node Package Manager) has over 2 million packages. Need to send emails? Validate forms? Connect to a database? Process images? Parse CSV? Almost every problem has a ready-made package. This ecosystem is one of Node's biggest advantages — you rarely build from scratch."
+            },
+            {
+              title: "Perfect for APIs and real-time apps",
+              color: T.green,
+              icon: "🌐",
+              desc: "Node.js excels at I/O-heavy workloads — REST APIs, GraphQL servers, WebSocket servers for chat/gaming, microservices, streaming data. Companies like Netflix, LinkedIn, Uber, and PayPal moved major services to Node.js and reported dramatic improvements in performance and developer productivity."
+            },
+            {
+              title: "When NOT to use Node.js",
+              color: T.red,
+              icon: "⚠️",
+              desc: "Node.js is NOT good at CPU-intensive work — image processing, machine learning, video encoding, complex number crunching. Because your JS runs on one thread, a heavy CPU task blocks ALL other requests. For CPU-heavy work, Python (with NumPy/SciPy) or Go is a better choice. Use worker_threads in Node as a workaround."
+            },
+          ].map((item, i) => (
+            <div key={i} style={{ marginBottom: 10, padding: "13px 16px", background: item.color + "08", border: `1px solid ${item.color}25`, borderRadius: 9 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 7 }}>{item.icon} {item.title}</div>
+              <p style={{ ...para, marginBottom: 0 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "quiz" && (
+        <div>
+          <p style={para}>Test your understanding of the basics. Click an answer to reveal the explanation.</p>
+          <QuizCard
+            question="What is Node.js?"
+            options={["A JavaScript framework like React", "A runtime environment that runs JavaScript outside the browser", "A database for JavaScript applications", "A JavaScript version newer than ES6"]}
+            correct={1}
+            explain="Node.js is a runtime — a program that can execute JavaScript files on your computer or server, outside any browser. It's not a framework, not a language, not a database."
+          />
+          <QuizCard
+            question="Which company created the V8 engine that Node.js uses?"
+            options={["Microsoft", "Mozilla", "Google", "Ryan Dahl"]}
+            correct={2}
+            explain="Google created V8 as the engine for Chrome. Ryan Dahl took V8 and wrapped it with libuv and Node APIs to create Node.js in 2009."
+          />
+          <QuizCard
+            question="Which of these can you do in Node.js but NOT in browser JavaScript?"
+            options={["Use Promises", "Read files from the hard drive", "Use async/await", "Create arrays and objects"]}
+            correct={1}
+            explain="Reading files requires access to the operating system's file system — something browsers block for security. Node.js provides the fs module for this. Promises, async/await, arrays, and objects are all standard JavaScript that works everywhere."
+          />
+          <QuizCard
+            question="What does 'non-blocking I/O' mean?"
+            options={["Node.js runs I/O operations very quickly", "Node.js doesn't wait for I/O to finish before continuing", "Node.js prevents I/O errors", "Node.js uses multiple threads for I/O"]}
+            correct={1}
+            explain="Non-blocking means Node hands the I/O task (like reading a file) to the OS and immediately moves on to the next line of code. When the I/O finishes, Node runs your callback. It never sits idle waiting."
+          />
+          <QuizCard
+            question="When should you NOT use Node.js?"
+            options={["For building REST APIs", "For real-time chat applications", "For CPU-intensive tasks like image processing or ML", "For handling many concurrent connections"]}
+            correct={2}
+            explain="Node's single-threaded JS execution means CPU-heavy work blocks all other requests. For image processing, video encoding, or ML — use Python, Go, or worker_threads. Node shines for I/O-heavy work (APIs, real-time, file serving)."
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: EVENT LOOP (deep)
+// ════════════════════════════════════════════════════════════════
+function SectionEventLoop() {
+  const [tab, setTab] = useState("problem");
+  const tabs = [
+    { id: "problem", label: "😩 The Problem" },
+    { id: "solution", label: "💡 The Solution" },
+    { id: "phases", label: "🔄 Loop Phases" },
+    { id: "order", label: "📊 Execution Order" },
+    { id: "demo", label: "🧪 Live Demo" },
+    { id: "quiz", label: "🧠 Quiz" },
+  ];
+  return (
+    <div>
+      <p style={para}>The Event Loop is the single most important concept in Node.js. If you understand this deeply, everything else makes sense. If you don't, Node.js will confuse you constantly.</p>
+
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? T.orange + "22" : "transparent", border: `1px solid ${tab === t.id ? T.orange : T.border}`, color: tab === t.id ? T.orange : T.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+      </div>
+
+      {tab === "problem" && (
+        <div>
+          <BigIdea number="1" title="Traditional servers: one thread per request" color={T.red}>
+            Imagine a restaurant where every customer gets their own dedicated waiter who stands with them the entire meal and does nothing else. The waiter is "blocked" — waiting while you look at the menu, waiting while your food is cooked, waiting while you eat. If 1,000 customers arrive, you need 1,000 waiters. Each waiter (thread) costs about 1MB of RAM. 1,000 threads = 1GB RAM just for waiting. When a burst of traffic hits, you run out of waiters and new customers queue up outside.
+          </BigIdea>
+          <BigIdea number="2" title="The problem with threads for I/O" color={T.orange}>
+            In a web server, most of the time is spent doing I/O — waiting for a database to respond, waiting for a file to be read, waiting for a network request to return. The actual CPU work (running JavaScript, forming a response) takes microseconds. But the thread is blocked the entire time, doing nothing, consuming resources. This is catastrophically wasteful.
+          </BigIdea>
+          <CodeBlock label="the traditional blocking model" code={`// What a traditional threaded server does:
+
+// Request 1 arrives → create Thread 1
+Thread 1: SELECT * FROM users WHERE id = 1;
+Thread 1: waiting... waiting... waiting... (50ms doing nothing)
+Thread 1: got result → send response → thread freed
+
+// Meanwhile, Request 2 arrives → create Thread 2
+// Request 3 arrives → create Thread 3
+// ... Request 10,000 arrives → create Thread 10,000
+// System runs out of memory. New requests time out. Server dies.
+
+// Each thread costs: ~1MB RAM + context switching overhead
+// 10,000 concurrent users = 10GB RAM just for threads`} />
+        </div>
+      )}
+
+      {tab === "solution" && (
+        <div>
+          <BigIdea number="1" title="Node's answer: one smart waiter" color={T.green}>
+            Now imagine a different kind of restaurant. There's ONE extremely efficient waiter. When a customer orders, the waiter writes it down, gives the order to the kitchen, and immediately walks to the next customer. The waiter never waits. When the kitchen has food ready, they call out and the waiter delivers it between taking new orders. One waiter serves hundreds of customers because they never block — they're always doing something.
+          </BigIdea>
+          <BigIdea number="2" title="How Node.js does this" color={T.blue}>
+            Node.js has one JavaScript thread (the "waiter"). When you call fs.readFile(), Node writes down your callback, hands the actual file read to the OS (the "kitchen"), and immediately runs the next line of code. When the OS finishes reading, it notifies Node, which puts your callback in a queue. The Event Loop sees the callback in the queue, picks it up, and runs it. No blocking. No waiting.
+          </BigIdea>
+          <EasyBox emoji="🔄" title="The Event Loop in plain English" color={T.orange}>
+            The Event Loop is just a loop that keeps asking: <br /><br />
+            <strong>"Is the Call Stack empty?"</strong> → If yes: <strong>"Is there anything in the Microtask Queue?"</strong> → If yes: run it. → <strong>"Any setTimeout/setInterval callbacks ready?"</strong> → If yes: run one. → <strong>"Any setImmediate callbacks?"</strong> → repeat forever.<br /><br />
+            That's it. The "loop" is just checking queues in a specific order, over and over, as long as Node is running.
+          </EasyBox>
+          <CodeBlock label="non-blocking node.js — one thread, many connections" code={`// Node.js with 10,000 concurrent connections:
+
+// All 10,000 requests are started:
+for (const req of 10000Requests) {
+  db.query('SELECT * FROM users', (result) => {
+    req.send(result); // callback fires when DB responds
+  });
+  // Node doesn't wait — immediately starts next request
+}
+
+// While 10,000 DB queries run in parallel (OS level):
+// Node's ONE thread is free to handle new requests
+// Memory used: ~kilobytes per connection (not 1MB per thread!)
+
+// When DB queries finish (one by one):
+// Callbacks queue up in the Event Loop
+// Node processes them one at a time as they arrive`} />
+        </div>
+      )}
+
+      {tab === "phases" && (
+        <div>
+          <p style={para}>The Event Loop has specific phases it cycles through in order. Each phase has its own queue of callbacks to process.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+            {[
+              { phase: "timers", color: T.orange, icon: "⏰", desc: "Runs callbacks from setTimeout() and setInterval() whose time has expired. Note: the timer only guarantees a MINIMUM delay, not an exact one.", example: "setTimeout(fn, 100) → runs here, after ≥100ms" },
+              { phase: "pending I/O", color: T.blue, icon: "📥", desc: "I/O callbacks that were deferred from the previous loop iteration. Rarely something you interact with directly.", example: "Internal: certain system errors" },
+              { phase: "idle / prepare", color: T.muted, icon: "💤", desc: "Internal use only. Node uses this internally between phases. You will never directly interact with this phase.", example: "Internal Node.js mechanics only" },
+              { phase: "poll", color: T.green, icon: "🔍", desc: "The most important phase. Retrieves new I/O events (file reads, network responses). Executes their callbacks. If queue is empty and no timers, Node WAITS here for new I/O events — this is where Node spends most of its time.", example: "fs.readFile callback runs here, HTTP responses run here" },
+              { phase: "check", color: T.purple, icon: "✓", desc: "Runs setImmediate() callbacks. Always runs after the poll phase completes, even if poll was empty.", example: "setImmediate(fn) → runs here" },
+              { phase: "close events", color: T.red, icon: "🔒", desc: "Close event callbacks — when a socket or file handle is abruptly closed.", example: "socket.on('close', ...) runs here" },
+              { phase: "⚡ microtasks (between every phase)", color: T.cyan, icon: "⚡", desc: "Microtasks are NOT a phase — they run BETWEEN every phase, draining completely before the next phase starts. process.nextTick() runs first (even before Promises), then Promise .then/.catch callbacks.", example: "Highest priority — always beats setTimeout and setImmediate" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 12, padding: "10px 13px", background: item.color + "08", border: `1px solid ${item.color}22`, borderRadius: 8 }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 4 }}>{item.phase}</div>
+                  <div style={{ fontSize: 12, color: T.muted, fontFamily: serif, lineHeight: 1.7, marginBottom: 4 }}>{item.desc}</div>
+                  <div style={{ fontSize: 10, color: item.color + "99", fontFamily: mono }}>→ {item.example}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tab === "order" && (
+        <div>
+          <p style={para}>This is the most commonly asked Node.js interview question. You need to know the exact execution order cold.</p>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: T.text, fontFamily: mono, marginBottom: 10 }}>The order — memorise this:</div>
+            {[
+              { order: "1st", label: "Synchronous code", color: T.blue, detail: "Everything on the call stack right now. const x = 5; function calls; loops. Always runs first, no exceptions." },
+              { order: "2nd", label: "process.nextTick()", color: T.cyan, detail: "Highest priority async callback. Runs before even Promises. Rarely used directly — mostly for library authors. Tip: if you nextTick() inside a nextTick(), the new one runs before any Promises too." },
+              { order: "3rd", label: "Promise .then / .catch", color: T.purple, detail: "Microtasks. ALL microtasks drain completely — if a .then() creates another .then(), that also runs before any setTimeout. Only stops when the microtask queue is empty." },
+              { order: "4th", label: "setTimeout() / setInterval()", color: T.orange, detail: "Macrotasks. Timer phase of the Event Loop. Even setTimeout(fn, 0) has to wait for all sync code and all microtasks first. '0ms' means 'as soon as all microtasks are done'." },
+              { order: "5th", label: "setImmediate()", color: T.yellow, detail: "Runs in the 'check' phase, after the poll phase. In practice very similar to setTimeout(fn, 0) but setImmediate always runs before setTimeout in I/O callback context." },
+              { order: "6th", label: "I/O callbacks (fs, network)", color: T.green, detail: "File read callbacks, HTTP response callbacks — run in the poll phase. After these run, any microtasks they created run before the next I/O callback." },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 12, marginBottom: 6, alignItems: "flex-start" }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: item.color + "22", border: `1px solid ${item.color}55`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: item.color, fontFamily: mono, flexShrink: 0 }}>{item.order}</div>
+                <div style={{ flex: 1, padding: "7px 11px", background: item.color + "08", border: `1px solid ${item.color}22`, borderRadius: 7 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 3 }}>{item.label}</div>
+                  <div style={{ fontSize: 12, color: T.muted, fontFamily: serif, lineHeight: 1.7 }}>{item.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <CodeBlock label="the classic interview question — predict the output" code={`console.log('A');                          // sync
+
+setTimeout(() => console.log('E'), 0);    // macrotask (timer)
+
+Promise.resolve()
+  .then(() => console.log('C'))           // microtask
+  .then(() => console.log('D'));          // microtask (chained)
+
+process.nextTick(() => console.log('B')); // microtask (nextTick first)
+
+console.log('A2');                        // sync
+
+// Output: A → A2 → B → C → D → E
+//
+// Why?
+// A, A2 → sync code runs first, in order
+// B      → process.nextTick fires before Promises
+// C      → first Promise .then
+// D      → second .then (microtask created by previous microtask)
+// E      → setTimeout fires last (macrotask)`} />
+        </div>
+      )}
+
+      {tab === "demo" && <EventLoopDemo />}
+
+      {tab === "quiz" && (
+        <div>
+          <QuizCard
+            question="What is the Event Loop?"
+            options={["A for loop that processes requests", "A mechanism that checks queues and runs callbacks when the call stack is empty", "The V8 engine's JavaScript compiler", "A thread pool for handling I/O"]}
+            correct={1}
+            explain="The Event Loop is a continuous loop that checks the Call Stack and various callback queues, running callbacks in order of priority when the stack is empty."
+          />
+          <QuizCard
+            question="Which runs FIRST after synchronous code finishes?"
+            options={["setTimeout callback", "setImmediate callback", "process.nextTick callback", "I/O callback"]}
+            correct={2}
+            explain="process.nextTick has the highest priority of any async callback — it runs before even Promise .then callbacks. Then Promises, then macrotasks (setTimeout/setImmediate)."
+          />
+          <QuizCard
+            question="setTimeout(fn, 0) means the function runs..."
+            options={["Immediately, in the current tick", "After 0 milliseconds exactly", "After all sync code AND all microtasks finish", "Before Promise callbacks"]}
+            correct={2}
+            explain="Even with 0ms delay, setTimeout must wait for all synchronous code to finish AND for all microtasks (Promises, nextTick) to drain completely. The '0' is a minimum delay, not an exact one."
+          />
+          <QuizCard
+            question="Why can Node.js handle 10,000 connections on a single thread?"
+            options={["It creates threads automatically", "It runs JS faster than other languages", "I/O operations are handed to the OS — the single thread never blocks waiting", "It uses multiple CPU cores"]}
+            correct={2}
+            explain="Non-blocking I/O: Node hands file reads, network calls, etc. to the OS, then immediately continues. The single thread is always busy doing JS work, never waiting for I/O. Callbacks fire when the OS finishes — no blocking, no wasted CPU cycles."
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// SECTION: MODULES
+// ════════════════════════════════════════════════════════════════
+function SectionModules() {
+  const [tab, setTab] = useState("what");
+  const tabs = [{ id: "what", label: "🤔 What & Why" }, { id: "cjs", label: "📦 CommonJS" }, { id: "esm", label: "🔷 ES Modules" }, { id: "wrapper", label: "🎁 Module Wrapper" }, { id: "compare", label: "⚖️ Compare" }];
+  return (
+    <div>
+      <p style={para}>Every file in Node.js is a module. Understanding modules is essential because <em>every single line of Node.js code you write</em> lives inside a module.</p>
+
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? T.orange + "22" : "transparent", border: `1px solid ${tab === t.id ? T.orange : T.border}`, color: tab === t.id ? T.orange : T.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+      </div>
+
+      {tab === "what" && (
+        <div>
+          <BigIdea number="1" title="What is a module?" color={T.orange}>
+            A module is just a file. But a special kind of file: its variables and functions are <em>private by default</em>. Nothing leaks out to other files. If you create a variable called <code style={{ color: T.orange, fontFamily: mono }}>const name = 'Alice'</code> in one file, no other file can see it — unless you explicitly choose to export it. This is the opposite of browser JS where everything you put on <code>window</code> is global.
+          </BigIdea>
+          <EasyBox emoji="🔒" title="Why private by default?" color={T.blue}>
+            Imagine you're building a large app with 50 files. Without modules, if any file creates a variable named <code style={{ color: T.blue, fontFamily: mono }}>user</code>, it could accidentally overwrite another file's <code>user</code> variable. Chaos. Modules prevent this — each file has its own private scope. You only share what you intentionally export.
+          </EasyBox>
+          <CodeBlock label="without modules — global scope chaos" code={`// file1.js
+var user = 'Alice';  // global!
+
+// file2.js (loaded after file1)
+var user = 'Bob';    // overwrites Alice's user!
+
+// file3.js
+console.log(user);   // 'Bob' — but you expected 'Alice'
+// This is the nightmare modules solve.`} />
+          <CodeBlock label="with modules — private by default" code={`// file1.js (a module)
+const user = 'Alice';  // private to this file
+// → file2 cannot see this 'user' at all
+
+// file2.js (a module)
+const user = 'Bob';    // completely separate variable
+// → no conflict with file1's user
+
+// To share, you must explicitly export:
+// file1.js
+export const user = 'Alice';  // intentionally shared
+
+// file2.js
+import { user } from './file1.js';
+console.log(user); // 'Alice' — controlled access`} />
+        </div>
+      )}
+
+      {tab === "cjs" && (
+        <div>
+          <EasyBox emoji="📦" title="CommonJS — the original Node module system" color={T.orange}>
+            CommonJS (CJS) was created specifically for Node.js in 2009. It uses <code style={{ color: T.orange, fontFamily: mono }}>require()</code> to import and <code style={{ color: T.orange, fontFamily: mono }}>module.exports</code> to export. It loads modules <strong>synchronously</strong> — when you call require(), Node reads and executes that file right now, blocking until done. That's fine on a server where files are local (microseconds), but would be terrible in a browser (milliseconds over network).
+          </EasyBox>
+          <CodeBlock label="exporting from a module — three patterns" code={`// ── math.js ──────────────────────────────────
+
+// PATTERN 1: Export an object with multiple things (most common)
+module.exports = {
+  add:      (a, b) => a + b,
+  subtract: (a, b) => a - b,
+  multiply: (a, b) => a * b,
+  PI:       3.14159,
+};
+
+// PATTERN 2: Export a single thing (a class, function, or value)
+module.exports = function add(a, b) { return a + b; };
+// or
+module.exports = class Database { ... };
+
+// PATTERN 3: Add exports one at a time
+exports.add      = (a, b) => a + b;
+exports.subtract = (a, b) => a - b;
+
+// ⚠️ THE TRAP — never do this:
+exports = { add, subtract };
+// This BREAKS because exports is a reference to module.exports.
+// Reassigning exports creates a NEW object, disconnecting
+// it from module.exports. require() returns the old empty object.
+// Always use module.exports = {...} when replacing entirely.`} />
+          <CodeBlock label="importing with require()" code={`// Get everything as an object:
+const math = require('./math');
+console.log(math.add(2, 3));     // 5
+console.log(math.PI);            // 3.14159
+
+// Destructure on import (clean and common):
+const { add, subtract, PI } = require('./math');
+console.log(add(10, 5));         // 15
+
+// Import a Node CORE module (no path, no npm install):
+const fs   = require('fs');
+const path = require('path');
+const http = require('http');
+const os   = require('os');
+
+// Import an NPM package (from node_modules):
+const express = require('express');
+const axios   = require('axios');
+const lodash  = require('lodash');
+
+// Dynamic require (choose which module at runtime):
+const db = process.env.DATABASE_TYPE === 'postgres'
+  ? require('./db/postgres')
+  : require('./db/mysql');
+
+// require() CACHES results:
+// Second call to require('./math') returns the SAME object
+// The file is NOT re-executed. This is usually what you want.
+console.log(require.cache); // see everything that's been cached`} />
+        </div>
+      )}
+
+      {tab === "esm" && (
+        <div>
+          <EasyBox emoji="🔷" title="ES Modules — the modern standard" color={T.blue}>
+            ES Modules (ESM) were standardised in 2015 as part of ES6. They use <code style={{ color: T.blue, fontFamily: mono }}>import</code> and <code style={{ color: T.blue, fontFamily: mono }}>export</code> syntax. Unlike CommonJS which loads synchronously, ESM is designed to be asynchronous and <strong>statically analyzable</strong> — tools can see exactly what you import before running the code, enabling tree-shaking (removing unused code). To use ESM in Node.js, use the <code>.mjs</code> extension or add <code>"type": "module"</code> to package.json.
+          </EasyBox>
+          <CodeBlock label="exporting with ES modules" code={`// ── math.mjs ──────────────────────────────────
+
+// Named exports — export multiple things:
+export const PI = 3.14159;
+export function add(a, b) { return a + b; }
+export const multiply = (a, b) => a * b;
+
+// Export a class:
+export class Calculator {
+  add(a, b) { return a + b; }
+}
+
+// Default export — one per file, for the "main thing":
+export default function mainAdd(a, b) { return a + b; }
+
+// Re-export from another file (useful for index.js barrel files):
+export { add, subtract } from './basic-math.mjs';
+export * from './advanced-math.mjs';`} />
+          <CodeBlock label="importing with ES modules" code={`// Named imports — import specific things:
+import { add, PI } from './math.mjs';
+console.log(add(2, 3)); // 5
+
+// Default import — you choose the name:
+import myAdd from './math.mjs';
+// or name it anything: import calculateSum from './math.mjs'
+
+// Both default AND named at once:
+import Calculator, { add, PI } from './math.mjs';
+
+// Rename on import (avoid name collisions):
+import { add as mathAdd } from './math.mjs';
+
+// Import everything as a namespace object:
+import * as math from './math.mjs';
+math.add(2, 3);
+math.PI;
+
+// DYNAMIC import (async — useful for lazy loading):
+const { add } = await import('./math.mjs');
+
+// TOP-LEVEL AWAIT — ESM only (CommonJS cannot do this!):
+const configRaw = await fs.promises.readFile('./config.json', 'utf8');
+const config    = JSON.parse(configRaw);
+// This runs before any other code in the module`} />
+          <Tip icon="⚠️" color={T.yellow} title="No __dirname in ES Modules">
+            CommonJS gives you <code>__dirname</code> and <code>__filename</code> for free. ES Modules don't have these. You need to build them yourself from <code>import.meta.url</code>.
+          </Tip>
+          <CodeBlock label="__dirname replacement in ES modules" code={`// CommonJS (works automatically):
+console.log(__dirname);   // '/home/user/my-project/src'
+console.log(__filename);  // '/home/user/my-project/src/app.js'
+
+// ES Modules (must build it):
+import { fileURLToPath } from 'url';
+import { dirname, join }  from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
+
+console.log(__dirname);   // '/home/user/my-project/src'
+
+// Now you can use it the same way:
+const configPath = join(__dirname, '..', 'config', 'db.json');`} />
+        </div>
+      )}
+
+      {tab === "wrapper" && (
+        <div>
+          <EasyBox emoji="🎁" title="The Module Wrapper Function — Node's hidden trick" color={T.purple}>
+            Here's something most Node.js tutorials never explain: before running any CommonJS file, Node.js wraps the entire file contents inside a function. This is why certain variables (<code style={{ color: T.purple, fontFamily: mono }}>require</code>, <code style={{ color: T.purple, fontFamily: mono }}>module</code>, <code style={{ color: T.purple, fontFamily: mono }}>exports</code>, <code style={{ color: T.purple, fontFamily: mono }}>__filename</code>, <code style={{ color: T.purple, fontFamily: mono }}>__dirname</code>) are available in every file without any import statement — they're injected as function parameters.
+          </EasyBox>
+          <CodeBlock label="your file — what you write" code={`// math.js — this is what you write:
+const PI = 3.14159;
+
+function add(a, b) { return a + b; }
+
+module.exports = { PI, add };`} />
+          <CodeBlock label="what Node actually runs" code={`// Node wraps your ENTIRE file in this function:
+(function(exports, require, module, __filename, __dirname) {
+
+  // ← YOUR CODE IS PLACED HERE BY NODE:
+  const PI = 3.14159;
+  function add(a, b) { return a + b; }
+  module.exports = { PI, add };
+  // ← END OF YOUR CODE
+
+}); // Node then calls this function with the 5 arguments injected
+
+// The 5 injected parameters explained:
+// exports   → shortcut reference to module.exports
+// require   → the require() function to import other modules
+// module    → the current module object ({ exports: {} })
+// __filename → full absolute path to this file
+// __dirname  → full absolute path to this file's directory`} />
+          <CodeBlock label="why this explains the exports trap" code={`// exports is initially === module.exports (same object in memory)
+// They both point to the same {}, like two names for one house
+
+exports.PI = 3.14;
+// Same as: module.exports.PI = 3.14
+// Works because we're modifying the SHARED object ✅
+
+// BUT if you reassign:
+exports = { PI: 3.14 };
+// You've just created a NEW local variable called 'exports'
+// module.exports still points to the original empty {}
+// require('./math') returns {} — nothing exported! ❌
+
+// CORRECT when replacing the whole export:
+module.exports = { PI: 3.14 };
+// You're replacing module.exports directly — this works ✅
+
+// Verify the wrapper yourself:
+console.log(arguments); // in a CJS file, shows the 5 params
+console.log(__filename); // proof it's injected automatically`} />
+        </div>
+      )}
+
+      {tab === "compare" && (
+        <div>
+          <div style={{ overflowX: "auto", marginBottom: 14 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: mono, fontSize: 11 }}>
+              <thead>
+                <tr>{["Feature", "CommonJS (require)", "ES Modules (import)"].map((h, i) => (
+                  <th key={i} style={{ padding: "9px 12px", background: "#03050c", color: [T.muted, T.orange, T.blue][i], textAlign: "left", borderBottom: `1px solid ${T.border}`, fontSize: 10 }}>{h}</th>
+                ))}</tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Syntax", "require() / module.exports", "import / export"],
+                  ["Loading style", "Synchronous (blocks)", "Asynchronous"],
+                  ["Analysis", "Dynamic — require() anywhere", "Static — imports at top only"],
+                  ["Default in Node.js", "Yes — .js files", "Need .mjs or type:module"],
+                  ["Top-level await", "❌ Cannot do this", "✅ Works natively"],
+                  ["Tree-shaking", "❌ Bundlers struggle", "✅ Bundlers remove unused"],
+                  ["__dirname", "✅ Free, always available", "❌ Must build from import.meta.url"],
+                  ["Dynamic import", "require() anywhere in code", "await import() — async"],
+                  ["Caching", "Yes — same object returned", "Yes — module evaluated once"],
+                  ["Use in new projects", "Legacy codebases", "Yes — this is the standard now"],
+                ].map((row, i) => (
+                  <tr key={i} style={{ background: i % 2 === 0 ? "transparent" : "#03050c06" }}>
+                    {row.map((cell, j) => <td key={j} style={{ padding: "8px 12px", borderBottom: `1px solid ${T.border}`, color: j === 0 ? T.text : T.muted, fontSize: j === 0 ? 11 : 11 }}>{cell}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Tip icon="🎯" color={T.blue} title="Simple rule for 2025">
+            New project: use ES Modules. Add <code style={{ color: T.blue, fontFamily: mono }}>"type": "module"</code> to package.json. Learn CommonJS because you'll read it in older codebases and npm packages daily — but write ESM.
+          </Tip>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════
+// CORE MODULES — expandable
+// ════════════════════════════════════════════════════════════════
+function ModuleCard({ name, color, icon, tagline, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ border: `1px solid ${color}33`, borderRadius: 10, overflow: "hidden", marginBottom: 10 }}>
+      <button onClick={() => setOpen(p => !p)} style={{ width: "100%", padding: "13px 16px", background: open ? color + "12" : color + "07", border: "none", cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ fontSize: 24 }}>{icon}</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 900, color, fontFamily: mono }}>require('{name}')</div>
+          <div style={{ fontSize: 12, color: T.muted, fontFamily: serif, marginTop: 2 }}>{tagline}</div>
+        </div>
+        <span style={{ fontSize: 11, color, fontFamily: mono, flexShrink: 0 }}>{open ? "▲ collapse" : "▼ expand"}</span>
+      </button>
+      {open && <div style={{ padding: "16px 18px", borderTop: `1px solid ${color}22` }}>{children}</div>}
+    </div>
+  );
+}
+
+function SectionCoreModules() {
+  return (
+    <div>
+      <p style={para}>Node.js ships with <strong style={{ color: T.cyan }}>built-in modules</strong> — ready to use with no npm install needed. These are the tools that make Node.js a complete server runtime. Click any module to see full examples and explanations.</p>
+      <EasyBox emoji="🎯" title="All 8 core modules — click any to expand" color={T.cyan}>
+        Each module is explained from scratch with a simple analogy, then all the practical code patterns you'll actually use in real projects.
+      </EasyBox>
+
+      <ModuleCard name="fs" color={T.green} icon="📁" tagline="File System — read, write, copy, delete, watch files on disk">
+        <EasyBox emoji="📁" title="What is fs?" color={T.green}>
+          The <code style={{ color: T.green, fontFamily: mono }}>fs</code> module gives your JavaScript program access to the computer's file system — the same file system you use in your file explorer. You can read text files, write new files, check if a file exists, delete files, create folders, list directory contents, and watch for changes.
+          <br /><br />
+          <strong>The #1 rule:</strong> always use <code style={{ color: T.green, fontFamily: mono }}>fs.promises</code> (async) in Node.js servers. The synchronous versions (<code>readFileSync</code>, etc.) block the entire Event Loop — every other request your server is handling freezes while the file reads. Only use sync versions in startup scripts or CLI tools.
+        </EasyBox>
+        <CodeBlock label="reading files — the right way" code={`import fs from 'fs';
+const fsp = fs.promises; // convenience shorthand
+
+// READ a text file (await version — use this):
+const text = await fsp.readFile('./data.txt', 'utf8');
+// 'utf8' tells Node to decode bytes to a string
+// Without 'utf8' you get a Buffer (raw bytes)
+
+// READ a binary file (image, PDF, etc.):
+const imageBuffer = await fsp.readFile('./photo.jpg');
+// Returns a Buffer — a binary data container
+
+// READ and parse JSON:
+const raw    = await fsp.readFile('./config.json', 'utf8');
+const config = JSON.parse(raw);
+
+// ❌ NEVER use readFileSync in a server:
+const text = fs.readFileSync('./data.txt', 'utf8');
+// This blocks ALL other requests while the file reads!`} />
+        <CodeBlock label="writing, appending, deleting" code={`// WRITE — creates file or completely overwrites it:
+await fsp.writeFile('./output.txt', 'Hello Node!', 'utf8');
+
+// WRITE JSON:
+await fsp.writeFile('./data.json', JSON.stringify(data, null, 2));
+
+// APPEND — add to end without overwriting:
+const logLine = \`[\${new Date().toISOString()}] User logged in\n\`;
+await fsp.appendFile('./server.log', logLine);
+
+// DELETE a file:
+await fsp.unlink('./temp.txt');
+
+// CHECK if file exists (no error thrown):
+const exists = await fsp.access('./file.txt')
+  .then(() => true)
+  .catch(() => false);`} />
+        <CodeBlock label="directories and file info" code={`// CREATE directory (recursive = don't error if already exists):
+await fsp.mkdir('./logs/2024/january', { recursive: true });
+
+// LIST all files in a directory:
+const files = await fsp.readdir('./src');
+// → ['app.js', 'utils.js', 'config.json']
+
+// GET file metadata (size, dates, type):
+const stats = await fsp.stat('./app.js');
+stats.size;          // 4096 (bytes)
+stats.mtime;         // Date object — when last modified
+stats.isFile();      // true
+stats.isDirectory(); // false
+
+// COPY a file:
+await fsp.copyFile('./template.html', './dist/index.html');
+
+// RENAME or MOVE:
+await fsp.rename('./old-name.txt', './new-name.txt');
+await fsp.rename('./file.txt', './archive/file.txt'); // moves it!
+
+// WATCH for changes (hot reload, etc.):
+fs.watch('./src', { recursive: true }, (event, filename) => {
+  console.log(\`\${filename} was \${event}d\`); // 'app.js was changed'
+});`} />
+        <CaseStudy title="Real-world: Config file loader"
+          color={T.green}
+          scenario="Your app needs to read settings from a config file at startup."
+          problem="Reading the config file synchronously blocks the event loop. Errors aren't handled, so a missing file crashes the app."
+          solution="Use async/await, handle ENOENT gracefully by returning defaults, and validate the config before returning.">
+          <CodeBlock label="production config loader" code={`async function loadConfig(path = './config.json') {
+  try {
+    const raw = await fs.promises.readFile(path, 'utf8');
+    const config = JSON.parse(raw);
+    console.log('Config loaded from', path);
+    return config;
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.warn('No config file found, using defaults');
+      return { port: 3000, env: 'development' };
+    }
+    if (err instanceof SyntaxError) {
+      throw new Error(\`Invalid JSON in \${path}: \${err.message}\`);
+    }
+    throw err; // unexpected error — rethrow
+  }
+}`} />
+        </CaseStudy>
+      </ModuleCard>
+
+      <ModuleCard name="path" color={T.blue} icon="🛤️" tagline="File paths — build them safely across Windows, Mac, Linux">
+        <EasyBox emoji="⚠️" title="Why you must use path — not string concatenation" color={T.red}>
+          Here's the trap: on Mac and Linux, file paths use forward slashes: <code>/home/user/file.txt</code>. On Windows, they use backslashes: <code>C:\Users\user\file.txt</code>. If you build paths by concatenating strings, your code works on your Mac, breaks on the Windows server. The <code style={{ color: T.blue, fontFamily: mono }}>path</code> module handles this automatically — it uses the right separator for whatever OS Node is running on.
+        </EasyBox>
+        <CodeBlock label="path — all the methods you need" code={`import path from 'path';
+
+// JOIN — safely combine path segments (cross-platform):
+path.join('/home', 'user', 'docs', 'file.txt');
+// Mac/Linux → '/home/user/docs/file.txt'
+// Windows   → '\\home\\user\\docs\\file.txt'
+
+path.join(__dirname, '..', 'config', 'db.json');
+// Goes up one level (..) then into config folder
+// Works on any OS ✅
+
+// RESOLVE — build an ABSOLUTE path:
+path.resolve('src', 'utils', 'math.js');
+// → '/current/working/directory/src/utils/math.js'
+// Like doing 'cd src && cd utils' and getting the full path
+
+// BASENAME — just the filename:
+path.basename('/home/user/docs/report.pdf');         // 'report.pdf'
+path.basename('/home/user/docs/report.pdf', '.pdf'); // 'report' (strip ext)
+
+// DIRNAME — just the directory:
+path.dirname('/home/user/docs/report.pdf'); // '/home/user/docs'
+
+// EXTNAME — file extension (with dot):
+path.extname('photo.jpg');      // '.jpg'
+path.extname('archive.tar.gz'); // '.gz' (last extension only)
+path.extname('README');         // '' (no extension)
+
+// PARSE — split into all parts at once:
+path.parse('/home/user/docs/report.pdf');
+// { root: '/', dir: '/home/user/docs',
+//   base: 'report.pdf', ext: '.pdf', name: 'report' }
+
+// FORMAT — build path from parts (reverse of parse):
+path.format({ dir: '/home/user', name: 'report', ext: '.pdf' });
+// → '/home/user/report.pdf'
+
+// NORMALIZE — clean up messy paths:
+path.normalize('/foo//bar/../baz/./');  // '/foo/baz'
+
+// RELATIVE — relative path from one place to another:
+path.relative('/home/user/project', '/home/user/project/src/app.js');
+// → 'src/app.js'`} />
+        <Tip icon="💡" color={T.blue} title="The pattern you'll use in every Node.js project">
+          <code style={{ color: T.blue, fontFamily: mono }}>path.join(__dirname, '..', 'config', 'settings.json')</code> — this builds a path relative to the current file, going up one directory then into config. Use this everywhere instead of hardcoding absolute paths.
+        </Tip>
+      </ModuleCard>
+
+      <ModuleCard name="os" color={T.purple} icon="💻" tagline="Operating System info — CPU, memory, hostname, platform">
+        <EasyBox emoji="💻" title="What is os?" color={T.purple}>
+          The <code style={{ color: T.purple, fontFamily: mono }}>os</code> module gives you information about the machine running your Node.js program. Useful for health monitoring dashboards, scaling decisions, writing cross-platform code, and generating system reports.
+        </EasyBox>
+        <CodeBlock label="os — all the useful methods" code={`import os from 'os';
+
+// PLATFORM — what OS is this?
+os.platform(); // 'linux' | 'darwin' | 'win32'
+os.arch();     // 'x64' | 'arm64' | 'ia32'
+os.release();  // '22.04.1' (OS version string)
+os.type();     // 'Linux' | 'Darwin' | 'Windows_NT'
+
+// MACHINE IDENTITY:
+os.hostname(); // 'my-server-prod-1' (machine name)
+os.uptime();   // 86400 (seconds since last reboot → divide by 3600 for hours)
+os.homedir();  // '/home/alice' or 'C:\\Users\\Alice'
+os.tmpdir();   // '/tmp' — good for temporary files
+
+// MEMORY (all values in BYTES):
+os.totalmem(); // 17179869184 → divide by 1e9 for GB (17.2 GB)
+os.freemem();  // 4294967296  → 4.3 GB free
+const usedPercent = ((1 - os.freemem() / os.totalmem()) * 100).toFixed(1);
+// '74.9' (% of RAM used)
+
+// CPUs:
+os.cpus();         // array of CPU info objects
+os.cpus().length;  // 8 (number of logical CPU cores)
+os.cpus()[0].model; // 'Apple M2'
+os.cpus()[0].speed; // 2400 (MHz)
+
+// NETWORK INTERFACES:
+const nets = os.networkInterfaces();
+// { lo: [{ address: '127.0.0.1', family: 'IPv4', internal: true }],
+//   eth0: [{ address: '192.168.1.5', family: 'IPv4', internal: false }] }
+
+// LINE ENDING (for cross-platform file writing):
+os.EOL; // '\\n' on Unix, '\\r\\n' on Windows
+
+// PRACTICAL: system health object for monitoring:
+function systemHealth() {
+  const mem  = os.totalmem();
+  const free = os.freemem();
+  return {
+    platform:  os.platform(),
+    cpuCores:  os.cpus().length,
+    totalRAM:  (mem / 1e9).toFixed(1) + ' GB',
+    freeRAM:   (free / 1e9).toFixed(1) + ' GB',
+    usedRAM:   ((1 - free / mem) * 100).toFixed(1) + '%',
+    uptime:    Math.floor(os.uptime() / 3600) + ' hours',
+    hostname:  os.hostname(),
+  };
+}`} />
+      </ModuleCard>
+
+      <ModuleCard name="events" color={T.orange} icon="📡" tagline="EventEmitter — pub/sub pattern, the foundation of all Node.js I/O">
+        <EasyBox emoji="📡" title="What is EventEmitter?" color={T.orange}>
+          The EventEmitter is the pattern that Node.js is built on. HTTP servers, file streams, database connections, network sockets — they all use EventEmitter under the hood.<br /><br />
+          Think of it like a radio station (the emitter) and radios (the listeners). The station broadcasts events. Anyone tuned in receives them. The station doesn't know or care who is listening — it just broadcasts. This is called <strong>pub/sub</strong> (publish/subscribe) or the <strong>observer pattern</strong>.
+        </EasyBox>
+        <CodeBlock label="eventemitter — everything you need to know" code={`import { EventEmitter } from 'events';
+
+// Create your own emitter by extending EventEmitter:
+class OrderSystem extends EventEmitter {
+  placeOrder(item, price) {
+    console.log(\`Order placed: \${item}\`);
+
+    // EMIT — broadcast an event with data attached:
+    this.emit('order', { item, price, time: new Date() });
+
+    // You can emit multiple different events:
+    if (price > 100) {
+      this.emit('bigOrder', item);
+    }
+  }
+}
+
+const shop = new OrderSystem();
+
+// .on() — SUBSCRIBE — runs every time event is emitted:
+shop.on('order', (orderData) => {
+  console.log(\`📦 Shipping: \${orderData.item} for $\${orderData.price}\`);
+});
+
+shop.on('order', (orderData) => {
+  // Multiple listeners for the same event — both run!
+  console.log(\`💾 Saved to DB: \${orderData.item}\`);
+});
+
+// .once() — runs only the FIRST time, then auto-removes itself:
+shop.once('bigOrder', (item) => {
+  console.log(\`🎉 First big order: \${item}! Notify the team!\`);
+});
+
+// Place some orders:
+shop.placeOrder('Book', 15);    // triggers 'order' only
+shop.placeOrder('Laptop', 999); // triggers 'order' AND 'bigOrder'
+shop.placeOrder('TV', 500);     // triggers 'order' + 'bigOrder' again,
+                                 // but once() already fired → silent
+
+// REMOVE a specific listener:
+const inventoryHandler = (data) => updateInventory(data);
+shop.on('order', inventoryHandler);
+// Later, when you want to stop listening:
+shop.off('order', inventoryHandler);    // same as removeListener
+
+// INSPECT the emitter:
+shop.eventNames();              // ['order', 'bigOrder']
+shop.listenerCount('order');   // 2
+
+// ❗ CRITICAL: ALWAYS handle 'error' events:
+// If an 'error' event is emitted with no listener,
+// Node.js CRASHES the entire process immediately!
+shop.on('error', (err) => {
+  console.error('Shop system error:', err.message);
+  // Handle gracefully — log it, send alert, don't crash
+});
+
+// Trigger an error:
+shop.emit('error', new Error('Payment service down'));
+// ✅ Caught — process continues running`} />
+      </ModuleCard>
+
+      <ModuleCard name="http" color={T.cyan} icon="🌐" tagline="Create HTTP servers — the foundation under Express and Fastify">
+        <EasyBox emoji="🌐" title="What is the http module?" color={T.cyan}>
+          The <code style={{ color: T.cyan, fontFamily: mono }}>http</code> module lets you create HTTP servers — programs that listen for incoming web requests and send responses. This is what Express.js, Fastify, Koa, and every other Node.js web framework wraps. Understanding raw HTTP helps you debug framework issues and understand what frameworks do automatically.
+        </EasyBox>
+        <CodeBlock label="a complete raw http server" code={`import http from 'http';
+
+const server = http.createServer(async (req, res) => {
+  // req (IncomingMessage) = the incoming request from the browser
+  // res (ServerResponse)  = what you send back
+
+  // ── Reading the request ────────────────────────────
+  console.log(req.method);  // 'GET' | 'POST' | 'PUT' | 'DELETE'
+  console.log(req.url);     // '/users?page=2' (path + query string)
+  console.log(req.headers); // { 'content-type': 'application/json', ... }
+
+  // Parse URL safely:
+  const url    = new URL(req.url, \`http://\${req.headers.host}\`);
+  const path   = url.pathname;       // '/users' (without query)
+  const page   = url.searchParams.get('page'); // '2'
+
+  // Read POST/PUT body (comes as a stream):
+  const body = await new Promise((resolve) => {
+    let raw = '';
+    req.on('data', chunk => { raw += chunk.toString(); });
+    req.on('end',  ()    => { resolve(raw ? JSON.parse(raw) : null); });
+  });
+
+  // ── Sending the response ───────────────────────────
+  // Helper function (you'd normally put this in a utility file):
+  const json = (data, status = 200) => {
+    res.writeHead(status, {
+      'Content-Type':                'application/json',
+      'Access-Control-Allow-Origin': '*', // CORS
+    });
+    res.end(JSON.stringify(data));
+  };
+
+  // ── Routing ────────────────────────────────────────
+  if (req.method === 'GET' && path === '/') {
+    return json({ message: 'Hello from Node.js!', status: 'ok' });
+  }
+
+  if (req.method === 'GET' && path === '/health') {
+    return json({ ok: true, uptime: process.uptime() });
+  }
+
+  if (req.method === 'GET' && path === '/users') {
+    const users = [{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }];
+    return json(users);
+  }
+
+  if (req.method === 'POST' && path === '/users') {
+    if (!body?.name) return json({ error: 'name is required' }, 400);
+    const newUser = { id: Date.now(), ...body };
+    return json({ created: true, user: newUser }, 201);
+  }
+
+  json({ error: \`Route \${req.method} \${path} not found\` }, 404);
+});
+
+// Start listening on port 3000:
+server.listen(3000, () => {
+  console.log('🚀 Server running at http://localhost:3000');
+});
+
+// Handle startup errors:
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error('❌ Port 3000 is already in use!');
+    process.exit(1);
+  }
+});`} />
+        <Tip icon="💡" color={T.cyan} title="Use Express or Fastify in real projects">
+          Raw http routing gets messy quickly. Express adds clean routing, middleware, and error handling. Fastify is faster and TypeScript-friendly. Both wrap http under the hood — knowing raw http helps you understand what they do.
+        </Tip>
+      </ModuleCard>
+
+      <ModuleCard name="crypto" color={T.rose} icon="🔐" tagline="Hashing, encryption, HMAC, cryptographically secure random">
+        <EasyBox emoji="🔐" title="What is the crypto module?" color={T.rose}>
+          The <code style={{ color: T.rose, fontFamily: mono }}>crypto</code> module wraps OpenSSL and gives you cryptographic tools: one-way hashing, HMAC signatures for webhook verification, symmetric encryption/decryption, and cryptographically secure random number/byte generation. Used everywhere security matters — authentication, data protection, token generation, webhook verification.
+        </EasyBox>
+        <CodeBlock label="secure random — tokens, UUIDs, API keys" code={`import crypto from 'crypto';
+
+// CRYPTOGRAPHICALLY SECURE random bytes:
+// (Math.random() is NOT secure — never use for passwords/tokens)
+const token = crypto.randomBytes(32).toString('hex');
+// Generates 32 random bytes → hex string of 64 characters
+// Perfect for: password reset tokens, API keys, session IDs
+
+const shortToken = crypto.randomBytes(16).toString('base64url');
+// base64url is URL-safe (no +, /, = characters)
+
+// UUID v4 — built in since Node 15:
+const id = crypto.randomUUID();
+// '110e8400-e29b-41d4-a716-446655440000'
+// No npm package needed!`} />
+        <CodeBlock label="hashing — one-way (cannot reverse)" code={`// SHA-256 hash — produces a fixed 64-char hex string:
+const hash = crypto.createHash('sha256')
+  .update('my secret password')
+  .digest('hex');
+// '6b3a55e0261b0304143f805a24924d0c1c44524821305f31d9277843b8a10f4e'
+
+// ⚠️ NEVER use SHA256 for passwords!
+// It's too fast — attackers can try billions of guesses per second.
+// For passwords always use bcrypt or argon2 (npm packages).
+// They're intentionally slow and add a salt automatically.
+
+// SHA-256 IS fine for:
+// - Checksums (verify file integrity)
+// - Cache keys
+// - Non-secret fingerprints
+// - ETag generation`} />
+        <CodeBlock label="HMAC — hash + secret key (webhook verification)" code={`// HMAC = Hash Message Authentication Code
+// Proves a message came from someone with the secret key.
+// Stripe, GitHub, Shopify all use this for webhooks.
+
+const hmac = crypto.createHmac('sha256', process.env.WEBHOOK_SECRET)
+  .update(rawRequestBody) // must be the raw bytes, not parsed JSON
+  .digest('hex');
+
+// Compare with what they sent in the header:
+const theirSignature = req.headers['x-stripe-signature'];
+
+// IMPORTANT: use timingSafeEqual, not ===
+// Regular === is vulnerable to timing attacks
+const ourSig   = Buffer.from(hmac);
+const theirSig = Buffer.from(theirSignature);
+const valid    = ourSig.length === theirSig.length
+  && crypto.timingSafeEqual(ourSig, theirSig);
+
+if (!valid) {
+  return res.status(401).json({ error: 'Invalid signature' });
+}`} />
+        <CodeBlock label="symmetric encryption (AES-256-GCM)" code={`// Encrypt sensitive data stored in a database:
+// (email addresses, personal data, PII)
+
+function encrypt(plaintext, key) {
+  const iv      = crypto.randomBytes(12); // fresh random IV every time!
+  const cipher  = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const enc     = Buffer.concat([
+    cipher.update(plaintext, 'utf8'),
+    cipher.final()
+  ]);
+  const tag = cipher.getAuthTag(); // authentication tag
+
+  // Store all three: iv + encrypted data + tag
+  return { iv: iv.toString('hex'), data: enc.toString('hex'), tag: tag.toString('hex') };
+}
+
+function decrypt({ iv, data, tag }, key) {
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key,
+    Buffer.from(iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(tag, 'hex'));
+  return decipher.update(data, 'hex', 'utf8') + decipher.final('utf8');
+}
+
+// Usage:
+const key       = crypto.randomBytes(32); // 256-bit key — store securely!
+const encrypted = encrypt('user@email.com', key);
+const original  = decrypt(encrypted, key); // 'user@email.com'`} />
+      </ModuleCard>
+
+      <ModuleCard name="child_process" color={T.yellow} icon="🔀" tagline="Run shell commands, scripts, and other programs from Node.js">
+        <EasyBox emoji="🔀" title="What is child_process?" color={T.yellow}>
+          Sometimes you need your Node.js program to run other programs — shell commands, Python scripts, C executables, Git commands, FFmpeg for video, ImageMagick for images. The <code style={{ color: T.yellow, fontFamily: mono }}>child_process</code> module lets you spawn these processes and communicate with them. Think of it as giving Node.js a terminal to type into.
+        </EasyBox>
+        <CodeBlock label="exec — run a command, get the output" code={`import { exec, execSync } from 'child_process';
+import { promisify } from 'util';
+
+// EXEC with callback style:
+exec('git log --oneline -5', (err, stdout, stderr) => {
+  if (err) { console.error('Failed:', err.message); return; }
+  if (stderr) console.warn('Warning:', stderr);
+  console.log(stdout); // the output
+});
+
+// EXEC with async/await (promisify makes it promise-based):
+const execAsync = promisify(exec);
+
+const { stdout, stderr } = await execAsync('git log --oneline -5');
+console.log(stdout);
+
+// Real usage examples:
+await execAsync('npm run build');
+await execAsync('pg_dump mydb > backup.sql');
+const { stdout: branch } = await execAsync('git branch --show-current');
+
+// ⚠️ exec() BUFFERS all output in memory.
+// Default limit is 1MB. Large output → crash.
+// For large output, use spawn() instead.
+
+// EXECSYNC — synchronous, blocks event loop:
+const version = execSync('node --version').toString().trim();
+// Only use in CLI tools / startup scripts — NEVER in HTTP servers!`} />
+        <CodeBlock label="spawn — streaming output, large commands" code={`import { spawn } from 'child_process';
+
+// SPAWN streams stdout/stderr chunk by chunk:
+const buildProcess = spawn('npm', ['run', 'build']);
+
+buildProcess.stdout.on('data', (chunk) => {
+  process.stdout.write(chunk); // stream build output in real time
+});
+
+buildProcess.stderr.on('data', (chunk) => {
+  process.stderr.write(chunk);
+});
+
+buildProcess.on('close', (exitCode) => {
+  if (exitCode === 0) console.log('Build succeeded!');
+  else console.error(\`Build failed with code \${exitCode}\`);
+});
+
+// Use spawn for:
+// - Large output (logs, exports, find results)
+// - Long-running processes (dev servers, watchers)
+// - Binary output (images, audio)
+// - Real-time streaming (progress bars)`} />
+        <CodeBlock label="fork — run another Node.js file (own process + memory)" code={`import { fork } from 'child_process';
+
+// FORK creates a separate Node.js process with IPC channel:
+// Perfect for: CPU-heavy tasks that would block the event loop
+
+const worker = fork('./workers/image-resizer.js');
+
+// Send data to the worker:
+worker.send({ file: './photos/original.jpg', width: 800, quality: 85 });
+
+// Receive results:
+worker.on('message', (result) => {
+  console.log('Resized image saved to:', result.outputPath);
+  worker.kill(); // clean up when done
+});
+
+worker.on('error',  err  => console.error('Worker error:', err));
+worker.on('exit',   code => console.log('Worker exited:', code));
+
+// ── In ./workers/image-resizer.js ────────────────────────
+process.on('message', async ({ file, width, quality }) => {
+  const outputPath = await resizeImage(file, width, quality);
+  process.send({ outputPath, success: true });
+});`} />
+      </ModuleCard>
+
+      <ModuleCard name="stream" color={T.teal} icon="🌊" tagline="Process data chunk by chunk — essential for large files and HTTP">
+        <EasyBox emoji="🌊" title="What are streams and why do they exist?" color={T.teal}>
+          Imagine you need to read a 4GB log file and count how many times the word "ERROR" appears. Without streams, your program would load the entire 4GB into RAM, then count. Most servers don't have 4GB free. The program crashes.<br /><br />
+          Streams solve this by processing data <strong>one chunk at a time</strong> (~64KB by default). Your program uses ~100KB of RAM regardless of whether the file is 1MB or 10GB. It's like reading a book one page at a time instead of photocopying the entire book before starting.<br /><br />
+          <strong>Important:</strong> HTTP requests and responses in Node.js are already streams. File reads can be streams. This isn't a niche feature — it's central to how Node handles data.
+        </EasyBox>
+        <CodeBlock label="4 types of streams" code={`// READABLE stream — you read FROM it (data flows to you):
+// Examples: fs.createReadStream(), http req, process.stdin
+
+// WRITABLE stream — you write TO it (data flows away):
+// Examples: fs.createWriteStream(), http res, process.stdout
+
+// DUPLEX stream — you can read AND write:
+// Examples: net.Socket (TCP connection)
+
+// TRANSFORM stream — reads input, transforms it, outputs result:
+// Examples: zlib.createGzip() (compress), crypto cipher, CSV parser`} />
+        <CodeBlock label="readable stream — chunk by chunk" code={`import fs from 'fs';
+
+const stream = fs.createReadStream('./huge-file.csv', {
+  encoding: 'utf8',
+  highWaterMark: 64 * 1024, // chunk size: 64KB at a time
+});
+
+let lineCount = 0;
+
+stream.on('data', (chunk) => {
+  // Called repeatedly — once per 64KB chunk
+  lineCount += chunk.split('\n').length - 1;
+  // Processing starts immediately, not after full file loads
+});
+
+stream.on('end', () => {
+  console.log(\`Total lines: \${lineCount}\`);
+  // Only ~64KB RAM used, regardless of file size
+});
+
+stream.on('error', (err) => {
+  console.error('Stream error:', err.message);
+});`} />
+        <CodeBlock label="pipe — chain streams together (powerful!)" code={`import fs from 'fs';
+import { createGzip } from 'zlib';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
+
+const pipe = promisify(pipeline); // makes pipeline promise-based
+
+// SIMPLE PIPE — read, compress, write:
+fs.createReadStream('./data.json')
+  .pipe(createGzip())                      // compress
+  .pipe(fs.createWriteStream('./data.json.gz')); // write
+
+// ✅ Better: use pipeline() — it handles errors properly!
+// pipe() doesn't clean up streams on error → memory leak
+await pipe(
+  fs.createReadStream('./data.json'),      // read
+  createGzip(),                            // compress
+  fs.createWriteStream('./data.json.gz')   // write
+);
+// If ANY stream errors → all streams destroyed, promise rejects
+
+// Process a 10GB file:
+await pipe(
+  fs.createReadStream('./10gb-export.csv'),
+  new TransformCSVtoJSON(),  // your custom Transform stream
+  fs.createWriteStream('./output.json')
+);
+// RAM used: ~200KB total. Not 10GB. ✅`} />
+        <CodeBlock label="custom transform stream — modify data in-flight" code={`import { Transform } from 'stream';
+
+// A Transform that converts each line to uppercase:
+class UpperCase extends Transform {
+  _transform(chunk, encoding, callback) {
+    // chunk = one piece of data (Buffer or string)
+    this.push(chunk.toString().toUpperCase()); // push transformed data downstream
+    callback(); // call when ready for next chunk
+  }
+
+  _flush(callback) {
+    // Called when all data has been processed
+    // Good place for cleanup or final output
+    callback();
+  }
+}
+
+// Use it in a pipeline:
+await pipe(
+  fs.createReadStream('./input.txt'),
+  new UpperCase(),
+  fs.createWriteStream('./output.txt')
+);`} />
+        <StreamDemo />
+      </ModuleCard>
+    </div>
+  );
+}
+
+// ══════════ KILL NOTES ══════════
+function KillNotes() {
+  const groups = [
+    { title: "What is Node.js", color: T.green, icon: "🟢", kills: [
+      "Node.js is a runtime environment — a program that runs JavaScript outside the browser using V8 + libuv + Node APIs.",
+      "Created in 2009 by Ryan Dahl. Motivation: traditional servers wasted resources creating one thread per connection.",
+      "Node.js is NOT a framework, NOT a programming language — it's a runtime like the JVM for Java.",
+      "Same V8 engine as Chrome — your JavaScript knowledge transfers completely; only the APIs differ.",
+      "Perfect for: APIs, real-time apps, microservices, CLI tools, streaming. Bad for: CPU-heavy tasks (ML, video encoding).",
+      "npm (Node Package Manager) has 2M+ packages — the largest package ecosystem in software.",
+    ]},
+    { title: "V8 + libuv + Architecture", color: T.orange, icon: "⚙️", kills: [
+      "V8 = Google's JS engine in C++. Compiles JS to native machine code via JIT. Same as Chrome.",
+      "JIT = Just-In-Time compilation. V8 watches hot code paths and compiles them to machine code for max speed.",
+      "libuv = C library providing the Event Loop, thread pool (4 threads default), and cross-platform async I/O.",
+      "Thread pool handles: file reads, DNS lookups, crypto operations. Network I/O uses OS-level async (epoll/kqueue).",
+      "V8 handles garbage collection automatically — you never call free(). Mark-and-sweep algorithm.",
+      "UV_THREADPOOL_SIZE=8 increases the libuv thread pool size for heavy file/crypto workloads.",
+    ]},
+    { title: "Event Loop", color: T.orange, icon: "🔄", kills: [
+      "Order: sync → process.nextTick → Promise .then → setTimeout/setInterval → setImmediate → I/O callbacks",
+      "Microtasks (nextTick + Promises) drain COMPLETELY before ANY macrotask runs — every single time.",
+      "process.nextTick fires before Promises — use sparingly, mainly for library authors ensuring async API.",
+      "setTimeout(fn, 0) still runs AFTER all microtasks — '0ms' means 'minimum 0ms, after microtasks'.",
+      "The poll phase is where Node WAITS for new I/O events — where Node spends most of its idle time.",
+      "NEVER block the Event Loop: no readFileSync in servers, no heavy CPU loops. Everything else waits.",
+      "For CPU work: use worker_threads (shared memory) or child_process.fork() (own process).",
+      "Event Loop is a loop — it checks queues in order, processes callbacks, repeats until nothing left.",
+    ]},
+    { title: "CommonJS vs ES Modules", color: T.blue, icon: "📦", kills: [
+      "CJS: require() is synchronous and blocking. ESM: import is asynchronous and statically analyzed.",
+      "exports is a reference to module.exports. NEVER do exports = {...} — creates a new object, breaks the link.",
+      "require() caches modules — second require('./math') returns the exact same cached object.",
+      "ESM has no __dirname or __filename — must construct from dirname(fileURLToPath(import.meta.url)).",
+      "Module Wrapper: Node wraps every CJS file in (function(exports, require, module, __filename, __dirname){}).",
+      "Top-level await works ONLY in ES Modules. Cannot use in CommonJS at all.",
+      "package.json 'type': 'module' makes all .js files ESM. Use .cjs extension to override per-file.",
+      "Dynamic import: await import('./mod.mjs') works in both CJS and ESM — the only way to do it in CJS.",
+    ]},
+    { title: "fs module", color: T.green, icon: "📁", kills: [
+      "Always use fs.promises (async). fs.readFileSync BLOCKS the Event Loop — never use in HTTP servers.",
+      "Without an encoding ('utf8'), readFile returns a Buffer (raw bytes). Always pass encoding for text.",
+      "fsp.mkdir({ recursive: true }) — safe, no error thrown if directory already exists.",
+      "fsp.access() to check existence (no throw). Check err.code === 'ENOENT' for file-not-found.",
+      "fs.createReadStream() for large files — constant memory usage regardless of file size.",
+      "fs.watch() is unreliable cross-platform — use chokidar (npm) in production for file watching.",
+      "fsp.rename() also MOVES files when you change the directory part of the path.",
+      "fsp.stat() gives size, dates, isFile(), isDirectory(). Always handle ENOENT (file not found).",
+    ]},
+    { title: "path module", color: T.blue, icon: "🛤️", kills: [
+      "Mac/Linux uses / separators. Windows uses \\. path.join() picks the right one automatically.",
+      "path.join() concatenates safely. path.resolve() makes an absolute path from CWD.",
+      "__dirname (CJS) = directory of current file. Must be constructed in ESM from import.meta.url.",
+      "path.basename(p) → filename. path.dirname(p) → directory. path.extname(p) → '.jpg' (with dot).",
+      "path.normalize() removes .. and . and double slashes from a messy path string.",
+      "path.parse() splits into { root, dir, base, name, ext }. path.format() is the reverse.",
+    ]},
+    { title: "events module", color: T.orange, icon: "📡", kills: [
+      "ALWAYS add an 'error' listener — unhandled 'error' events crash Node IMMEDIATELY with no try/catch help.",
+      ".once() auto-removes after first call. .on() stays until you call .off() or removeAllListeners().",
+      "Default max listeners = 10 per event. Getting a warning? Probably a listener leak in a loop.",
+      "EventEmitter is the base class for streams, http.Server, net.Socket, child processes — everything.",
+      "emit() returns true if there were listeners, false if nobody was listening.",
+      "Listeners fire synchronously in registration order — not queued in the Event Loop.",
+    ]},
+    { title: "http module", color: T.cyan, icon: "🌐", kills: [
+      "req.method, req.url, req.headers — your three tools to understand any incoming request.",
+      "For POST body: collect chunks in req.on('data') → parse in req.on('end'). req is a stream.",
+      "res.writeHead() MUST be called before res.write() or res.end(). Sets status + headers.",
+      "res.end() MUST always be called — browser hangs forever if you forget it.",
+      "Use new URL(req.url, 'http://'+req.headers.host) to safely parse paths and query strings.",
+      "req and res are streams — you can pipe req directly to a file for upload handling.",
+    ]},
+    { title: "crypto module", color: T.rose, icon: "🔐", kills: [
+      "NEVER hash passwords with SHA256 — use bcrypt or argon2 (npm). They're slow by design + salted.",
+      "crypto.randomBytes(32) is cryptographically secure. Math.random() is not — never for security.",
+      "HMAC = hash + secret key. Use for webhook verification. Use timingSafeEqual to compare signatures.",
+      "timingSafeEqual prevents timing attacks — length of comparison time doesn't reveal key info.",
+      "AES-256-GCM: always generate a fresh random IV for each encryption. Never reuse IVs.",
+      "crypto.randomUUID() is built-in since Node 15 — no uuid npm package needed.",
+    ]},
+    { title: "child_process module", color: T.yellow, icon: "🔀", kills: [
+      "exec() buffers ALL output in memory (1MB default). For large output use spawn().",
+      "spawn() streams stdout/stderr — no size limit, handles large/long-running processes.",
+      "execSync() BLOCKS the Event Loop — CLI scripts only. Never in HTTP servers.",
+      "fork() creates a separate Node.js process with IPC channel. Use for CPU-heavy work.",
+      "shell: true enables pipes/globs but is a security risk with any user input.",
+      "Always handle child.on('error') and child.on('close'). Clean up processes on exit.",
+    ]},
+    { title: "stream module", color: T.teal, icon: "🌊", kills: [
+      "4 types: Readable (source), Writable (dest), Duplex (read+write), Transform (read+modify+write).",
+      "Always use pipeline() not pipe() — pipeline properly destroys all streams on any error.",
+      "Backpressure: when writable.write() returns false, pause readable until 'drain' event fires.",
+      "highWaterMark controls buffer size (default 16KB text, 16KB binary). Tune per use case.",
+      "objectMode: true — stream JS objects instead of Buffers. Used in data processing pipelines.",
+      "ALL HTTP req/res, net.Socket, fs.createRead/WriteStream, zlib, crypto cipher are streams.",
+    ]},
+  ];
+
+  return (
+    <div>
+      <p style={para}>One card per topic. The precise facts that matter most — for interviews, for debugging, for real work.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {groups.map(n => (
+          <div key={n.title} style={{ border: `1px solid ${n.color}33`, borderRadius: 10, overflow: "hidden" }}>
+            <div style={{ padding: "10px 14px", background: n.color + "0d", borderBottom: `1px solid ${n.color}22`, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16 }}>{n.icon}</span>
+              <span style={{ fontSize: 13, fontWeight: 900, color: n.color, fontFamily: mono }}>{n.title}</span>
+            </div>
+            <div style={{ padding: "10px 14px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 6 }}>
+              {n.kills.map((k, i) => (
+                <div key={i} style={{ display: "flex", gap: 8 }}>
+                  <span style={{ color: n.color, fontSize: 10, marginTop: 3, flexShrink: 0 }}>▸</span>
+                  <span style={{ fontSize: 11, color: T.muted, lineHeight: 1.65, fontFamily: serif }}>{k}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ══════════ CHEATSHEET ══════════
+function SuperCheatsheet() {
+  const [tab, setTab] = useState("runtime");
+  const tabs = [
+    { id: "runtime",  label: "⚙️ Runtime" },
+    { id: "modules",  label: "📦 Modules" },
+    { id: "fs-path",  label: "📁 fs + path" },
+    { id: "net",      label: "🌐 http + events" },
+    { id: "power",    label: "🔐 crypto + child + stream" },
+    { id: "mistakes", label: "💀 Mistakes" },
+  ];
+  const content = {
+    runtime: (
+      <div>
+        <CodeBlock label="execution order — the most asked interview question" code={`console.log('1');
+process.nextTick(() => console.log('2'));
+Promise.resolve().then(() => console.log('3'));
+setTimeout(() => console.log('4'), 0);
+setImmediate(() => console.log('5'));
+console.log('6');
+// Output: 1 → 6 → 2 → 3 → 4 → 5`} />
+        <CodeBlock label="process — global reference" code={`process.env.NODE_ENV    // 'production' | 'development'
+process.env.PORT        // '3000'
+process.argv            // ['node', 'app.js', '--flag', 'value']
+process.cwd()           // working directory
+process.exit(0)         // success. process.exit(1) = error
+process.uptime()        // seconds running
+process.memoryUsage()   // { heapUsed, heapTotal, rss }
+process.pid             // 12345
+process.version         // 'v20.11.0'
+process.platform        // 'linux' | 'darwin' | 'win32'
+
+process.on('SIGTERM', async () => {   // graceful shutdown
+  server.close();
+  await db.disconnect();
+  process.exit(0);
+});
+process.on('uncaughtException',  err => { log(err); process.exit(1); });
+process.on('unhandledRejection', err => { log(err); process.exit(1); });`} />
+      </div>
+    ),
+    modules: (
+      <div>
+        <CodeBlock label="commonjs" code={`// Export:
+module.exports = { fn1, fn2, VALUE };  // ✅ recommended
+exports.fn1 = fn1;                     // ✅ one at a time
+// exports = {...}                      // ❌ NEVER — breaks ref
+
+// Import:
+const { fn1 }   = require('./mod');
+const fs        = require('fs');       // core
+const express   = require('express'); // npm`} />
+        <CodeBlock label="es modules" code={`// Export:
+export const PI = 3.14;
+export function add(a, b) { return a + b; }
+export default class Calc {}
+
+// Import:
+import Calc             from './math.mjs'; // default
+import { add, PI }      from './math.mjs'; // named
+import { add as sum }   from './math.mjs'; // rename
+import * as math        from './math.mjs'; // namespace
+import Calc, { add }    from './math.mjs'; // both
+
+// __dirname in ESM:
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Dynamic import:
+const { add } = await import('./math.mjs');`} />
+      </div>
+    ),
+    "fs-path": (
+      <div>
+        <CodeBlock label="fs.promises — production patterns" code={`import { readFile, writeFile, appendFile, unlink,
+         mkdir, readdir, stat, copyFile, rename, access } from 'fs/promises';
+
+const text  = await readFile('./file.txt', 'utf8');
+const buf   = await readFile('./img.png');
+
+await writeFile('./out.txt', content, 'utf8');
+await appendFile('./log.txt', line + '\n');
+await unlink('./tmp.txt');
+await mkdir('./logs', { recursive: true });
+const files = await readdir('./src');
+const s     = await stat('./file.txt');
+// s.isFile() s.isDirectory() s.size s.mtime
+
+await copyFile('./a.txt', './b.txt');
+await rename('./old.txt', './new.txt');
+const ok = await access('./f.txt').then(() => true).catch(() => false);`} />
+        <CodeBlock label="path" code={`import path from 'path';
+path.join('/home', 'user', 'file.txt')  // '/home/user/file.txt'
+path.resolve('src', 'app.js')           // '/cwd/src/app.js'
+path.basename('/a/file.txt')            // 'file.txt'
+path.basename('/a/file.txt', '.txt')    // 'file'
+path.dirname('/a/file.txt')             // '/a'
+path.extname('photo.jpg')               // '.jpg'
+path.parse('/a/file.txt')               // { root, dir, base, name, ext }
+path.normalize('/foo//bar/../baz')      // '/foo/baz'
+// Most used:
+const cfg = path.join(__dirname, '..', 'config', 'db.json');`} />
+      </div>
+    ),
+    net: (
+      <div>
+        <CodeBlock label="http server" code={`const server = http.createServer(async (req, res) => {
+  const url    = new URL(req.url, \`http://\${req.headers.host}\`);
+  const path   = url.pathname;
+  const params = url.searchParams;
+
+  const body = await new Promise(r => {
+    let raw = '';
+    req.on('data', c => raw += c);
+    req.on('end', () => r(raw ? JSON.parse(raw) : null));
+  });
+
+  const json = (data, s = 200) => {
+    res.writeHead(s, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+  };
+
+  if (req.method === 'GET' && path === '/') return json({ ok: true });
+  json({ error: 'Not found' }, 404);
+});
+server.listen(3000);`} />
+        <CodeBlock label="events" code={`import { EventEmitter, once } from 'events';
+const em = new EventEmitter();
+
+em.on('data', payload => handle(payload));
+em.once('ready', ()   => console.log('Connected once!'));
+em.emit('data', { value: 42 });
+em.off('data', handler);
+
+// ALWAYS:
+em.on('error', err => console.error(err));
+
+// Promisify an event:
+const [data] = await once(em, 'result');`} />
+      </div>
+    ),
+    power: (
+      <div>
+        <CodeBlock label="crypto" code={`import crypto from 'crypto';
+const token = crypto.randomBytes(32).toString('hex');
+const id    = crypto.randomUUID();
+const sha   = s => crypto.createHash('sha256').update(s).digest('hex');
+const hmac  = crypto.createHmac('sha256', secret).update(body).digest('hex');
+const valid = crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
+
+function encrypt(text, key) {
+  const iv = crypto.randomBytes(12), c = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const enc = Buffer.concat([c.update(text, 'utf8'), c.final()]);
+  return { iv: iv.toString('hex'), data: enc.toString('hex'), tag: c.getAuthTag().toString('hex') };
+}`} />
+        <CodeBlock label="child_process + stream" code={`import { spawn, fork } from 'child_process';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
+
+const execAsync = promisify(require('child_process').exec);
+const pipe      = promisify(pipeline);
+
+const { stdout } = await execAsync('git log --oneline -5');
+
+const proc = spawn('find', ['.', '-name', '*.ts']);
+proc.stdout.on('data', c => process.stdout.write(c));
+
+const worker = fork('./worker.js');
+worker.send({ task: 'resize', file: './img.jpg' });
+const result = await new Promise(r => worker.once('message', r));
+
+await pipe(
+  createReadStream('./data.json'),
+  createGzip(),
+  createWriteStream('./data.json.gz')
+);`} />
+      </div>
+    ),
+    mistakes: (
+      <div>
+        {[
+          { color: T.red, title: "readFileSync in a server — blocks ALL requests",
+            bad: `app.get('/data', (req, res) => {
+  const data = fs.readFileSync('./huge.json'); // ❌ blocks!
+  res.json(JSON.parse(data));
+});`,
+            good: `app.get('/data', async (req, res) => {
+  const data = await fs.promises.readFile('./huge.json', 'utf8');
+  res.json(JSON.parse(data)); // ✅ event loop free
+});` },
+          { color: T.orange, title: "exports = {} instead of module.exports",
+            bad: `exports = { add, subtract };
+// ❌ New object — disconnected from module.exports
+// require('./math') returns {} — nothing!`,
+            good: `module.exports = { add, subtract }; // ✅
+// OR: exports.add = add; exports.subtract = subtract; // ✅` },
+          { color: T.purple, title: "No 'error' listener on EventEmitter",
+            bad: `const em = new EventEmitter();
+em.emit('error', new Error('Oops'));
+// ❌ Unhandled 'error' event → Node crashes IMMEDIATELY`,
+            good: `em.on('error', err => {
+  console.error('Caught:', err.message); // ✅ process survives
+});` },
+          { color: T.yellow, title: "exec() for large command output",
+            bad: `exec('find / -name "*.log"', (err, stdout) => {
+  // ❌ stdout = gigabytes → maxBuffer exceeded → crash
+});`,
+            good: `const proc = spawn('find', ['/', '-name', '*.log']);
+proc.stdout.on('data', c => process.stdout.write(c)); // ✅ streams` },
+          { color: T.teal, title: "pipe() instead of pipeline()",
+            bad: `readStream.pipe(transform).pipe(writeStream);
+// ❌ Error in transform → other streams stay open → memory leak`,
+            good: `const pipe = promisify(pipeline);
+await pipe(readStream, transform, writeStream); // ✅ cleans up all` },
+        ].map((item, i) => (
+          <div key={i} style={{ border: `1px solid ${item.color}28`, borderRadius: 8, overflow: "hidden", marginBottom: 10 }}>
+            <div style={{ padding: "8px 14px", background: item.color + "0d", fontSize: 11, fontWeight: 700, color: item.color, fontFamily: mono }}>💀 {item.title}</div>
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: 160, padding: "10px 14px", borderRight: `1px solid ${T.border}`, borderTop: `1px solid ${T.border}` }}>
+                <div style={{ fontSize: 9, color: T.red, fontFamily: mono, marginBottom: 4 }}>❌ WRONG</div>
+                <pre style={{ margin: 0, fontSize: 10, color: T.red + "bb", fontFamily: mono, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{item.bad}</pre>
+              </div>
+              <div style={{ flex: 1, minWidth: 160, padding: "10px 14px", borderTop: `1px solid ${T.border}` }}>
+                <div style={{ fontSize: 9, color: T.green, fontFamily: mono, marginBottom: 4 }}>✅ CORRECT</div>
+                <pre style={{ margin: 0, fontSize: 10, color: T.green + "bb", fontFamily: mono, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{item.good}</pre>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ),
+  };
+  return (
+    <div>
+      <p style={para}>Everything on one page. <strong style={{ color: T.pink }}>Bookmark this.</strong></p>
+      <div style={{ display: "flex", gap: 5, marginBottom: 14, flexWrap: "wrap" }}>
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? T.pink + "22" : "transparent", border: `1px solid ${tab === t.id ? T.pink : T.border}`, color: tab === t.id ? T.pink : T.muted, borderRadius: 5, cursor: "pointer", fontWeight: tab === t.id ? 700 : 400 }}>{t.label}</button>)}
+      </div>
+      {content[tab]}
+    </div>
+  );
+}
+
+// ══════════ INTERVIEW ══════════
+function InterviewSection() {
+  const [open, setOpen] = useState(null);
+  const qs = [
+    { q: "What is Node.js? Explain it to someone who has never heard of it.", level: "Junior", color: T.green,
+      a: `Node.js is a runtime environment — a program installed on a computer that can read and execute JavaScript files, giving that JavaScript access to the computer's file system, network, and operating system.\n\nBefore Node.js (created in 2009), JavaScript could only run inside web browsers. You couldn't use JavaScript to build servers, read files, or create CLI tools. Node.js changed that.\n\nIt uses Google's V8 engine (the same engine inside Chrome) plus a C library called libuv to handle async I/O efficiently.\n\nKey distinction: Node.js is NOT a framework and NOT a programming language. It's a runtime — like how the JVM lets you run Java, Node.js lets you run JavaScript on servers.`,
+      code: `// JavaScript before Node.js (browser only):
+document.getElementById('btn').click(); // UI stuff only
+
+// JavaScript with Node.js (server/computer):
+import fs   from 'fs';
+import http from 'http';
+
+// Read a file:
+const data = await fs.promises.readFile('./data.json', 'utf8');
+
+// Create an HTTP server:
+const server = http.createServer((req, res) => res.end('Hello!'));
+server.listen(3000);
+
+// Same language. Completely different powers.` },
+    { q: "What is the Event Loop and why is it important?", level: "Junior", color: T.green,
+      a: `The Event Loop is the mechanism that allows Node.js to handle many concurrent operations on a single JavaScript thread.\n\nWhen you call an async operation (like reading a file), Node hands the work to the OS via libuv and immediately continues running other code. When the OS finishes, it puts your callback in a queue. The Event Loop continuously checks this queue and runs callbacks when the Call Stack is empty.\n\nWhy it matters: traditional servers create one thread per request (~1MB RAM each). At 10,000 concurrent users, that's 10GB just for threads. Node handles the same traffic with a single thread because it never blocks waiting — it's always processing the next callback.\n\nThe danger: any synchronous code that takes a long time (heavy loops, readFileSync) blocks the entire Event Loop. Every other request waits. This is the #1 performance pitfall in Node.js.`,
+      code: `// This is why Node can handle thousands of connections:
+for (const request of 10000Requests) {
+  db.query('SELECT * FROM users', callback);
+  // Node doesn't wait for DB — immediately starts next query
+}
+// All 10,000 queries run in parallel at the OS level
+// One thread, zero blocking, minimal RAM
+
+// The danger — blocking the Event Loop:
+app.get('/slow', (req, res) => {
+  for (let i = 0; i < 1e9; i++) {} // blocks 10 SECONDS!
+  // Every other request queues up and waits. Server appears down.
+  res.send('done');
+});` },
+    { q: "What is the execution order of async code in Node.js?", level: "Mid", color: T.blue,
+      a: `This is the most commonly asked Node.js interview question. The exact order:\n\n1. Synchronous code — runs first, always, no exceptions\n2. process.nextTick() — highest priority async. Runs before Promises.\n3. Promise .then/.catch callbacks — microtasks. ALL microtasks drain before any macrotask.\n4. setTimeout() / setInterval() — macrotasks. Timer phase of Event Loop.\n5. setImmediate() — runs in check phase, after poll phase.\n6. I/O callbacks (fs, network) — run in poll phase.\n\nThe critical rule: ALL microtasks (nextTick + Promises) drain completely after each sync block and after each macrotask. If a .then() creates another .then(), that second one also runs before any setTimeout.`,
+      code: `console.log('1');                            // sync
+setTimeout(() => console.log('4'), 0);       // macrotask
+Promise.resolve().then(() => console.log('3')); // microtask
+process.nextTick(() => console.log('2'));     // microtask (nextTick first)
+console.log('1b');                            // sync
+
+// Output: 1 → 1b → 2 → 3 → 4
+//
+// Explanation:
+// 1, 1b  — sync code, runs in order
+// 2      — process.nextTick: highest priority async
+// 3      — Promise .then: microtask
+// 4      — setTimeout: macrotask, runs after ALL microtasks` },
+    { q: "What is the difference between CommonJS and ES Modules?", level: "Junior", color: T.green,
+      a: `Two different module systems for Node.js:\n\nCommonJS (CJS): Node's original system (2009). Uses require()/module.exports. Loads synchronously — require() blocks while reading and executing the file. Dynamic — you can require() inside if statements and loops. Default for .js files.\n\nES Modules (ESM): The modern standard (2015, native in Node 12+). Uses import/export. Loads asynchronously. Static — imports must be at the top level, enabling tree-shaking. Requires .mjs extension or "type":"module" in package.json.\n\nPractical differences that trip people up:\n1. exports = {} BREAKS in CJS — use module.exports instead\n2. __dirname doesn't exist in ESM — build it from import.meta.url\n3. Top-level await only works in ESM\n4. Dynamic import() is async in ESM, but synchronous require() works in CJS`,
+      code: `// CommonJS trap — exports = {} breaks:
+exports = { add };    // ❌ disconnects from module.exports
+module.exports = { add }; // ✅ correct
+
+// ESM __dirname replacement:
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Top-level await — ESM only:
+const config = await fs.promises.readFile('./config.json', 'utf8');
+// Impossible in CommonJS!
+
+// Module Wrapper — Node wraps every CJS file in:
+// (function(exports, require, module, __filename, __dirname) {
+//   /* YOUR CODE */
+// });
+// That's why require/__dirname exist without importing them!` },
+    { q: "When and why would you use streams?", level: "Mid", color: T.blue,
+      a: `Streams solve the memory problem with large data.\n\nWithout streams: reading a 4GB file loads 4GB into RAM. Most servers don't have 4GB free. The process crashes.\n\nWith streams: data is processed in small chunks (~64KB at a time). A 4GB file uses ~100KB of RAM. Constant memory regardless of file size.\n\nAdditionally, streams allow you to START processing before the entire data arrives. With fs.readFile(), you wait for the complete file. With createReadStream(), you start processing after the first 64KB.\n\nReal use cases: large file reads/writes, HTTP request/response bodies (they ARE streams), compressing files with zlib, database exports, CSV/JSON streaming, video/audio processing.\n\nAlways use pipeline() not pipe(). pipeline() properly destroys all streams on error — pipe() doesn't, which causes memory leaks.`,
+      code: `// Without streams — dangerous:
+const data = await fs.promises.readFile('./4gb-log.txt');
+// Loads 4GB into RAM → process likely crashes
+
+// With streams — safe:
+import { createReadStream, createWriteStream } from 'fs';
+import { createGzip } from 'zlib';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
+
+await promisify(pipeline)(
+  createReadStream('./4gb-log.txt'),
+  createGzip(),                    // compress in-flight
+  createWriteStream('./log.gz')
+);
+// RAM used: ~200KB total, regardless of file size
+// Starts writing output while still reading input` },
+    { q: "What is the Module Wrapper Function?", level: "Mid", color: T.blue,
+      a: `Before running any CommonJS file, Node.js wraps the entire file contents in a function:\n(function(exports, require, module, __filename, __dirname) { /* your code */ })\n\nThis explains three mysteries:\n1. Why require, module, exports, __filename, __dirname exist in every file without importing them — they're injected as function parameters.\n2. Why variables don't leak between files — they're inside a function scope.\n3. Why exports = {} doesn't work — you're reassigning a local function parameter, disconnecting it from module.exports. The require() caller gets the original empty module.exports, not your new object.`,
+      code: `// Your math.js file:
+const PI = 3.14;
+module.exports = { PI };
+
+// What Node ACTUALLY executes:
+(function(exports, require, module, __filename, __dirname) {
+  const PI = 3.14; // scoped to this function — doesn't leak!
+  module.exports = { PI }; // sets the actual exports ✅
+});
+
+// The exports trap:
+(function(exports, require, module, ...) {
+  exports = { PI }; // ❌ reassigns LOCAL variable
+                    // module.exports is still {}
+                    // require('./math') returns {}
+});
+
+// Why module.exports = {} works:
+// You're modifying the module object directly — that's what require() returns.` },
+    { q: "How do you handle errors properly in Node.js?", level: "Senior", color: T.purple,
+      a: `Three categories of errors need different handling:\n\n1. Async errors (try/catch with await): wrap await calls, check error codes like err.code === 'ENOENT' for file-not-found. Return defaults for expected errors, rethrow unexpected ones.\n\n2. EventEmitter errors: ALWAYS add an 'error' event listener. Unhandled 'error' events crash Node immediately — no try/catch helps. Every stream, socket, and http.Server is an EventEmitter.\n\n3. Process-level safety nets: process.on('uncaughtException') and process.on('unhandledRejection') for errors that slip through everything else. Log and exit — don't try to recover, the state is corrupted.\n\nFor production servers: implement graceful shutdown on SIGTERM. Stop accepting new connections, let in-flight requests finish (with a timeout), close database connections, then exit cleanly.`,
+      code: `// 1. Async — specific error codes:
+async function loadFile(path) {
+  try {
+    return await fs.promises.readFile(path, 'utf8');
+  } catch (err) {
+    if (err.code === 'ENOENT') return null; // expected → default
+    throw err; // unexpected → let caller handle
+  }
+}
+
+// 2. EventEmitter — ALWAYS:
+server.on('error', err => { console.error(err); process.exit(1); });
+stream.on('error', err => { stream.destroy(); cleanup(); });
+
+// 3. Process safety nets:
+process.on('uncaughtException',  err => { log(err); process.exit(1); });
+process.on('unhandledRejection', err => { log(err); process.exit(1); });
+
+// 4. Graceful shutdown:
+process.on('SIGTERM', async () => {
+  server.close();         // stop accepting new connections
+  await db.disconnect();  // close connection pool
+  process.exit(0);        // clean exit
+});` },
+  ];
+  return (
+    <div>
+      <p style={para}>These questions cover everything from "what is Node.js" to deep internals. Know these for any backend or full-stack interview.</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+        {qs.map((q, i) => (
+          <div key={i} style={{ border: `1px solid ${open === i ? q.color + "55" : T.border}`, borderRadius: 9, overflow: "hidden", transition: "border-color 0.2s" }}>
+            <button onClick={() => setOpen(open === i ? null : i)}
+              style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "11px 14px", background: open === i ? q.color + "0d" : "transparent", border: "none", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ fontSize: 9, padding: "2px 6px", background: q.color + "22", border: `1px solid ${q.color}44`, borderRadius: 3, color: q.color, fontFamily: mono, fontWeight: 700, flexShrink: 0 }}>{q.level}</span>
+              <span style={{ fontSize: 12, color: open === i ? q.color : T.text, fontFamily: serif, flex: 1, lineHeight: 1.4 }}>{q.q}</span>
+              <span style={{ color: q.color, fontSize: 13, flexShrink: 0 }}>{open === i ? "▲" : "▼"}</span>
+            </button>
+            {open === i && (
+              <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${q.color}22` }}>
+                <pre style={{ margin: "10px 0 0", fontSize: 12, color: T.muted, fontFamily: serif, lineHeight: 1.9, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{q.a}</pre>
+                <CodeBlock label="code" code={q.code} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN APP
+// ══════════════════════════════════════════════════════════════════════════════
+const SECTIONS = [
+  {
+    id: "what", icon: "🟢", title: "What is Node.js?", color: T.green,
+    render: () => <SectionWhatIsNode />,
+  },
+  {
+    id: "eventloop", icon: "🔄", title: "Event Loop", color: T.orange,
+    render: () => <SectionEventLoop />,
+  },
+  {
+    id: "modules", icon: "📦", title: "Modules", color: T.blue,
+    render: () => <SectionModules />,
+  },
+  {
+    id: "core", icon: "🔧", title: "Core Modules", color: T.cyan,
+    render: () => <SectionCoreModules />,
+  },
+  { id: "killnotes",  icon: "⚡", title: "Kill Notes",    color: T.yellow, render: () => <KillNotes /> },
+  { id: "cheatsheet", icon: "📋", title: "Cheatsheet",    color: T.pink,   render: () => <SuperCheatsheet /> },
+  { id: "interview",  icon: "🎤", title: "Interview Q&A", color: T.teal,   render: () => <InterviewSection /> },
+];
+
+export default function NodePhase1Deep() {
+  const [active, setActive] = useState("what");
+  const current = SECTIONS.find(s => s.id === active) || SECTIONS[0];
+  const idx     = SECTIONS.findIndex(s => s.id === active);
+
+  return (
+    <div style={{ minHeight: "100vh", background: T.bg, fontFamily: mono, color: T.text, display: "flex", flexDirection: "column" }}>
+      <div style={{ padding: "13px 20px 9px", borderBottom: `1px solid ${T.border}`, background: "#07090f" }}>
+        <div style={{ fontSize: 10, letterSpacing: 4, color: "#1a2035", textTransform: "uppercase", marginBottom: 3 }}>Node.js · Phase 1 · Deep Dive</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 22 }}>🟢</span>
+          <div>
+            <h1 style={{ margin: 0, fontSize: "clamp(13px,2.4vw,19px)", fontFamily: serif, fontWeight: 900, color: T.text }}>
+              Core Fundamentals — <span style={{ color: current.color, transition: "color 0.3s" }}>{current.title}</span>
+            </h1>
+            <p style={{ margin: 0, fontSize: 10, color: "#1a2035" }}>Beginner to dev · Every concept explained from zero · With quizzes, demos, analogies and real code</p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flex: 1, minHeight: 0, flexWrap: "wrap" }}>
+        <div style={{ width: "clamp(115px,15vw,195px)", background: "#07090f", borderRight: `1px solid ${T.border}`, padding: "8px 0", overflowY: "auto" }}>
+          {SECTIONS.map(s => (
+            <button key={s.id} onClick={() => setActive(s.id)}
+              style={{ display: "flex", alignItems: "center", gap: 7, width: "100%", padding: "9px 12px", background: active === s.id ? s.color + "0d" : "transparent", border: "none", borderLeft: active === s.id ? `3px solid ${s.color}` : "3px solid transparent", cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
+              <span style={{ fontSize: 12 }}>{s.icon}</span>
+              <span style={{ fontSize: 11, fontWeight: active === s.id ? 700 : 400, color: active === s.id ? s.color : T.muted }}>{s.title}</span>
+              {["killnotes","cheatsheet","interview"].includes(s.id) && (
+                <span style={{ marginLeft: "auto", fontSize: 8, color: s.color, background: s.color + "22", padding: "1px 4px", borderRadius: 3 }}>★</span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ flex: 1, overflowY: "auto", padding: "clamp(12px,3vw,24px)", minWidth: 260 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 16, paddingBottom: 10, borderBottom: `1px solid ${current.color}22` }}>
+            <span style={{ fontSize: 20 }}>{current.icon}</span>
+            <h2 style={{ margin: 0, fontSize: "clamp(14px,2.2vw,20px)", fontFamily: serif, color: current.color, fontWeight: 900 }}>{current.title}</h2>
+          </div>
+          {current.render()}
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 24, gap: 8 }}>
+            {idx > 0 && <button onClick={() => setActive(SECTIONS[idx-1].id)} style={{ padding: "7px 14px", background: "transparent", border: `1px solid ${T.border}`, borderRadius: 5, color: T.muted, cursor: "pointer", fontSize: 11, fontFamily: mono }}>← {SECTIONS[idx-1].title}</button>}
+            <div style={{ flex: 1 }} />
+            {idx < SECTIONS.length-1 && <button onClick={() => setActive(SECTIONS[idx+1].id)} style={{ padding: "7px 14px", background: "transparent", border: `1px solid ${current.color}`, borderRadius: 5, color: current.color, cursor: "pointer", fontSize: 11, fontFamily: mono }}>{SECTIONS[idx+1].title} →</button>}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: "7px 14px", borderTop: `1px solid ${T.border}`, background: "#07090f", display: "flex", gap: 4, flexWrap: "wrap" }}>
+        {SECTIONS.map(s => (
+          <button key={s.id} onClick={() => setActive(s.id)}
+            style={{ padding: "3px 8px", fontSize: 10, background: active === s.id ? s.color : "transparent", color: active === s.id ? "#000" : "#1e2840", border: `1px solid ${active === s.id ? s.color : T.border}`, borderRadius: 3, cursor: "pointer", fontWeight: active === s.id ? 900 : 400, fontFamily: mono }}>
+            {s.icon} {s.title}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
