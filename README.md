@@ -176,6 +176,3 @@ MIT
 
 Created with ❤️ for learning and teaching JavaScript/Node.js fundamentals.
 
----
-
-**Want to contribute?** See [CLAUDE.md](CLAUDE.md) for development guidelines.
