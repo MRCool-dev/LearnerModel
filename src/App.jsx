@@ -272,6 +272,7 @@ function SectionWhatIsNode() {
     { id: "how", label: "⚙️ How it works" },
     { id: "browser", label: "🔀 Browser vs Node" },
     { id: "why", label: "🎯 Why use it?" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quick Quiz" },
   ];
 
@@ -373,12 +374,14 @@ Operating System       ← Linux / macOS / Windows kernel`} />
       {tab === "quiz" && (
         <div>
           <QuizCard question="What is Node.js?" options={["A JavaScript framework like React", "A runtime environment that runs JavaScript outside the browser", "A database for JavaScript applications", "A JavaScript version newer than ES6"]} correct={1} explain="Node.js is a runtime — a program that can execute JavaScript files on your computer or server, outside any browser. It's not a framework, not a language, not a database." />
+
           <QuizCard question="Which company created the V8 engine?" options={["Microsoft", "Mozilla", "Google", "Ryan Dahl"]} correct={2} explain="Google created V8 as the engine for Chrome. Ryan Dahl took V8 and wrapped it with libuv and Node APIs to create Node.js in 2009." />
           <QuizCard question="Which can you do in Node.js but NOT in browser JS?" options={["Use Promises", "Read files from the hard drive", "Use async/await", "Create arrays and objects"]} correct={1} explain="Reading files requires access to the OS file system — something browsers block for security. Node.js provides the fs module for this." />
           <QuizCard question="What does 'non-blocking I/O' mean?" options={["Node.js runs I/O operations very quickly", "Node.js doesn't wait for I/O to finish before continuing", "Node.js prevents I/O errors", "Node.js uses multiple threads for I/O"]} correct={1} explain="Non-blocking means Node hands the I/O task to the OS and immediately moves on to the next line of code. When the I/O finishes, Node runs your callback." />
           <QuizCard question="When should you NOT use Node.js?" options={["For building REST APIs", "For real-time chat applications", "For CPU-intensive tasks like image processing or ML", "For handling many concurrent connections"]} correct={2} explain="Node's single-threaded JS execution means CPU-heavy work blocks all other requests. For image processing, video encoding, or ML — use Python, Go, or worker_threads." />
         </div>
       )}
+      {tab === "demo" && <NodeVsBrowserDemo />}
     </div>
   );
 }
@@ -494,7 +497,7 @@ console.log('A2');                        // sync
 // ══════════════════════════════════════════════════════════════════════════════
 function SectionModules() {
   const [tab, setTab] = useState("what");
-  const tabs = [{ id: "what", label: "🤔 What & Why" }, { id: "cjs", label: "📦 CommonJS" }, { id: "esm", label: "🔷 ES Modules" }, { id: "wrapper", label: "🎁 Module Wrapper" }, { id: "compare", label: "⚖️ Compare" }];
+  const tabs = [{ id: "what", label: "🤔 What & Why" }, { id: "cjs", label: "📦 CommonJS" }, { id: "esm", label: "🔷 ES Modules" }, { id: "wrapper", label: "🎁 Module Wrapper" }, { id: "compare", label: "⚖️ Compare" }, { id: "demo", label: "🧪 Live Demo" }];
   return (
     <div>
       <p style={para}>Every file in Node.js is a module. Understanding modules is essential because <em>every single line of Node.js code you write</em> lives inside a module.</p>
@@ -647,6 +650,7 @@ module.exports = { PI };  // ✅ replaces module.exports directly`} />
           <Tip icon="🎯" color="#3b82f6" title="Simple rule for 2025">New project: use ES Modules. Add <code>"type": "module"</code> to package.json. Learn CommonJS because you'll read it in older codebases daily — but write ESM.</Tip>
         </div>
       )}
+      {tab === "demo" && <ModuleSystemDemo />}
     </div>
   );
 }
@@ -1393,11 +1397,13 @@ function SectionWhatIsExpress() {
     { id: "story", label: "📖 The Story" },
     { id: "server", label: "🖥️ First Server" },
     { id: "why", label: "🎯 Why Express?" },
+    { id: "structure", label: "🏗️ MNC Structure" },
+    { id: "security", label: "🔒 Security Setup" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
     <div>
-      <p style={para}>Express.js is the de facto standard web framework for Node.js. It is minimal, unopinionated, and powers millions of production APIs.</p>
+      <p style={para}>Express.js is the de facto standard web framework for Node.js. It is minimal, unopinionated, and powers millions of production APIs at companies like Netflix, Uber, and IBM.</p>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
         {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? "#8b5cf622" : "transparent", border: `1px solid ${tab === t.id ? "#8b5cf6" : D.outline}`, color: tab === t.id ? "#8b5cf6" : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
       </div>
@@ -1406,7 +1412,7 @@ function SectionWhatIsExpress() {
           <BigIdea number="1" title="Node.js gave JavaScript superpowers" color="#3b82f6">In 2009, Node.js let JavaScript run on servers. But the built-in <code>http</code> module was verbose. You had to manually parse URLs, handle routing, and manage headers. Every developer was rewriting the same boilerplate.</BigIdea>
           <BigIdea number="2" title="TJ Holowaychuk built Express in 2010" color="#f59e0b">TJ Holowaychuk created Express.js as a thin layer on top of Node's <code>http</code> module. His insight: routing and middleware are the only primitives a web framework truly needs. Everything else is optional.</BigIdea>
           <BigIdea number="3" title="The middleware pattern changed everything" color="#8b5cf6">Instead of one giant request handler, Express broke processing into small, composable functions called <strong>middleware</strong>. Each middleware can inspect the request, modify it, or terminate it. This pattern became the standard for Node.js servers.</BigIdea>
-          <EasyBox emoji="🎯" title="What Express actually is — one sentence" color="#8b5cf6"><strong>Express is a minimal, unopinionated web framework</strong> that provides a robust set of features for web and mobile applications: routing, middleware, template engine integration, and HTTP utility methods.</EasyBox>
+          <EasyBox emoji="🎯" title="What Express actually is — one sentence" color="#8b5cf6"><strong>Express is a minimal, unopinionated web framework</strong> that provides routing, middleware, template integration, and HTTP utilities — nothing more, nothing less.</EasyBox>
           <Tip icon="🔑" color={D.yellow} title="Key insight">Express is NOT a full-stack framework like Django or Laravel. It does not dictate your database, ORM, or folder structure. It gives you routing + middleware — you choose everything else.</Tip>
         </div>
       )}
@@ -1427,6 +1433,21 @@ app.listen(PORT, () => {
           <CodeBlock label="run it" code={`node server.js
 # Then visit http://localhost:3000 in your browser`} />
           <Tip icon="💡" color={D.yellow} title="req and res">Every route handler receives <code>req</code> (the request object) and <code>res</code> (the response object). Express extends Node's native objects with helpful methods like <code>res.json()</code>, <code>res.status()</code>, and <code>res.send()</code>.</Tip>
+          <CodeBlock label="key response methods" code={`// Send JSON (most common in APIs)
+res.status(200).json({ users: [] });
+
+// Send string/HTML
+res.status(200).send('<h1>Hello</h1>');
+
+// No body (e.g. DELETE success)
+res.status(204).end();
+
+// Redirect
+res.redirect(301, '/new-path');
+
+// Set headers before responding
+res.set('X-Request-Id', req.id);
+res.status(200).json({ ok: true });`} />
         </div>
       )}
       {tab === "why" && (
@@ -1445,11 +1466,154 @@ app.listen(PORT, () => {
           ))}
         </div>
       )}
+      {tab === "structure" && (
+        <div>
+          <BigIdea number="1" title="Production folder structure that MNCs use" color="#8b5cf6">Most companies use a layered architecture: Routes → Controllers → Services → Repository/Model. Each layer has one responsibility. This makes code testable, maintainable, and easy to onboard new developers.</BigIdea>
+          <CodeBlock label="production project structure" code={`src/
+├── app.js           # Express app setup (no listen)
+├── server.js        # Entry point: app.listen()
+├── config/
+│   ├── database.js  # DB connection
+│   └── env.js       # Zod-validated env vars
+├── routes/
+│   ├── index.js     # Mount all routers
+│   ├── users.js     # /api/users routes
+│   └── orders.js    # /api/orders routes
+├── controllers/
+│   └── users.js     # Route handlers (thin)
+├── services/
+│   └── users.js     # Business logic
+├── repositories/
+│   └── users.js     # DB queries only
+├── middleware/
+│   ├── auth.js      # JWT verification
+│   ├── validate.js  # Request validation
+│   └── errorHandler.js
+├── models/          # Prisma / Mongoose schemas
+└── utils/
+    └── asyncHandler.js`} />
+          <CodeBlock label="app.js — clean setup pattern" code={`const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const { morganMiddleware } = require('./middleware/logger');
+const routes = require('./routes');
+const errorHandler = require('./middleware/errorHandler');
+
+const app = express();
+
+// Security
+app.use(helmet());
+app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') }));
+
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Logging
+app.use(morganMiddleware);
+
+// Compression
+app.use(compression());
+
+// Routes
+app.use('/api/v1', routes);
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handler (must be last)
+app.use(errorHandler);
+
+module.exports = app;`} />
+          <CodeBlock label="separating app from server (critical for testing)" code={`// server.js — only this file calls listen()
+const app = require('./app');
+const { PORT } = require('./config/env');
+
+app.listen(PORT, () => {
+  console.log(\`Server started on port \${PORT}\`);
+});
+
+// Why separate?
+// Tests import 'app' directly — no port binding
+// supertest(app) works without starting a real server`} />
+          <Tip icon="🎯" color={D.yellow} title="MNC interview pattern">Interviewers at MNCs specifically ask about this separation. Keeping <code>app.js</code> and <code>server.js</code> separate makes integration testing clean — no port conflicts, no need to close the server.</Tip>
+        </div>
+      )}
+      {tab === "security" && (
+        <div>
+          <BigIdea number="1" title="helmet.js — set security headers in one line" color="#f43f5e">helmet sets 14 security HTTP headers automatically: Content-Security-Policy, X-Frame-Options, Referrer-Policy, etc. Without helmet, browsers and security scanners flag your app as vulnerable.</BigIdea>
+          <CodeBlock label="essential security middleware stack" code={`const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
+
+// 1. Security headers
+app.use(helmet());
+
+// 2. CORS — only allow your frontend
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || [],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+}));
+
+// 3. Rate limiting — prevent brute force
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,                  // 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' },
+});
+app.use('/api/', limiter);
+
+// Stricter limit for auth endpoints
+const authLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10 });
+app.use('/api/auth/', authLimiter);
+
+// 4. NoSQL injection prevention
+app.use(mongoSanitize());
+
+// 5. HTTP Parameter Pollution prevention
+app.use(hpp());
+
+// 6. Body size limit — prevent payload attacks
+app.use(express.json({ limit: '10kb' }));`} />
+          <CodeBlock label="input validation with Zod (MNC standard)" code={`const { z } = require('zod');
+
+const createUserSchema = z.object({
+  name: z.string().min(1).max(100).trim(),
+  email: z.string().email(),
+  age: z.number().int().min(18).max(120).optional(),
+});
+
+const validate = (schema) => (req, res, next) => {
+  const result = schema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      error: 'Validation failed',
+      details: result.error.flatten().fieldErrors,
+    });
+  }
+  req.body = result.data; // cleaned & typed data
+  next();
+};
+
+// Usage:
+app.post('/users', validate(createUserSchema), createUser);`} />
+          <Tip icon="🔒" color={D.yellow} title="Security checklist for MNC code reviews">helmet ✓ | CORS with whitelist ✓ | Rate limiting ✓ | Input validation ✓ | SQL/NoSQL injection prevention ✓ | Body size limit ✓. Missing any one of these gets flagged in security audits.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What is Express.js?" options={["A database for Node.js applications", "A minimal web framework for Node.js", "A frontend JavaScript library like React", "A replacement for the V8 engine"]} correct={1} explain="Express is a minimal, unopinionated web framework for Node.js. It provides routing, middleware, and HTTP utilities." />
-          <QuizCard question="Which Node.js module does Express build on top of?" options={["fs (file system)", "path", "http", "crypto"]} correct={2} explain="Express is built on top of Node's built-in http module. It adds routing, middleware, and convenience methods." />
-          <QuizCard question="What makes Express 'unopinionated'?" options={["It forces you to use MongoDB", "It does not dictate your database, ORM, or folder structure", "It has no opinions about HTTP methods", "It only works with certain frontend frameworks"]} correct={1} explain="Unopinionated means Express gives you the HTTP layer and lets you choose everything else: database, architecture, folder structure, etc." />
+          <QuizCard question="Why should you separate app.js from server.js?" options={["To improve performance", "So tests can import the app without binding to a port", "Express requires it", "To support multiple databases"]} correct={1} explain="Separating app.js (Express setup) from server.js (app.listen) lets integration tests import the app directly with supertest without starting a real server or dealing with port conflicts." />
+          <QuizCard question="What does helmet.js do in Express?" options={["Handles database connections", "Sets security-related HTTP response headers", "Validates request bodies", "Manages JWT tokens"]} correct={1} explain="helmet sets secure HTTP headers like Content-Security-Policy, X-Frame-Options, and others that protect against common web attacks. It is the first middleware you should add to any production Express app." />
+          <QuizCard question="What is the correct order for registering middleware in Express?" options={["Routes first, then body parsers", "Error handler first, then security middleware", "Security headers → body parsers → routes → 404 handler → error handler", "Any order works"]} correct={2} explain="Express middleware runs in registration order. Security headers should be first, body parsers before routes that read req.body, and the error handler must be last (after all routes)." />
         </div>
       )}
     </div>
@@ -1462,6 +1626,8 @@ function SectionRouting() {
     { id: "methods", label: "📬 HTTP Methods" },
     { id: "params", label: "🔗 URL Params" },
     { id: "query", label: "❓ Query Strings" },
+    { id: "router", label: "📂 Router Module" },
+    { id: "advanced", label: "🚀 Advanced Patterns" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -1548,11 +1714,110 @@ app.get('/search', (req, res) => {
           <Tip icon="💡" color={D.yellow} title="req.query is also strings">Just like <code>req.params</code>, values in <code>req.query</code> are strings. <code>?limit=10</code> gives <code>"10"</code>, not <code>10</code>. Convert with <code>parseInt()</code> when needed.</Tip>
         </div>
       )}
+      {tab === "router" && (
+        <div>
+          <BigIdea number="1" title="express.Router() — modularize your routes" color="#3b82f6">As apps grow, keeping all routes in one file becomes unmanageable. <code>express.Router()</code> creates a mini-app with its own routes and middleware. You mount it at a path prefix in your main app.</BigIdea>
+          <CodeBlock label="routes/users.js — standalone router" code={`const express = require('express');
+const router = express.Router();
+const { auth, adminOnly } = require('../middleware/auth');
+const usersController = require('../controllers/users');
+
+// GET /api/users
+router.get('/', usersController.getAll);
+
+// POST /api/users
+router.post('/', auth, usersController.create);
+
+// GET /api/users/:id
+router.get('/:id', usersController.getById);
+
+// PUT /api/users/:id
+router.put('/:id', auth, usersController.update);
+
+// DELETE /api/users/:id — admin only
+router.delete('/:id', auth, adminOnly, usersController.remove);
+
+module.exports = router;`} />
+          <CodeBlock label="routes/index.js — mount all routers" code={`const express = require('express');
+const router = express.Router();
+
+router.use('/users', require('./users'));
+router.use('/orders', require('./orders'));
+router.use('/products', require('./products'));
+router.use('/auth', require('./auth'));
+
+module.exports = router;`} />
+          <CodeBlock label="app.js — single mount point" code={`const routes = require('./routes');
+
+// All API routes under /api/v1
+app.use('/api/v1', routes);
+
+// Result: /api/v1/users, /api/v1/orders, etc.`} />
+          <Tip icon="🎯" color={D.yellow} title="Router-level middleware">You can add middleware to a specific router: <code>router.use(auth)</code> makes all routes in that router require authentication. Use this for protected route groups instead of adding <code>auth</code> to every individual route.</Tip>
+        </div>
+      )}
+      {tab === "advanced" && (
+        <div>
+          <BigIdea number="1" title="Chained route handlers for same path" color="#8b5cf6">Use <code>app.route()</code> to chain GET, POST, PUT on the same path. Cleaner than three separate calls and avoids typos when the path changes.</BigIdea>
+          <CodeBlock label="chained route handlers" code={`// Instead of:
+app.get('/users/:id', getUser);
+app.put('/users/:id', updateUser);
+app.delete('/users/:id', deleteUser);
+
+// Use route chaining:
+app.route('/users/:id')
+  .get(getUser)
+  .put(auth, updateUser)
+  .delete(auth, adminOnly, deleteUser);`} />
+          <CodeBlock label="route versioning — critical in production APIs" code={`const v1Router = require('./routes/v1');
+const v2Router = require('./routes/v2');
+
+// Old clients keep working
+app.use('/api/v1', v1Router);
+
+// New clients use v2
+app.use('/api/v2', v2Router);
+
+// v2 changes: different response shape, new fields
+// Never break v1 consumers when releasing v2`} />
+          <CodeBlock label="param middleware — DRY resource loading" code={`// router.param runs BEFORE the route handler
+// when a named param is in the path
+router.param('userId', async (req, res, next, id) => {
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    req.targetUser = user; // attach to req
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Now ALL routes with :userId auto-load the user
+router.get('/:userId', (req, res) => res.json(req.targetUser));
+router.put('/:userId', auth, updateUser);  // req.targetUser available here too`} />
+          <CodeBlock label="wildcard routes and 404 handling" code={`// Catch unmatched routes — must come AFTER all other routes
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    method: req.method,
+    path: req.originalUrl,
+  });
+});
+
+// Note: express.Router() also supports wildcards
+router.get('/users/*', (req, res) => {
+  res.json({ path: req.params[0] }); // everything after /users/
+});`} />
+          <Tip icon="🔑" color={D.yellow} title="MNC best practice — always version your APIs">Every public or internal API at MNCs is versioned from day one. When you break backwards compatibility, increment the version. Your current consumers keep working forever on v1. New features go in v2.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="Which HTTP method should you use to create a new resource?" options={["GET", "POST", "PUT", "DELETE"]} correct={1} explain="POST is the standard HTTP method for creating new resources. GET reads, PUT updates, DELETE removes." />
           <QuizCard question="What is the value of req.params.id for the URL /users/42?" options={["42 (number)", "'42' (string)", "undefined", "null"]} correct={1} explain="req.params values are ALWAYS strings. req.params.id would be '42', not the number 42." />
           <QuizCard question="How do you access query string ?page=2 in Express?" options={["req.query.page", "req.params.page", "req.body.page", "req.headers.page"]} correct={0} explain="Express parses query strings automatically into req.query. req.query.page would be '2'." />
+          <QuizCard question="What does express.Router() provide?" options={["A database connection pool", "A mini-app with isolated routes and middleware", "A way to handle WebSockets", "An alternative to app.listen()"]} correct={1} explain="express.Router() creates a mini Express application with its own route and middleware stack. You mount it at a prefix using app.use('/path', router), enabling modular route organization." />
         </div>
       )}
     </div>
@@ -1677,6 +1942,7 @@ function SectionErrorHandling() {
     { id: "sync", label: "⚡ Sync Errors" },
     { id: "async", label: "🔄 Async Errors" },
     { id: "patterns", label: "📐 Patterns" },
+    { id: "production", label: "🏭 Production" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -1769,11 +2035,113 @@ if (err.isOperational) {
 }`} />
         </div>
       )}
+      {tab === "production" && (
+        <div>
+          <BigIdea number="1" title="Operational vs Programmer errors" color="#f43f5e">Operational errors are expected: user not found, validation failed, DB timeout. Programmer errors are bugs: undefined is not a function, can't read property of null. Handle operational errors gracefully. For programmer errors, crash and let PM2 restart.</BigIdea>
+          <CodeBlock label="complete production error handling system" code={`// utils/AppError.js
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.status = statusCode < 500 ? 'fail' : 'error';
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}
+
+// Convenience factory methods
+AppError.notFound = (resource) =>
+  new AppError(\`\${resource} not found\`, 404);
+AppError.unauthorized = (msg = 'Authentication required') =>
+  new AppError(msg, 401);
+AppError.forbidden = (msg = 'Insufficient permissions') =>
+  new AppError(msg, 403);
+AppError.badRequest = (msg) => new AppError(msg, 400);
+AppError.conflict = (msg) => new AppError(msg, 409);
+
+module.exports = AppError;`} />
+          <CodeBlock label="middleware/errorHandler.js — full production handler" code={`const AppError = require('../utils/AppError');
+
+// Map known DB/library errors to AppError
+const handleJWTError = () => AppError.unauthorized('Invalid token');
+const handleJWTExpiredError = () => AppError.unauthorized('Token expired');
+const handleValidationError = (err) => new AppError(
+  Object.values(err.errors).map(e => e.message).join(', '),
+  400
+);
+const handleDuplicateKeyError = (err) => {
+  const field = Object.keys(err.keyValue)[0];
+  return new AppError(\`\${field} already exists\`, 409);
+};
+
+const sendError = (err, req, res) => {
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (isProd) {
+    // Only send safe info to clients
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        error: err.message,
+      });
+    }
+    // Programmer error: don't leak details
+    console.error('PROGRAMMER ERROR', err);
+    return res.status(500).json({
+      status: 'error',
+      error: 'Something went wrong',
+    });
+  }
+
+  // Development: full detail
+  res.status(err.statusCode || 500).json({
+    status: err.status,
+    error: err.message,
+    stack: err.stack,
+  });
+};
+
+module.exports = (err, req, res, next) => {
+  let error = { ...err, message: err.message };
+
+  // Transform known errors
+  if (err.name === 'JsonWebTokenError') error = handleJWTError();
+  if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
+  if (err.name === 'ValidationError') error = handleValidationError(err);
+  if (err.code === 11000) error = handleDuplicateKeyError(err);
+
+  sendError(error, req, res);
+};`} />
+          <CodeBlock label="handling uncaught exceptions and unhandled rejections" code={`// server.js — global safety net
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION — shutting down', err);
+  process.exit(1); // PM2 will restart
+});
+
+const server = app.listen(PORT);
+
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION — shutting down', err);
+  server.close(() => process.exit(1)); // graceful shutdown
+});
+
+// Graceful shutdown for SIGTERM (Docker, Kubernetes)
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received — draining connections');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});`} />
+          <Tip icon="🎯" color={D.yellow} title="MNC interview: what happens after an unhandled rejection?">The correct answer: log it, close the HTTP server gracefully (stop accepting new requests), then exit with code 1. Let PM2/Kubernetes restart the process. Never swallow unhandled rejections silently — they indicate bugs.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="How many parameters does an error-handling middleware have?" options={["2", "3", "4", "5"]} correct={2} explain="Express error-handling middleware MUST have exactly 4 parameters: (err, req, res, next). Express uses the arity (parameter count) to identify it." />
           <QuizCard question="What happens if an async route handler throws without try/catch?" options={["Express catches it automatically", "The error is lost and the request hangs", "The server crashes immediately", "The error handler middleware catches it"]} correct={1} explain="Without try/catch or an async wrapper, thrown errors in async handlers are lost promises. The request hangs and the client gets no response." />
           <QuizCard question="What does the asyncHandler utility do?" options={["Makes sync functions async", "Wraps the route so .catch(next) handles errors", "Replaces express.json()", "Creates a new Express app"]} correct={1} explain="asyncHandler catches any rejected promise from the async function and passes the error to next(err), which routes it to your error-handling middleware." />
+          <QuizCard question="What is the difference between an operational error and a programmer error?" options={["Operational errors are in production, programmer errors are in development", "Operational errors are expected (404, validation) — programmer errors are bugs (undefined is not a function)", "Operational errors crash the app, programmer errors don't", "There is no difference"]} correct={1} explain="Operational errors are predictable: user not found, invalid input, DB timeout. Handle them gracefully with error responses. Programmer errors are bugs — crash the process and let PM2 restart it." />
         </div>
       )}
     </div>
@@ -1785,6 +2153,9 @@ function SectionAuth() {
   const tabs = [
     { id: "jwt", label: "🔑 JWT Basics" },
     { id: "middleware", label: "🛡️ Auth Middleware" },
+    { id: "refresh", label: "🔄 Refresh Tokens" },
+    { id: "rbac", label: "👮 RBAC" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -1852,13 +2223,163 @@ curl -H "Authorization: Bearer eyJhbGc..." \
           <EasyBox emoji="🎯" title="req.user pattern" color="#06b6d4">Authentication middleware attaches <code>req.user</code> so downstream route handlers know who is logged in. This pattern is used in virtually every Express authentication system.</EasyBox>
         </div>
       )}
+      {tab === "refresh" && (
+        <div>
+          <BigIdea number="1" title="Short-lived access tokens + long-lived refresh tokens" color="#06b6d4">Access tokens expire in 15 minutes — if stolen, the attacker has a short window. Refresh tokens live for days and are stored securely in an httpOnly cookie (not localStorage). To get a new access token, you hit /auth/refresh.</BigIdea>
+          <CodeBlock label="refresh token flow implementation" code={`const jwt = require('jsonwebtoken');
+
+const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+// Login — issue both tokens
+app.post('/auth/login', async (req, res) => {
+  const user = await validateCredentials(req.body);
+
+  const accessToken = jwt.sign(
+    { userId: user.id, role: user.role },
+    ACCESS_SECRET,
+    { expiresIn: '15m' }  // short-lived!
+  );
+
+  const refreshToken = jwt.sign(
+    { userId: user.id },
+    REFRESH_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  // Store refresh token hash in DB for revocation
+  await db.query(
+    'INSERT INTO refresh_tokens (user_id, token_hash) VALUES ($1, $2)',
+    [user.id, hashToken(refreshToken)]
+  );
+
+  // Refresh token in httpOnly cookie (secure, not accessible to JS)
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  res.json({ accessToken });
+});
+
+// Refresh — get new access token
+app.post('/auth/refresh', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });
+
+  try {
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+
+    // Verify it's in DB (not revoked)
+    const stored = await db.query(
+      'SELECT * FROM refresh_tokens WHERE user_id = $1 AND token_hash = $2',
+      [decoded.userId, hashToken(refreshToken)]
+    );
+    if (!stored.rows.length) return res.status(401).json({ error: 'Token revoked' });
+
+    // Issue new access token
+    const accessToken = jwt.sign(
+      { userId: decoded.userId },
+      ACCESS_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    res.json({ accessToken });
+  } catch {
+    res.status(401).json({ error: 'Invalid refresh token' });
+  }
+});
+
+// Logout — revoke refresh token
+app.post('/auth/logout', async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (refreshToken) {
+    await db.query('DELETE FROM refresh_tokens WHERE token_hash = $1',
+      [hashToken(refreshToken)]);
+  }
+  res.clearCookie('refreshToken');
+  res.json({ message: 'Logged out' });
+});`} />
+          <Tip icon="🔒" color={D.yellow} title="Why httpOnly cookies for refresh tokens?">localStorage is accessible to JavaScript — XSS attacks can steal it. httpOnly cookies are invisible to JavaScript. Combined with sameSite=strict (prevents CSRF), this is the most secure way to store refresh tokens.</Tip>
+        </div>
+      )}
+      {tab === "rbac" && (
+        <div>
+          <BigIdea number="1" title="Role-Based Access Control (RBAC)" color="#06b6d4">RBAC assigns permissions based on roles. Users have roles (admin, editor, viewer). Roles have permissions (create:post, delete:any). This is far more maintainable than checking user IDs individually.</BigIdea>
+          <CodeBlock label="RBAC middleware implementation" code={`// middleware/authorize.js
+
+// Simple role check
+const requireRole = (...roles) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({
+      error: 'Insufficient permissions',
+      required: roles,
+      current: req.user.role,
+    });
+  }
+  next();
+};
+
+// Permission-based (more granular)
+const permissions = {
+  admin: ['read:any', 'create:any', 'update:any', 'delete:any'],
+  editor: ['read:any', 'create:own', 'update:own'],
+  viewer: ['read:any'],
+};
+
+const requirePermission = (action) => (req, res, next) => {
+  const userPermissions = permissions[req.user?.role] || [];
+  if (!userPermissions.includes(action)) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+};
+
+// Ownership check — ensure users can only modify their own resources
+const requireOwnership = (getResourceUserId) => async (req, res, next) => {
+  const resourceUserId = await getResourceUserId(req);
+  if (req.user.role !== 'admin' && req.user.userId !== resourceUserId) {
+    return res.status(403).json({ error: 'Not your resource' });
+  }
+  next();
+};
+
+module.exports = { requireRole, requirePermission, requireOwnership };`} />
+          <CodeBlock label="applying RBAC to routes" code={`const { auth } = require('./middleware/auth');
+const { requireRole, requirePermission } = require('./middleware/authorize');
+
+// Anyone authenticated can read
+router.get('/posts', auth, getPosts);
+
+// Only editors and admins can create
+router.post('/posts', auth, requireRole('editor', 'admin'), createPost);
+
+// Only admins can delete any post
+router.delete('/posts/:id', auth, requireRole('admin'), deletePost);
+
+// Editors can update only their own posts
+router.put('/posts/:id', auth, requireRole('editor', 'admin'),
+  requireOwnership(async (req) => {
+    const post = await Post.findById(req.params.id);
+    return post?.authorId;
+  }),
+  updatePost
+);`} />
+          <Tip icon="🎯" color={D.yellow} title="RBAC vs ABAC">RBAC (role-based) is simpler and covers 80% of needs. ABAC (attribute-based) lets you define rules like "users can only access resources tagged with their department" — more powerful but complex. MNCs start with RBAC and add ABAC selectively for multi-tenant systems.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What does JWT stand for?" options={["JavaScript Web Token", "JSON Web Token", "Java Web Transfer", "Joint Web Token"]} correct={1} explain="JWT = JSON Web Token. It's a signed JSON payload used to transmit user identity between client and server." />
           <QuizCard question="Where should the client send the JWT on each request?" options={["In the request body", "In the Authorization header", "In the URL query string", "In a cookie only"]} correct={1} explain="The standard is the Authorization header with the Bearer scheme: Authorization: Bearer <token>. This keeps tokens out of URLs (which get logged) and bodies (which are for data)." />
-          <QuizCard question="Why is it safe to put userId in a JWT payload?" options={["Because JWTs are encrypted", "Because the payload is signed — tampering invalidates the signature", "Because only the server can read it", "Because userId is not sensitive"]} correct={1} explain="JWT payloads are Base64-encoded (readable by anyone) but cryptographically signed. If you change the payload, the signature verification fails." />
+          <QuizCard question="Why store refresh tokens in httpOnly cookies?" options={["For performance", "localStorage is accessible to XSS attacks; httpOnly cookies are not", "Cookies are required by JWT spec", "To support mobile apps"]} correct={1} explain="httpOnly cookies cannot be read by JavaScript, making them immune to XSS token theft. Combined with sameSite=strict, this prevents both XSS and CSRF attacks on your refresh token." />
+          <QuizCard question="What HTTP status code means 'authenticated but not authorized'?" options={["401 Unauthorized", "403 Forbidden", "400 Bad Request", "404 Not Found"]} correct={1} explain="403 Forbidden means the server knows who you are (authenticated) but you don't have permission (not authorized). 401 Unauthorized means the server doesn't know who you are — missing or invalid token." />
         </div>
       )}
+      {tab === "demo" && <JwtAuthDemo />}
     </div>
   );
 }
@@ -1869,6 +2390,8 @@ function SectionRestApi() {
     { id: "crud", label: "📝 CRUD" },
     { id: "design", label: "🏗️ Design" },
     { id: "example", label: "💻 Full Example" },
+    { id: "pagination", label: "📄 Pagination" },
+    { id: "validation", label: "✅ Validation" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -1978,11 +2501,149 @@ app.listen(3000, () => console.log('API running'));`} />
           <Tip icon="💡" color={D.yellow} title="In production">Use a real database (PostgreSQL, MongoDB), validation library (Zod, Joi), and an ORM (Prisma, Mongoose). This in-memory example is for learning the REST pattern.</Tip>
         </div>
       )}
+      {tab === "pagination" && (
+        <div>
+          <BigIdea number="1" title="Never return unbounded lists" color="#14b8a6">Returning all records with GET /users will kill your API when you have 1 million users. Every list endpoint must be paginated. There are two main strategies: offset pagination and cursor pagination.</BigIdea>
+          <CodeBlock label="offset pagination (simple, common)" code={`// GET /api/users?page=2&limit=20
+app.get('/api/users', async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, parseInt(req.query.limit) || 20);
+  const offset = (page - 1) * limit;
+
+  const [users, total] = await Promise.all([
+    User.find().skip(offset).limit(limit),
+    User.countDocuments(),
+  ]);
+
+  res.json({
+    data: users,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit),
+      hasNext: page < Math.ceil(total / limit),
+      hasPrev: page > 1,
+    },
+  });
+});
+
+// Problem: inefficient at high offsets
+// SKIP 100000 LIMIT 20 — DB scans 100020 rows!`} />
+          <CodeBlock label="cursor pagination (production-grade)" code={`// GET /api/users?cursor=eyJpZCI6MTAwfQ&limit=20
+// cursor = base64-encoded { id: 100 }
+app.get('/api/users', async (req, res) => {
+  const limit = Math.min(100, parseInt(req.query.limit) || 20);
+  let where = {};
+
+  if (req.query.cursor) {
+    const { id } = JSON.parse(
+      Buffer.from(req.query.cursor, 'base64').toString()
+    );
+    where = { id: { $gt: id } }; // start AFTER cursor
+  }
+
+  const users = await User.find(where)
+    .sort({ id: 1 })
+    .limit(limit + 1); // fetch one extra to detect hasNext
+
+  const hasNext = users.length > limit;
+  const items = hasNext ? users.slice(0, -1) : users;
+  const nextCursor = hasNext
+    ? Buffer.from(JSON.stringify({ id: items.at(-1).id })).toString('base64')
+    : null;
+
+  res.json({ data: items, nextCursor });
+});
+
+// Always O(log n) — never slows down at high pages`} />
+          <Tip icon="🔑" color={D.yellow} title="When to use which">Offset: admin dashboards, simple UIs where users jump to page N. Cursor: infinite scroll, high-traffic APIs, real-time data where rows can be inserted between pages. MNCs use cursor for most production APIs.</Tip>
+        </div>
+      )}
+      {tab === "validation" && (
+        <div>
+          <BigIdea number="1" title="Validate at the boundary, trust internally" color="#14b8a6">Validate every request that comes in from outside your system. Once data has been validated and entered your service layer, trust it. Don't re-validate at every function call.</BigIdea>
+          <CodeBlock label="Zod validation middleware (MNC standard)" code={`const { z } = require('zod');
+
+// Define schema once, use everywhere
+const userSchemas = {
+  create: z.object({
+    name: z.string().min(1, 'Name required').max(100).trim(),
+    email: z.string().email('Invalid email').toLowerCase(),
+    role: z.enum(['user', 'admin']).default('user'),
+    age: z.number().int().min(18, 'Must be 18+').max(120).optional(),
+  }),
+
+  update: z.object({
+    name: z.string().min(1).max(100).trim().optional(),
+    email: z.string().email().toLowerCase().optional(),
+  }).refine(
+    (data) => Object.keys(data).length > 0,
+    { message: 'At least one field must be provided' }
+  ),
+
+  queryList: z.object({
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+    search: z.string().max(200).optional(),
+    sortBy: z.enum(['name', 'email', 'createdAt']).default('createdAt'),
+    order: z.enum(['asc', 'desc']).default('desc'),
+  }),
+};
+
+// Generic validation middleware factory
+const validate = (schema, source = 'body') => (req, res, next) => {
+  const result = schema.safeParse(req[source]);
+  if (!result.success) {
+    return res.status(400).json({
+      error: 'Validation failed',
+      details: result.error.flatten().fieldErrors,
+    });
+  }
+  req[source] = result.data; // replace with cleaned data
+  next();
+};
+
+// Routes
+router.get('/', validate(userSchemas.queryList, 'query'), getUsers);
+router.post('/', validate(userSchemas.create), createUser);
+router.put('/:id', validate(userSchemas.update), updateUser);`} />
+          <CodeBlock label="response envelope standard" code={`// Always respond with consistent shape
+// utils/response.js
+
+const success = (res, data, statusCode = 200, meta = {}) => {
+  res.status(statusCode).json({
+    success: true,
+    data,
+    ...meta, // pagination, count, etc.
+    timestamp: new Date().toISOString(),
+  });
+};
+
+const error = (res, message, statusCode = 500, details = null) => {
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+    ...(details && { details }),
+    timestamp: new Date().toISOString(),
+  });
+};
+
+module.exports = { success, error };
+
+// Usage in controllers:
+const { success, error } = require('../utils/response');
+success(res, users, 200, { count: users.length });
+error(res, 'User not found', 404);`} />
+          <Tip icon="🎯" color={D.yellow} title="Why Zod over Joi?">Zod is TypeScript-first — it infers static types from schemas. <code>const data = schema.parse(req.body)</code> gives you full type safety downstream. Joi predates TypeScript and requires separate type definitions. Most MNCs have standardized on Zod for new projects.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="Which status code means 'Created successfully'?" options={["200", "201", "204", "400"]} correct={1} explain="201 Created is the correct status code when a new resource is successfully created. 200 is generic OK, 204 is no content, 400 is bad request." />
           <QuizCard question="What is wrong with the endpoint GET /getAllUsers?" options={["GET is the wrong method", "The endpoint should use a noun, not a verb", "It needs a status code", "It should be POST"]} correct={1} explain="REST endpoints should be nouns (/users) not verbs (/getAllUsers). The HTTP method (GET) already indicates the action." />
           <QuizCard question="What status code should you return if a resource is not found?" options={["200", "400", "404", "500"]} correct={2} explain="404 Not Found is the standard status code when the requested resource does not exist. 400 is for bad requests, 500 is for server errors." />
+          <QuizCard question="Which pagination strategy is preferred for high-traffic production APIs?" options={["Offset pagination (?page=2)", "Cursor pagination (opaque token)", "Load all records and filter client-side", "Random access pagination"]} correct={1} explain="Cursor pagination is O(log n) regardless of which page you're on. Offset pagination requires scanning all previous rows — at page 5000, OFFSET 100000 is expensive. Cursor is the MNC standard for real-time or high-volume data." />
         </div>
       )}
     </div>
@@ -2328,12 +2989,535 @@ function PoolDemo() {
   );
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+// LIVE DEMO COMPONENTS
+// ══════════════════════════════════════════════════════════════════════════════
+
+function NodeVsBrowserDemo() {
+  const [env, setEnv] = useState("browser");
+  const [output, setOutput] = useState([]);
+  const [running, setRunning] = useState(false);
+  const browserApis = [
+    { code: "document.getElementById('app')", result: "<div id='app'>...</div>", ok: true },
+    { code: "window.localStorage.setItem('key','val')", result: "✅ Stored in browser storage", ok: true },
+    { code: "fetch('https://api.example.com/data')", result: "✅ HTTP request sent", ok: true },
+    { code: "require('fs').readFileSync('data.txt')", result: "❌ ReferenceError: require is not defined", ok: false },
+    { code: "process.env.DB_URL", result: "❌ ReferenceError: process is not defined", ok: false },
+  ];
+  const nodeApis = [
+    { code: "require('fs').readFileSync('data.txt','utf8')", result: "✅ 'Hello from file!'", ok: true },
+    { code: "process.env.DB_URL", result: "✅ 'postgresql://localhost/myapp'", ok: true },
+    { code: "require('http').createServer(...)", result: "✅ HTTP server created on port 3000", ok: true },
+    { code: "document.getElementById('app')", result: "❌ ReferenceError: document is not defined", ok: false },
+    { code: "window.localStorage", result: "❌ ReferenceError: window is not defined", ok: false },
+  ];
+  const items = env === "browser" ? browserApis : nodeApis;
+  const run = async () => {
+    setRunning(true); setOutput([]);
+    for (let i = 0; i < items.length; i++) {
+      await new Promise(r => setTimeout(r, 500));
+      setOutput(p => [...p, items[i]]);
+    }
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — see what runs in each environment</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        {["browser", "node"].map(e => (
+          <button key={e} onClick={() => { setEnv(e); setOutput([]); }} style={{ padding: "6px 16px", background: env === e ? (e === "browser" ? "#3b82f6" : D.green) : "transparent", color: env === e ? "#fff" : D.muted, border: `1px solid ${env === e ? (e === "browser" ? "#3b82f6" : D.green) : D.outline}`, borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>
+            {e === "browser" ? "🌐 Browser JS" : "🟢 Node.js"}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
+        {items.map((item, i) => {
+          const done = output.find(o => o.code === item.code);
+          return (
+            <div key={i} style={{ padding: "8px 12px", background: done ? (done.ok ? D.green + "0d" : D.red + "0d") : D.surface, border: `1px solid ${done ? (done.ok ? D.green + "44" : D.red + "44") : D.outline}`, borderRadius: 6, transition: "all 0.3s" }}>
+              <div style={{ fontSize: 11, fontFamily: mono, color: done ? (done.ok ? D.green : D.red) : D.muted }}>{item.code}</div>
+              {done && <div style={{ fontSize: 11, color: D.muted, fontFamily: mono, marginTop: 3 }}>→ {done.result}</div>}
+            </div>
+          );
+        })}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 16px", background: env === "browser" ? "#3b82f6" : D.green, color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>
+        {running ? "▶ Running…" : "▶ Run All"}
+      </button>
+    </div>
+  );
+}
+
+function ModuleSystemDemo() {
+  const [mode, setMode] = useState("cjs");
+  const [step, setStep] = useState(-1);
+  const [running, setRunning] = useState(false);
+  const cjsSteps = [
+    { label: "Node wraps file in module wrapper function", code: "(function(exports, require, module, __filename, __dirname) { ... })" },
+    { label: "require('./math') — synchronously loads math.js", code: "Execution BLOCKS until math.js is fully loaded and executed" },
+    { label: "math.js runs: module.exports = { add, multiply }", code: "module.exports object is returned to the caller" },
+    { label: "const { add } = require('./math') destructures the export", code: "add is now available in this file's scope" },
+    { label: "console.log(add(2, 3)) → 5", code: "✅ Output: 5" },
+  ];
+  const esmSteps = [
+    { label: "import { add } from './math.js' — static analysis phase", code: "Bundlers/Node scans all imports BEFORE running any code" },
+    { label: "Module graph built — all dependencies identified", code: "math.js is fetched and parsed (can be parallel in browsers)" },
+    { label: "math.js exports: export function add(a,b) { return a+b; }", code: "Named export 'add' is live binding — updates automatically" },
+    { label: "Evaluation phase — modules execute in dependency order", code: "math.js evaluates first, then the importing file" },
+    { label: "console.log(add(2, 3)) → 5", code: "✅ Output: 5" },
+  ];
+  const steps = mode === "cjs" ? cjsSteps : esmSteps;
+  const run = async () => {
+    setRunning(true); setStep(-1);
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 700));
+      setStep(i);
+    }
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — trace how modules load step by step</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        {[["cjs", "📦 CommonJS (require)","#f59e0b"], ["esm", "🔷 ES Modules (import)","#3b82f6"]].map(([m, label, c]) => (
+          <button key={m} onClick={() => { setMode(m); setStep(-1); }} style={{ padding: "6px 14px", background: mode === m ? c : "transparent", color: mode === m ? "#fff" : D.muted, border: `1px solid ${mode === m ? c : D.outline}`, borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>{label}</button>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 12 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ padding: "9px 12px", background: step === i ? (mode === "cjs" ? "#f59e0b15" : "#3b82f615") : step > i ? D.surface : "transparent", border: `1px solid ${step >= i ? (mode === "cjs" ? "#f59e0b55" : "#3b82f655") : D.outline}`, borderRadius: 6, transition: "all 0.3s" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span style={{ fontSize: 12, flexShrink: 0 }}>{step > i ? "✅" : step === i ? "⏳" : "○"}</span>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: mono, color: step >= i ? (mode === "cjs" ? "#f59e0b" : "#3b82f6") : D.muted, fontWeight: step === i ? 700 : 400 }}>{s.label}</div>
+                {step === i && <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, marginTop: 3, padding: "4px 8px", background: D.surface, borderRadius: 4 }}>{s.code}</div>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 16px", background: mode === "cjs" ? "#f59e0b" : "#3b82f6", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>
+        {running ? "▶ Loading…" : "▶ Trace Module Load"}
+      </button>
+    </div>
+  );
+}
+
+function MongoQueryDemo() {
+  const [query, setQuery] = useState("find");
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState(null);
+  const db = [
+    { _id: "1", name: "Alice", age: 28, role: "admin", city: "Mumbai", score: 95 },
+    { _id: "2", name: "Bob", age: 35, role: "user", city: "Delhi", score: 72 },
+    { _id: "3", name: "Carol", age: 22, role: "user", city: "Mumbai", score: 88 },
+    { _id: "4", name: "Dave", age: 41, role: "admin", city: "Pune", score: 60 },
+    { _id: "5", name: "Eve", age: 29, role: "user", city: "Mumbai", score: 91 },
+  ];
+  const queries = {
+    find: { label: "find({ city: 'Mumbai' })", fn: () => db.filter(d => d.city === "Mumbai") },
+    filter: { label: "find({ age: { $gte: 28 }, role: 'user' })", fn: () => db.filter(d => d.age >= 28 && d.role === "user") },
+    sort: { label: "find().sort({ score: -1 }).limit(3)", fn: () => [...db].sort((a,b) => b.score - a.score).slice(0,3) },
+    project: { label: "find({}, { name:1, score:1, _id:0 })", fn: () => db.map(({ name, score }) => ({ name, score })) },
+    aggregate: { label: "aggregate: $group by city → avg score", fn: () => {
+      const groups = {};
+      db.forEach(d => { if (!groups[d.city]) groups[d.city] = []; groups[d.city].push(d.score); });
+      return Object.entries(groups).map(([city, scores]) => ({ city, avgScore: Math.round(scores.reduce((a,b)=>a+b,0)/scores.length), count: scores.length }));
+    }},
+  };
+  const run = async () => {
+    setRunning(true); setResult(null);
+    await new Promise(r => setTimeout(r, 400));
+    setResult(queries[query].fn());
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — run MongoDB queries against sample data</div>
+      <div style={{ marginBottom: 10, padding: "8px 10px", background: D.surface, borderRadius: 6, fontSize: 10, fontFamily: mono, color: D.muted }}>
+        Collection: users (5 documents) — Alice, Bob, Carol, Dave, Eve
+      </div>
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 12 }}>
+        {Object.entries(queries).map(([k, v]) => (
+          <button key={k} onClick={() => { setQuery(k); setResult(null); }} style={{ padding: "5px 10px", background: query === k ? "#14b8a622" : "transparent", border: `1px solid ${query === k ? "#14b8a6" : D.outline}`, color: query === k ? "#14b8a6" : D.muted, borderRadius: 5, cursor: "pointer", fontSize: 10, fontFamily: mono }}>{k}</button>
+        ))}
+      </div>
+      <div style={{ padding: "8px 12px", background: "#14b8a608", border: "1px solid #14b8a633", borderRadius: 6, marginBottom: 10, fontFamily: mono, fontSize: 11, color: "#14b8a6" }}>
+        User.{queries[query].label}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 14px", background: "#14b8a6", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, marginBottom: 10, opacity: running ? 0.7 : 1 }}>
+        {running ? "Querying…" : "▶ Execute Query"}
+      </button>
+      {result && (
+        <div style={{ background: D.surface, border: `1px solid ${D.outline}`, borderRadius: 6, padding: "10px 12px" }}>
+          <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, marginBottom: 6 }}>RESULT — {result.length} document{result.length !== 1 ? "s" : ""}</div>
+          {result.map((r, i) => (
+            <div key={i} style={{ fontFamily: mono, fontSize: 11, color: D.text, padding: "3px 0", borderBottom: i < result.length - 1 ? `1px solid ${D.outline}` : "none" }}>
+              {JSON.stringify(r)}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SqlQueryDemo() {
+  const [query, setQuery] = useState("select");
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState(null);
+  const users = [
+    { id:1, name:"Alice", age:28, city:"Mumbai", dept_id:1 },
+    { id:2, name:"Bob",   age:35, city:"Delhi",  dept_id:2 },
+    { id:3, name:"Carol", age:22, city:"Mumbai", dept_id:1 },
+    { id:4, name:"Dave",  age:41, city:"Pune",   dept_id:2 },
+    { id:5, name:"Eve",   age:29, city:"Mumbai", dept_id:3 },
+  ];
+  const depts = [{ id:1, name:"Engineering" }, { id:2, name:"Design" }];
+  const queries = {
+    select: { label: "SELECT name, age FROM users WHERE city = 'Mumbai'", fn: () => users.filter(u=>u.city==="Mumbai").map(({name,age})=>({name,age})) },
+    orderby: { label: "SELECT * FROM users ORDER BY age DESC LIMIT 3", fn: () => [...users].sort((a,b)=>b.age-a.age).slice(0,3) },
+    innerjoin: { label: "SELECT u.name, d.name AS dept FROM users u INNER JOIN depts d ON u.dept_id = d.id", fn: () => users.filter(u=>depts.find(d=>d.id===u.dept_id)).map(u=>({ name:u.name, dept: depts.find(d=>d.id===u.dept_id)?.name||null })) },
+    leftjoin: { label: "SELECT u.name, d.name AS dept FROM users u LEFT JOIN depts d ON u.dept_id = d.id", fn: () => users.map(u=>({ name:u.name, dept: depts.find(d=>d.id===u.dept_id)?.name||null })) },
+    groupby: { label: "SELECT city, COUNT(*) AS total, AVG(age) AS avg_age FROM users GROUP BY city", fn: () => {
+      const g = {};
+      users.forEach(u => { if(!g[u.city]) g[u.city]={city:u.city,total:0,ages:[]}; g[u.city].total++; g[u.city].ages.push(u.age); });
+      return Object.values(g).map(({city,total,ages})=>({city,total,avg_age:Math.round(ages.reduce((a,b)=>a+b,0)/ages.length)}));
+    }},
+  };
+  const run = async () => {
+    setRunning(true); setResult(null);
+    await new Promise(r => setTimeout(r, 350));
+    setResult(queries[query].fn());
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — execute SQL queries against sample tables</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <div style={{ fontSize: 10, fontFamily: mono, color: "#3b82f6", padding: "4px 8px", background: "#3b82f60d", borderRadius: 4, border: "1px solid #3b82f622" }}>users (5 rows)</div>
+        <div style={{ fontSize: 10, fontFamily: mono, color: "#8b5cf6", padding: "4px 8px", background: "#8b5cf60d", borderRadius: 4, border: "1px solid #8b5cf622" }}>depts (2 rows: Engineering, Design)</div>
+      </div>
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 12 }}>
+        {Object.entries(queries).map(([k]) => (
+          <button key={k} onClick={() => { setQuery(k); setResult(null); }} style={{ padding: "5px 10px", background: query === k ? "#3b82f622" : "transparent", border: `1px solid ${query === k ? "#3b82f6" : D.outline}`, color: query === k ? "#3b82f6" : D.muted, borderRadius: 5, cursor: "pointer", fontSize: 10, fontFamily: mono }}>{k}</button>
+        ))}
+      </div>
+      <div style={{ padding: "8px 12px", background: "#3b82f608", border: "1px solid #3b82f633", borderRadius: 6, marginBottom: 10, fontFamily: mono, fontSize: 10, color: "#3b82f6", wordBreak: "break-word" }}>
+        {queries[query].label}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 14px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, marginBottom: 10, opacity: running ? 0.7 : 1 }}>
+        {running ? "Running…" : "▶ Execute SQL"}
+      </button>
+      {result && (
+        <div style={{ background: D.surface, border: `1px solid ${D.outline}`, borderRadius: 6, padding: "10px 12px", overflowX: "auto" }}>
+          <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, marginBottom: 6 }}>RESULT — {result.length} row{result.length !== 1 ? "s" : ""}</div>
+          {result.length > 0 && (
+            <table style={{ borderCollapse: "collapse", fontFamily: mono, fontSize: 10, width: "100%" }}>
+              <thead><tr>{Object.keys(result[0]).map(k => <th key={k} style={{ padding: "4px 10px", background: D.surfaceHighest, color: "#3b82f6", textAlign: "left", borderBottom: `1px solid ${D.outline}` }}>{k}</th>)}</tr></thead>
+              <tbody>{result.map((r,i) => <tr key={i}>{Object.values(r).map((v,j) => <td key={j} style={{ padding: "4px 10px", color: D.muted, borderBottom: `1px solid ${D.outline}` }}>{String(v)}</td>)}</tr>)}</tbody>
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RedisCacheDemo() {
+  const [cache, setCache] = useState({});
+  const [log, setLog] = useState([]);
+  const [key, setKey] = useState("user:1");
+  const [dbHits, setDbHits] = useState(0);
+  const [cacheHits, setCacheHits] = useState(0);
+  const db = { "user:1": { name: "Alice", role: "admin" }, "user:2": { name: "Bob", role: "user" }, "post:1": { title: "Node.js Guide" } };
+  const addLog = (msg, color) => setLog(p => [...p.slice(-6), { msg, color }]);
+  const get = async () => {
+    if (cache[key]) {
+      setCacheHits(p => p+1);
+      addLog(`CACHE HIT  "${key}" → ${JSON.stringify(cache[key])}`, D.green);
+    } else {
+      addLog(`CACHE MISS "${key}" — querying DB…`, "#f59e0b");
+      await new Promise(r => setTimeout(r, 500));
+      const val = db[key];
+      if (val) {
+        setCache(p => ({...p, [key]: val}));
+        setDbHits(p => p+1);
+        addLog(`DB HIT     "${key}" → stored in cache (TTL 60s)`, "#3b82f6");
+      } else {
+        addLog(`DB MISS    "${key}" — not found`, D.red);
+      }
+    }
+  };
+  const invalidate = () => {
+    setCache(p => { const n={...p}; delete n[key]; return n; });
+    addLog(`INVALIDATED "${key}" — removed from cache`, "#ec4899");
+  };
+  const flush = () => { setCache({}); addLog("FLUSH — all cache cleared", D.red); };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — cache-aside pattern simulator</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        {["user:1","user:2","post:1","user:99"].map(k => (
+          <button key={k} onClick={() => setKey(k)} style={{ padding: "4px 10px", fontSize: 10, fontFamily: mono, background: key === k ? "#f43f5e22" : "transparent", border: `1px solid ${key === k ? "#f43f5e" : D.outline}`, color: key === k ? "#f43f5e" : D.muted, borderRadius: 4, cursor: "pointer" }}>{k}</button>
+        ))}
+      </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+        <button onClick={get} style={{ padding: "6px 14px", background: "#f43f5e", color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>GET "{key}"</button>
+        <button onClick={invalidate} style={{ padding: "6px 14px", background: "transparent", border: `1px solid #f43f5e`, color: "#f43f5e", borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>DEL "{key}"</button>
+        <button onClick={flush} style={{ padding: "6px 14px", background: "transparent", border: `1px solid ${D.outline}`, color: D.muted, borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>FLUSH ALL</button>
+      </div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        <div style={{ flex: 1, padding: "8px 10px", background: D.green + "0a", border: `1px solid ${D.green}33`, borderRadius: 6 }}>
+          <div style={{ fontSize: 10, color: D.green, fontFamily: mono }}>REDIS CACHE</div>
+          {Object.keys(cache).length === 0 ? <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, marginTop: 4 }}>empty</div> :
+            Object.entries(cache).map(([k, v]) => <div key={k} style={{ fontSize: 10, fontFamily: mono, color: D.muted, marginTop: 3 }}>{k}: {JSON.stringify(v)}</div>)}
+        </div>
+        <div style={{ padding: "8px 10px", background: D.surface, border: `1px solid ${D.outline}`, borderRadius: 6, minWidth: 100 }}>
+          <div style={{ fontSize: 10, color: D.green, fontFamily: mono }}>✅ Cache: {cacheHits}</div>
+          <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: mono, marginTop: 3 }}>🗄 DB: {dbHits}</div>
+        </div>
+      </div>
+      <div style={{ background: "#000", borderRadius: 6, padding: "8px 10px", minHeight: 60 }}>
+        {log.map((l, i) => <div key={i} style={{ fontSize: 10, fontFamily: mono, color: l.color, lineHeight: 1.8 }}>{l.msg}</div>)}
+      </div>
+    </div>
+  );
+}
+
+function JwtAuthDemo() {
+  const [token, setToken] = useState(null);
+  const [running, setRunning] = useState(false);
+  const [log, setLog] = useState([]);
+  const addLog = (msg, color="#14b8a6") => setLog(p => [...p, { msg, color }]);
+  const fakeToken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInJvbGUiOiJhZG1pbiIsImV4cCI6MTcwMDAwMH0.SIGNATURE";
+  const login = async () => {
+    setRunning(true); setLog([]); setToken(null);
+    addLog("POST /auth/login  { email, password }", "#3b82f6");
+    await new Promise(r => setTimeout(r, 500));
+    addLog("✅ Credentials verified against DB", D.green);
+    await new Promise(r => setTimeout(r, 400));
+    addLog("🔑 jwt.sign({ userId:1, role:'admin' }, SECRET, { expiresIn:'1h' })", "#f59e0b");
+    await new Promise(r => setTimeout(r, 400));
+    setToken(fakeToken);
+    addLog("✅ JWT returned → client stores in httpOnly cookie", D.green);
+    setRunning(false);
+  };
+  const request = async () => {
+    if (!token) return;
+    setRunning(true);
+    setLog([]);
+    addLog("GET /api/dashboard  Authorization: Bearer <token>", "#3b82f6");
+    await new Promise(r => setTimeout(r, 400));
+    addLog("🔍 Middleware: jwt.verify(token, SECRET)", "#f59e0b");
+    await new Promise(r => setTimeout(r, 500));
+    addLog("✅ Token valid! Payload: { userId:1, role:'admin', exp:... }", D.green);
+    await new Promise(r => setTimeout(r, 300));
+    addLog("🎯 req.user = { userId:1, role:'admin' } — route handler called", D.green);
+    setRunning(false);
+  };
+  const expired = async () => {
+    setRunning(true); setLog([]);
+    addLog("GET /api/dashboard  Authorization: Bearer <expired_token>", "#3b82f6");
+    await new Promise(r => setTimeout(r, 400));
+    addLog("🔍 Middleware: jwt.verify(token, SECRET)", "#f59e0b");
+    await new Promise(r => setTimeout(r, 500));
+    addLog("❌ JsonWebTokenError: jwt expired", D.red);
+    await new Promise(r => setTimeout(r, 300));
+    addLog("→ 401 Unauthorized  { error: 'Token expired' }", D.red);
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — JWT auth flow simulator</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        <button onClick={login} disabled={running} style={{ padding: "6px 14px", background: D.green, color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>1. Login</button>
+        <button onClick={request} disabled={running || !token} style={{ padding: "6px 14px", background: token ? "#3b82f6" : D.surface, color: token ? "#fff" : D.muted, border: `1px solid ${token ? "#3b82f6" : D.outline}`, borderRadius: 5, cursor: token ? "pointer" : "default", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>2. Protected Request</button>
+        <button onClick={expired} disabled={running} style={{ padding: "6px 14px", background: "transparent", border: `1px solid ${D.red}`, color: D.red, borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>3. Expired Token</button>
+      </div>
+      {token && (
+        <div style={{ marginBottom: 10, padding: "6px 10px", background: "#f59e0b0d", border: "1px solid #f59e0b33", borderRadius: 5, wordBreak: "break-all" }}>
+          <div style={{ fontSize: 9, color: "#f59e0b", fontFamily: mono, marginBottom: 2 }}>JWT TOKEN</div>
+          <div style={{ fontSize: 9, fontFamily: mono, color: D.muted }}>{token}</div>
+        </div>
+      )}
+      <div style={{ background: "#000", borderRadius: 6, padding: "8px 10px", minHeight: 70 }}>
+        {log.map((l, i) => <div key={i} style={{ fontSize: 10, fontFamily: mono, color: l.color, lineHeight: 1.9 }}>{l.msg}</div>)}
+      </div>
+    </div>
+  );
+}
+
+function TestRunnerLiveDemo() {
+  const [running, setRunning] = useState(false);
+  const [results, setResults] = useState([]);
+  const tests = [
+    { name: "add(2, 3) === 5", fn: () => 2 + 3 === 5 },
+    { name: "add(-1, 1) === 0", fn: () => -1 + 1 === 0 },
+    { name: "typeof 'hello' === 'string'", fn: () => typeof "hello" === "string" },
+    { name: "[] instanceof Array", fn: () => [] instanceof Array },
+    { name: "JSON.parse(JSON.stringify({a:1})).a === 1", fn: () => JSON.parse(JSON.stringify({a:1})).a === 1 },
+    { name: "Promise resolves to 42", fn: async () => await Promise.resolve(42) === 42 },
+    { name: "null == undefined (loose)", fn: () => null == undefined },
+    { name: "null === undefined (strict) — FAILS", fn: () => null === undefined },
+  ];
+  const run = async () => {
+    setRunning(true); setResults([]);
+    for (const t of tests) {
+      await new Promise(r => setTimeout(r, 350));
+      try {
+        const ok = await t.fn();
+        setResults(p => [...p, { name: t.name, ok, err: null }]);
+      } catch (e) {
+        setResults(p => [...p, { name: t.name, ok: false, err: e.message }]);
+      }
+    }
+    setRunning(false);
+  };
+  const passed = results.filter(r => r.ok).length;
+  const failed = results.filter(r => !r.ok).length;
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — watch tests run in real time</div>
+      <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
+        <button onClick={run} disabled={running} style={{ padding: "6px 16px", background: "#f59e0b", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>
+          {running ? "▶ Running tests…" : "▶ Run Test Suite"}
+        </button>
+        {results.length > 0 && (
+          <>
+            <span style={{ fontSize: 11, color: D.green, fontFamily: mono }}>✅ {passed} passed</span>
+            <span style={{ fontSize: 11, color: D.red, fontFamily: mono }}>❌ {failed} failed</span>
+          </>
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {tests.map((t, i) => {
+          const r = results[i];
+          return (
+            <div key={i} style={{ display: "flex", gap: 10, alignItems: "center", padding: "7px 10px", background: !r ? D.surface : r.ok ? D.green + "0d" : D.red + "0d", border: `1px solid ${!r ? D.outline : r.ok ? D.green + "44" : D.red + "44"}`, borderRadius: 5, transition: "all 0.3s" }}>
+              <span style={{ fontSize: 12, flexShrink: 0, width: 16 }}>{!r ? (running && i === results.length ? "⏳" : "○") : r.ok ? "✅" : "❌"}</span>
+              <span style={{ fontSize: 11, fontFamily: mono, color: !r ? D.muted : r.ok ? D.green : D.red }}>{t.name}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DockerBuildDemo() {
+  const [step, setStep] = useState(-1);
+  const [running, setRunning] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const steps = [
+    { label: "FROM node:20-alpine", color: "#06b6d4", logs: ["Pulling node:20-alpine from Docker Hub…", "✅ Image pulled (45MB)"] },
+    { label: "WORKDIR /app", color: "#3b82f6", logs: ["Created working directory /app"] },
+    { label: "COPY package*.json ./", color: "#8b5cf6", logs: ["Copying package.json, package-lock.json"] },
+    { label: "RUN npm ci --only=production", color: "#f59e0b", logs: ["Installing 142 packages…", "✅ node_modules ready (28MB)", "Layer cached for future builds ⚡"] },
+    { label: "COPY . .", color: "#8b5cf6", logs: ["Copying source files (1.2MB)"] },
+    { label: "EXPOSE 3000", color: "#14b8a6", logs: ["Port 3000 declared"] },
+    { label: "CMD [\"node\", \"server.js\"]", color: D.green, logs: ["Entry point set", "✅ Image built: myapp:latest (74MB)", "🚀 Run: docker run -p 3000:3000 myapp:latest"] },
+  ];
+  const run = async () => {
+    setRunning(true); setStep(-1); setLogs([]);
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 700));
+      setStep(i);
+      for (const log of steps[i].logs) {
+        await new Promise(r => setTimeout(r, 200));
+        setLogs(p => [...p, { text: log, color: steps[i].color }]);
+      }
+    }
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — Docker build process step by step</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ display: "flex", gap: 10, padding: "7px 10px", background: step === i ? s.color + "15" : step > i ? s.color + "07" : D.surface, border: `1px solid ${step >= i ? s.color + "44" : D.outline}`, borderRadius: 5, transition: "all 0.3s" }}>
+            <span style={{ fontSize: 12, width: 16, flexShrink: 0 }}>{step > i ? "✅" : step === i ? "⏳" : "○"}</span>
+            <span style={{ fontSize: 11, fontFamily: mono, color: step >= i ? s.color : D.muted, fontWeight: step === i ? 700 : 400 }}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 16px", background: "#06b6d4", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, marginBottom: 10, opacity: running ? 0.7 : 1 }}>
+        {running ? "Building…" : "▶ docker build ."}
+      </button>
+      {logs.length > 0 && (
+        <div style={{ background: "#000", borderRadius: 6, padding: "8px 10px", maxHeight: 120, overflowY: "auto" }}>
+          {logs.map((l, i) => <div key={i} style={{ fontSize: 10, fontFamily: mono, color: l.color, lineHeight: 1.8 }}>{l.text}</div>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TypeScriptErrorDemo() {
+  const [mode, setMode] = useState("js");
+  const [step, setStep] = useState(-1);
+  const [running, setRunning] = useState(false);
+  const jsSteps = [
+    { label: "Code written", code: "const user = getUser();\nconsole.log(user.nmae.toUpperCase());", color: D.muted },
+    { label: "✅ No editor warning — JS is dynamic", code: "// JS has no type info — 'nmae' looks fine", color: "#f59e0b" },
+    { label: "✅ Build succeeds — no compile step", code: "$ node server.js — Started on port 3000", color: D.green },
+    { label: "User visits the page…", code: "GET /profile — request received", color: "#3b82f6" },
+    { label: "💥 RUNTIME crash — server returns 500", code: "TypeError: Cannot read properties of undefined (reading 'toUpperCase')\n  at /server.js:12:28\n  — caught 1 hour later in production", color: D.red },
+  ];
+  const tsSteps = [
+    { label: "Code written", code: "const user: User = getUser();\nconsole.log(user.nmae.toUpperCase());", color: D.muted },
+    { label: "❌ Editor shows red squiggle immediately", code: "Property 'nmae' does not exist on type 'User'.\nDid you mean 'name'?  ts(2551)", color: D.red },
+    { label: "Developer fixes typo in seconds", code: "console.log(user.name.toUpperCase()); // ✅", color: D.green },
+    { label: "✅ TypeScript compiles successfully", code: "$ tsc — 0 errors", color: D.green },
+    { label: "✅ Server runs — zero runtime crash", code: "GET /profile — 200 OK\nAlice", color: D.green },
+  ];
+  const steps = mode === "js" ? jsSteps : tsSteps;
+  const run = async () => {
+    setRunning(true); setStep(-1);
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(r => setTimeout(r, 700));
+      setStep(i);
+    }
+    setRunning(false);
+  };
+  return (
+    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
+      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — same typo: JS vs TypeScript</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        {[["js","🟡 JavaScript",D.red],["ts","🔷 TypeScript",D.green]].map(([m,label,c]) => (
+          <button key={m} onClick={() => { setMode(m); setStep(-1); }} style={{ padding: "6px 14px", background: mode === m ? c + "22" : "transparent", color: mode === m ? c : D.muted, border: `1px solid ${mode === m ? c : D.outline}`, borderRadius: 5, cursor: "pointer", fontSize: 11, fontFamily: mono }}>{label}</button>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 12 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ padding: "8px 12px", background: step >= i ? s.color + "12" : D.surface, border: `1px solid ${step >= i ? s.color + "44" : D.outline}`, borderRadius: 6, transition: "all 0.3s" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>{step > i ? "✅" : step === i ? "⏳" : "○"}</span>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: mono, color: step >= i ? s.color : D.muted, fontWeight: step === i ? 700 : 400 }}>{s.label}</div>
+                {step === i && <pre style={{ margin: "4px 0 0", fontSize: 10, fontFamily: mono, color: s.color, background: "#00000033", padding: "4px 8px", borderRadius: 4, whiteSpace: "pre-wrap" }}>{s.code}</pre>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={run} disabled={running} style={{ padding: "6px 16px", background: mode === "js" ? "#f59e0b" : "#3b82f6", color: "#fff", border: "none", borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono, opacity: running ? 0.7 : 1 }}>
+        {running ? "Running…" : "▶ Trace Execution"}
+      </button>
+    </div>
+  );
+}
+
 function SectionWhatIsDatabase() {
   const [tab, setTab] = useState("story");
   const tabs = [
     { id: "story", label: "📖 The Story" },
     { id: "sql-nosql", label: "🔀 SQL vs NoSQL" },
     { id: "acid", label: "🔒 ACID" },
+    { id: "indexing", label: "⚡ Indexing" },
+    { id: "normalization", label: "📐 Normalization" },
+    { id: "transactions", label: "💳 Transactions" },
+    { id: "cap", label: "🌐 CAP Theorem" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -2348,6 +3532,24 @@ function SectionWhatIsDatabase() {
           <BigIdea number="2" title="Files don't scale" color="#f59e0b">You could store data in JSON files. But what happens when two users write at the same time? What happens when the file is 10GB? Files lack concurrency control, indexing, and query languages. Databases solve all of this.</BigIdea>
           <BigIdea number="3" title="The database is the source of truth" color="#3b82f6">In any application, the database is the single source of truth. Your API reads from it, your background jobs write to it, your analytics query it. Everything else — caches, frontend state, message queues — are derived from the database.</BigIdea>
           <EasyBox emoji="🎯" title="One sentence" color="#3b82f6"><strong>A database is organized, persistent storage</strong> with built-in tools for querying, concurrency, and reliability. An ORM (Object-Relational Mapper) or ODM (Object-Document Mapper) lets you interact with the database using code objects instead of raw SQL or queries.</EasyBox>
+          <EasyBox emoji="🗂️" title="Types of databases you'll encounter" color="#8b5cf6">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8, marginTop: 6 }}>
+              {[
+                { type: "Relational", ex: "PostgreSQL, MySQL", color: "#3b82f6", use: "Structured data, complex queries" },
+                { type: "Document", ex: "MongoDB, CouchDB", color: "#14b8a6", use: "Flexible schemas, nested data" },
+                { type: "Key-Value", ex: "Redis, DynamoDB", color: "#f43f5e", use: "Caching, sessions, leaderboards" },
+                { type: "Time-Series", ex: "InfluxDB, TimescaleDB", color: "#f59e0b", use: "Metrics, logs, IoT events" },
+                { type: "Graph", ex: "Neo4j, Amazon Neptune", color: "#8b5cf6", use: "Social graphs, recommendations" },
+                { type: "Search", ex: "Elasticsearch, Typesense", color: "#ec4899", use: "Full-text search, faceting" },
+              ].map((db, i) => (
+                <div key={i} style={{ padding: "8px 10px", background: db.color + "0d", border: `1px solid ${db.color}33`, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: db.color, fontFamily: mono }}>{db.type}</div>
+                  <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, margin: "3px 0" }}>{db.ex}</div>
+                  <div style={{ fontSize: 10, color: D.muted, fontFamily: serif, lineHeight: 1.5 }}>{db.use}</div>
+                </div>
+              ))}
+            </div>
+          </EasyBox>
         </div>
       )}
       {tab === "sql-nosql" && (
@@ -2358,7 +3560,7 @@ function SectionWhatIsDatabase() {
                 <th key={i} style={{ padding: "9px 12px", background: D.surface, color: [D.muted, "#3b82f6", "#14b8a6"][i], textAlign: "left", borderBottom: `1px solid ${D.outline}`, fontSize: 10 }}>{h}</th>
               ))}</tr></thead>
               <tbody>
-                {[["Structure", "Tables, rows, columns", "Collections, documents, fields"],["Schema", "Rigid — defined upfront", "Flexible — dynamic"],["Relationships", "Foreign keys, JOINs", "Embedded docs, references"],["Scaling", "Vertical (bigger machine)", "Horizontal (more machines)"],["Best for", "Complex queries, transactions", "Rapid dev, unstructured data"],["Examples", "PostgreSQL, MySQL, SQLite", "MongoDB, Redis, DynamoDB"]].map((row, i) => (
+                {[["Structure", "Tables, rows, columns", "Collections, documents, fields"],["Schema", "Rigid — defined upfront", "Flexible — dynamic"],["Relationships", "Foreign keys, JOINs", "Embedded docs, references"],["Scaling", "Vertical (bigger machine)", "Horizontal (more machines)"],["Transactions", "Full ACID support", "Limited (MongoDB 4.0+ has multi-doc)"],["Query language", "SQL — standardized", "Driver-specific API or MQL"],["Best for", "Complex queries, transactions", "Rapid dev, unstructured data"],["Examples", "PostgreSQL, MySQL, SQLite", "MongoDB, Redis, DynamoDB"]].map((row, i) => (
                   <tr key={i} style={{ background: i % 2 === 0 ? "transparent" : D.surface + "06" }}>
                     {row.map((cell, j) => <td key={j} style={{ padding: "8px 12px", borderBottom: `1px solid ${D.outline}`, color: j === 0 ? D.text : D.muted }}>{cell}</td>)}
                   </tr>
@@ -2367,6 +3569,9 @@ function SectionWhatIsDatabase() {
             </table>
           </div>
           <Tip icon="🎯" color={D.yellow} title="When to choose what">Use <strong>SQL</strong> when data is structured, relationships are complex, and you need strong consistency (banks, e-commerce). Use <strong>NoSQL</strong> when schemas evolve rapidly, you need horizontal scaling, or data is document-like (CMS, IoT, real-time analytics).</Tip>
+          <CaseStudy title="Real scenario: social media app" color="#3b82f6" scenario="You're designing the data layer" problem="Users, posts, likes, comments, follows — which DB?" solution="Hybrid: PostgreSQL for users/auth/billing, Redis for feed caching, Elasticsearch for search">
+            <Tip icon="💡" color="#3b82f6" title="Polyglot persistence">Production apps routinely use 3+ different database types. Each database is chosen for what it's best at. This is called polyglot persistence — use the right tool for the right job.</Tip>
+          </CaseStudy>
         </div>
       )}
       {tab === "acid" && (
@@ -2386,6 +3591,132 @@ function SectionWhatIsDatabase() {
               </div>
             </div>
           ))}
+          <Tip icon="⚠️" color="#f59e0b" title="Isolation levels — what interviewers love to ask">There are 4 isolation levels: Read Uncommitted → Read Committed → Repeatable Read → Serializable. Higher isolation = fewer anomalies but slower throughput. PostgreSQL defaults to Read Committed. Most apps never need to change this — but you should know it exists.</Tip>
+        </div>
+      )}
+      {tab === "indexing" && (
+        <div>
+          <EasyBox emoji="📚" title="What is an index?" color="#3b82f6">An index is a separate data structure (usually a B-tree) that the database maintains alongside your table. It maps column values to row locations — like a book's index maps terms to page numbers. Without an index, the database scans <em>every row</em> (full table scan) to find matches.</EasyBox>
+          <BigIdea number="1" title="Full table scan vs index scan" color="#f43f5e">Without index on email: SELECT * FROM users WHERE email = 'a@b.com' scans all 10 million rows. With an index: the DB does a B-tree lookup in O(log n) — milliseconds instead of seconds.</BigIdea>
+          <CodeBlock label="creating indexes in PostgreSQL" code={`-- Single column index (most common)
+CREATE INDEX idx_users_email ON users(email);
+
+-- Composite index — order matters! Matches (status), (status, created_at)
+CREATE INDEX idx_orders_status_date ON orders(status, created_at DESC);
+
+-- Unique index — enforces uniqueness + speeds lookups
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+
+-- Partial index — only indexes rows matching a condition
+CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
+
+-- Check if your query uses the index
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'alice@example.com';`} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "12px 0" }}>
+            <div style={{ padding: "10px 12px", background: D.green + "0a", border: `1px solid ${D.green}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.green, fontFamily: mono, marginBottom: 6 }}>✅ INDEX THESE</div>
+              {["Foreign key columns (user_id, order_id)", "Columns in WHERE, ORDER BY, GROUP BY", "Columns used in JOIN conditions", "High-cardinality columns (email, UUID)"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+            <div style={{ padding: "10px 12px", background: D.red + "0a", border: `1px solid ${D.red}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.red, fontFamily: mono, marginBottom: 6 }}>❌ AVOID INDEXING</div>
+              {["Low-cardinality columns (boolean, gender)", "Columns rarely queried", "Tiny tables (full scan is faster)", "Too many indexes slow down writes"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+          </div>
+          <Tip icon="🎯" color="#3b82f6" title="The N+1 query problem">If you fetch 100 posts and then query each post's author separately, that's 101 queries — the N+1 problem. Fix it with JOIN or Mongoose's .populate(). Indexes help individual queries but can't fix architectural inefficiency.</Tip>
+        </div>
+      )}
+      {tab === "normalization" && (
+        <div>
+          <EasyBox emoji="📐" title="What is normalization?" color="#8b5cf6">Normalization is the process of organizing data to reduce redundancy and improve integrity. You split data into multiple related tables. The goal: store each piece of information exactly once. Denormalization is the deliberate reversal — storing redundant data to gain read performance.</EasyBox>
+          <BigIdea number="1" title="1NF — Atomic values" color="#3b82f6">Every column must hold a single, indivisible value. No arrays in a cell. No "Alice, Bob" in one column. Each row must be unique (primary key).</BigIdea>
+          <BigIdea number="2" title="2NF — No partial dependencies" color="#8b5cf6">Every non-key column must depend on the entire primary key — not just part of it. Applies when you have a composite primary key. If order_item depends on order_id alone (not product_id), move it out.</BigIdea>
+          <BigIdea number="3" title="3NF — No transitive dependencies" color="#14b8a6">Non-key columns must not depend on other non-key columns. If city depends on zip_code and zip_code is not the primary key, move city+zip_code to a separate table.</BigIdea>
+          <CodeBlock label="denormalized → normalized" code={`-- ❌ DENORMALIZED — redundant author data duplicated per post
+posts: | id | title          | author_name | author_email      |
+       | 1  | "Node Basics"  | Alice       | alice@example.com |
+       | 2  | "React Hooks"  | Alice       | alice@example.com |
+
+-- ✅ NORMALIZED — author stored once, referenced by id
+users: | id | name  | email             |
+       | 1  | Alice | alice@example.com |
+
+posts: | id | title          | user_id |
+       | 1  | "Node Basics"  | 1       |
+       | 2  | "React Hooks"  | 1       |`} />
+          <Tip icon="⚖️" color="#f59e0b" title="Normalize vs denormalize in production">Normalize for write-heavy systems (fewer places to update). Denormalize for read-heavy systems (avoid expensive JOINs). Analytics databases (data warehouses) are intentionally denormalized — reads vastly outnumber writes.</Tip>
+        </div>
+      )}
+      {tab === "transactions" && (
+        <div>
+          <EasyBox emoji="💳" title="What is a transaction?" color="#14b8a6">A transaction is a sequence of database operations that are treated as a single unit. Either all operations succeed (COMMIT) or all are undone (ROLLBACK). Critical for anything involving money, inventory, or user accounts.</EasyBox>
+          <CodeBlock label="transaction in Node.js with pg" code={`const { Pool } = require('pg');
+const pool = new Pool();
+
+async function transferMoney(fromId, toId, amount) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Debit sender
+    const { rows } = await client.query(
+      'SELECT balance FROM accounts WHERE id = $1 FOR UPDATE',
+      [fromId]
+    );
+    if (rows[0].balance < amount) throw new Error('Insufficient funds');
+
+    await client.query(
+      'UPDATE accounts SET balance = balance - $1 WHERE id = $2',
+      [amount, fromId]
+    );
+
+    // Credit receiver
+    await client.query(
+      'UPDATE accounts SET balance = balance + $1 WHERE id = $2',
+      [amount, toId]
+    );
+
+    await client.query('COMMIT');
+    console.log('Transfer complete');
+  } catch (err) {
+    await client.query('ROLLBACK');  // undo everything
+    throw err;
+  } finally {
+    client.release();
+  }
+}`} />
+          <Tip icon="🔒" color="#3b82f6" title="FOR UPDATE — optimistic vs pessimistic locking">FOR UPDATE locks the selected rows for the duration of the transaction (pessimistic locking). Prevents two transactions from modifying the same row simultaneously. Alternative: optimistic locking uses a version column — check-and-update without locks, retry on conflict.</Tip>
+          <EasyBox emoji="⚠️" title="Savepoints — partial rollback" color="#f59e0b">
+            <CodeBlock label="savepoint example" code={`await client.query('BEGIN');
+await client.query('INSERT INTO logs ...');
+await client.query('SAVEPOINT before_payment');
+try {
+  await client.query('UPDATE accounts ...');
+  await client.query('COMMIT');
+} catch (err) {
+  await client.query('ROLLBACK TO before_payment'); // keeps the log insert
+  await client.query('COMMIT');
+}`} />
+          </EasyBox>
+        </div>
+      )}
+      {tab === "cap" && (
+        <div>
+          <EasyBox emoji="🌐" title="CAP Theorem" color="#8b5cf6">In a distributed system, you can only guarantee 2 of these 3 properties simultaneously: <strong>Consistency</strong> (every read gets the latest write), <strong>Availability</strong> (every request gets a response), <strong>Partition Tolerance</strong> (system works despite network failures). Since network partitions always happen in distributed systems, you're really choosing between CP and AP.</EasyBox>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10, margin: "12px 0" }}>
+            {[
+              { label: "CP — Consistency + Partition Tolerance", ex: "PostgreSQL, MongoDB (in replica set)", color: "#3b82f6", desc: "System may become unavailable during a partition but will never return stale data. Bank transactions need this." },
+              { label: "AP — Availability + Partition Tolerance", ex: "Cassandra, DynamoDB, CouchDB", color: "#14b8a6", desc: "System stays available during partitions but may return stale data. Shopping cart, social feeds can tolerate this." },
+              { label: "CA — Consistency + Availability", ex: "Single-node RDBMS (no distribution)", color: "#f59e0b", desc: "Only possible without network partitions — i.e., a single server. Not practical at scale." },
+            ].map((item, i) => (
+              <div key={i} style={{ padding: "10px 12px", background: item.color + "0d", border: `1px solid ${item.color}33`, borderRadius: 7 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 10, color: D.green, fontFamily: mono, marginBottom: 5 }}>{item.ex}</div>
+                <div style={{ fontSize: 11, color: D.muted, fontFamily: serif, lineHeight: 1.6 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+          <BigIdea number="1" title="Eventual consistency" color="#8b5cf6">AP systems use eventual consistency — all replicas will converge to the same value given enough time. When you post on Instagram and your friend doesn't see it for 2 seconds, that's eventual consistency. For most social/content apps, this is completely acceptable.</BigIdea>
+          <Tip icon="🎤" color="#ec4899" title="How to answer CAP in an interview">Don't memorize definitions. Say: 'Partition tolerance is non-negotiable in any distributed system. So the real choice is consistency vs availability under a partition. For financial data I'd choose CP; for user activity feeds I'd choose AP and accept eventual consistency.'</Tip>
         </div>
       )}
       {tab === "quiz" && (
@@ -2393,6 +3724,9 @@ function SectionWhatIsDatabase() {
           <QuizCard question="What happens to in-memory data when a Node.js server restarts?" options={["It is saved to disk automatically", "It is wiped — everything in RAM is lost", "It persists in the V8 engine", "It moves to the event loop"]} correct={1} explain="RAM is volatile. When the process restarts, all variables, arrays, and objects are destroyed. Only persistent storage (databases, files) survives." />
           <QuizCard question="Which database type uses tables with rows and columns?" options={["NoSQL", "Document DB", "SQL", "Key-value store"]} correct={2} explain="SQL databases (PostgreSQL, MySQL) use tables with predefined schemas, rows, and columns. NoSQL databases use documents, key-value pairs, or graphs." />
           <QuizCard question="What does the 'A' in ACID stand for?" options={["Availability", "Atomicity", "Aggregation", "Asynchronous"]} correct={1} explain="Atomicity means a transaction is all-or-nothing. Either every operation in the transaction succeeds, or the entire transaction is rolled back." />
+          <QuizCard question="What data structure do most database indexes use internally?" options={["Hash map", "Linked list", "B-tree", "Binary search tree"]} correct={2} explain="Most relational databases use B-trees for indexes. B-trees keep data sorted and allow O(log n) lookups, inserts, and deletes. PostgreSQL also supports hash indexes for equality-only lookups." />
+          <QuizCard question="In the CAP theorem, what does 'P' stand for?" options={["Performance", "Persistence", "Partition Tolerance", "Primary Key"]} correct={2} explain="Partition Tolerance means the system continues to operate even when network messages between nodes are lost or delayed. Since network partitions are unavoidable in distributed systems, P is always required — making the real trade-off CP vs AP." />
+          <QuizCard question="Which isolation problem does 'Repeatable Read' prevent?" options={["Dirty reads and non-repeatable reads", "Only dirty reads", "Only phantom reads", "All isolation problems"]} correct={0} explain="Repeatable Read prevents dirty reads (reading uncommitted data) and non-repeatable reads (same row returns different values in the same transaction). It does NOT prevent phantom reads (new rows appearing in range queries). Serializable prevents all three." />
         </div>
       )}
     </div>
@@ -2405,11 +3739,17 @@ function SectionMongoDB() {
     { id: "documents", label: "📄 Documents" },
     { id: "mongoose", label: "🦁 Mongoose" },
     { id: "crud", label: "📝 CRUD" },
+    { id: "aggregation", label: "🔢 Aggregation" },
+    { id: "indexes", label: "⚡ Indexes" },
+    { id: "populate", label: "🔗 Populate" },
+    { id: "hooks", label: "🪝 Hooks" },
+    { id: "patterns", label: "🏗️ Patterns" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
     <div>
-      <p style={para}>MongoDB is the most popular NoSQL database. It stores data as flexible JSON-like documents instead of rigid tables.</p>
+      <p style={para}>MongoDB is the most popular NoSQL database. It stores data as flexible JSON-like documents instead of rigid tables. At 2.5 years experience, you're expected to know aggregation pipelines, indexing strategy, and Mongoose middleware deeply.</p>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
         {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? "#14b8a622" : "transparent", border: `1px solid ${tab === t.id ? "#14b8a6" : D.outline}`, color: tab === t.id ? "#14b8a6" : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
       </div>
@@ -2432,7 +3772,8 @@ function SectionMongoDB() {
   createdAt: ISODate("2024-01-15T10:30:00Z")
 }`} />
           <BigIdea number="1" title="Documents are self-contained" color="#14b8a6">Unlike SQL where you need JOINs to fetch related data, MongoDB documents can embed related data directly. An order document can contain the customer info, shipping address, and line items — all in one place. One read, one document.</BigIdea>
-          <Tip icon="🎯" color={D.yellow} title="Embed vs Reference">Embed when data is read together (user + profile). Reference when data is shared across documents (user + company). Embedding is faster to read but harder to update consistently.</Tip>
+          <BigIdea number="2" title="BSON — not just JSON" color="#3b82f6">MongoDB stores data as BSON (Binary JSON). It supports extra types that plain JSON doesn't: ObjectId, Date, Decimal128, Binary, and more. When you write JS objects, the driver automatically converts to BSON and back.</BigIdea>
+          <Tip icon="🎯" color={D.yellow} title="Embed vs Reference">Embed when data is read together (user + profile). Reference when data is shared across documents (user + company). Embedding is faster to read but harder to update consistently. A document cannot exceed 16MB — embed carefully.</Tip>
         </div>
       )}
       {tab === "mongoose" && (
@@ -2440,60 +3781,386 @@ function SectionMongoDB() {
           <CodeBlock label="Mongoose schema & model" code={`const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name:     { type: String, required: true },
-  email:    { type: String, required: true, unique: true },
-  age:      { type: Number, min: 0, max: 150 },
-  role:     { type: String, enum: ['user', 'admin'], default: 'user' },
-  createdAt:{ type: Date, default: Date.now }
+  name:      { type: String, required: [true, 'Name is required'], trim: true },
+  email:     { type: String, required: true, unique: true, lowercase: true },
+  age:       { type: Number, min: 0, max: 150 },
+  role:      { type: String, enum: ['user', 'admin'], default: 'user' },
+  isActive:  { type: Boolean, default: true },
+  tags:      [String],
+  address: {
+    city:    String,
+    country: { type: String, default: 'India' }
+  },
+  createdAt: { type: Date, default: Date.now, immutable: true }
+}, {
+  timestamps: true,       // auto adds createdAt, updatedAt
+  toJSON: { virtuals: true }, // include virtuals when serialized
 });
 
-// Create model
+// Virtual — not stored in DB, computed on demand
+userSchema.virtual('fullLabel').get(function() {
+  return \`\${this.name} (\${this.role})\`;
+});
+
+// Instance method
+userSchema.methods.isAdmin = function() {
+  return this.role === 'admin';
+};
+
+// Static method
+userSchema.statics.findByEmail = function(email) {
+  return this.findOne({ email });
+};
+
 const User = mongoose.model('User', userSchema);
+await mongoose.connect(process.env.MONGODB_URI);`} />
+          <EasyBox emoji="🦁" title="Why Mongoose?" color="#14b8a6">Mongoose adds structure to MongoDB's flexibility. It gives you schemas, validation, middleware (pre/post hooks), virtuals, and query building. Without Mongoose, MongoDB accepts any JSON — typos in field names silently create new fields with no warning.</EasyBox>
+          <CodeBlock label="schema types quick reference" code={`String, Number, Date, Buffer, Boolean, Mixed,
+mongoose.Schema.Types.ObjectId,
+Array (shorthand: [String], [{ type: ObjectId, ref: 'User' }]),
+Map, Decimal128
 
-// Connect
-await mongoose.connect('mongodb://localhost:27017/myapp');`} />
-          <EasyBox emoji="🦁" title="Why Mongoose?" color="#14b8a6">Mongoose adds structure to MongoDB's flexibility. It gives you schemas, validation, middleware (pre/post hooks), and query building. Without Mongoose, MongoDB accepts any JSON — typos in field names silently create new fields.</EasyBox>
-          <CodeBlock label="schema types" code={`String, Number, Date, Buffer, Boolean,
-Mixed, ObjectId, Array, Map, Decimal128
-
-// Advanced options
-{ type: String, required: true, trim: true, lowercase: true }
-{ type: Number, default: 0, min: 0 }
-{ type: Date, default: Date.now, immutable: true }`} />
+// Validation
+{ type: String, required: true, minlength: 3, maxlength: 50 }
+{ type: String, match: /^[a-z]+$/ }
+{ type: Number, validate: { validator: v => v % 2 === 0, message: 'Must be even' }}`} />
         </div>
       )}
       {tab === "crud" && (
         <div>
-          <CodeBlock label="Mongoose CRUD" code={`// CREATE
+          <CodeBlock label="Mongoose CRUD — full patterns" code={`// CREATE — single
 const user = await User.create({ name: 'Alice', email: 'alice@example.com' });
 
+// CREATE — many
+await User.insertMany([{ name: 'Bob' }, { name: 'Carol' }], { ordered: false });
+
 // READ ONE
-const found = await User.findOne({ email: 'alice@example.com' });
+const found = await User.findOne({ email: 'alice@example.com' }).lean();
 
-// READ MANY with filter, sort, limit
+// READ MANY — filter, sort, paginate, project
 const users = await User
-  .find({ age: { $gte: 18 } })
+  .find({ age: { $gte: 18 }, isActive: true })
   .sort({ createdAt: -1 })
-  .limit(10)
-  .select('name email');
+  .skip(20).limit(10)
+  .select('name email role -_id');
 
-// UPDATE
-await User.updateOne({ _id: user._id }, { age: 31 });
-await User.findByIdAndUpdate(id, { age: 31 }, { new: true });
+// UPDATE — findByIdAndUpdate returns old doc by default
+const updated = await User.findByIdAndUpdate(
+  id,
+  { $set: { age: 31 }, $push: { tags: 'senior' } },
+  { new: true, runValidators: true }
+);
+
+// UPDATE MANY
+await User.updateMany({ isActive: false }, { $set: { role: 'user' } });
 
 // DELETE
-await User.deleteOne({ _id: user._id });
-await User.findByIdAndDelete(id);`} />
-          <Tip icon="💡" color={D.yellow} title="Query operators">$eq, $ne, $gt, $gte, $lt, $lte, $in, $nin, $regex, $exists, $or, $and, $not. Use them to build powerful queries without writing raw JavaScript filters.</Tip>
+await User.findByIdAndDelete(id);
+await User.deleteMany({ createdAt: { $lt: cutoff } });
+
+// UPSERT — create if not exists, update if exists
+await User.findOneAndUpdate(
+  { email: 'new@example.com' },
+  { $set: { name: 'New User' } },
+  { upsert: true, new: true }
+);`} />
+          <Tip icon="💡" color={D.yellow} title="Query operators cheatsheet">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {[["Comparison", "$eq $ne $gt $gte $lt $lte $in $nin"],["Logical", "$or $and $not $nor"],["Array", "$all $elemMatch $size"],["Element", "$exists $type"],["Evaluation", "$regex $where $expr"],["Update", "$set $unset $push $pull $inc $addToSet"]].map(([cat, ops], i) => (
+                <div key={i} style={{ padding: "5px 8px", background: D.surface, borderRadius: 5 }}>
+                  <div style={{ fontSize: 10, color: "#14b8a6", fontFamily: mono, marginBottom: 2 }}>{cat}</div>
+                  <div style={{ fontSize: 10, color: D.muted, fontFamily: mono }}>{ops}</div>
+                </div>
+              ))}
+            </div>
+          </Tip>
+          <Tip icon="⚡" color="#3b82f6" title=".lean() — double the performance">.lean() returns plain JS objects instead of full Mongoose documents. No virtuals, no methods, no change tracking. Use it on read-only queries — it is 2x faster and uses less memory.</Tip>
+        </div>
+      )}
+      {tab === "aggregation" && (
+        <div>
+          <EasyBox emoji="🔢" title="What is the Aggregation Pipeline?" color="#8b5cf6">The aggregation pipeline is MongoDB's answer to SQL GROUP BY, JOINs, and computed columns. You chain stages — each stage transforms the documents flowing through it. Critical for analytics, dashboards, and reporting.</EasyBox>
+          <CodeBlock label="aggregation pipeline stages" code={`// Count orders per user, only for users with 3+ orders
+db.orders.aggregate([
+  // Stage 1: filter documents (like WHERE)
+  { $match: { status: 'completed', total: { $gt: 0 } } },
+
+  // Stage 2: group + compute (like GROUP BY)
+  { $group: {
+    _id: '$userId',
+    orderCount: { $sum: 1 },
+    totalSpent: { $sum: '$total' },
+    avgOrder:   { $avg: '$total' },
+    lastOrder:  { $max: '$createdAt' }
+  }},
+
+  // Stage 3: filter groups (like HAVING)
+  { $match: { orderCount: { $gte: 3 } } },
+
+  // Stage 4: join another collection (like LEFT JOIN)
+  { $lookup: {
+    from:         'users',
+    localField:   '_id',
+    foreignField: '_id',
+    as:           'user'
+  }},
+
+  // Stage 5: flatten the joined array
+  { $unwind: '$user' },
+
+  // Stage 6: shape the output (like SELECT)
+  { $project: {
+    _id: 0,
+    userName:   '$user.name',
+    orderCount: 1,
+    totalSpent: { $round: ['$totalSpent', 2] }
+  }},
+
+  // Stage 7: sort results
+  { $sort: { totalSpent: -1 } },
+
+  // Stage 8: pagination
+  { $skip: 0 },
+  { $limit: 10 }
+]);`} />
+          <CodeBlock label="useful aggregation stages" code={`$match    // filter (use EARLY to reduce documents)
+$group    // group + aggregate ($sum, $avg, $min, $max, $push, $addToSet)
+$project  // shape output (include/exclude/compute fields)
+$sort     // sort documents
+$limit    // limit count
+$skip     // skip for pagination
+$lookup   // LEFT JOIN another collection
+$unwind   // deconstruct array field into separate documents
+$addFields // add computed fields without removing existing ones
+$count    // count documents
+$facet    // run multiple pipelines in parallel
+$bucket   // group into ranges (price ranges, age buckets)`} />
+          <Tip icon="⚡" color="#f59e0b" title="Performance tip">Always put $match first. Every document that passes through $match reduces the work for all subsequent stages. Without an early $match, MongoDB processes the entire collection.</Tip>
+        </div>
+      )}
+      {tab === "indexes" && (
+        <div>
+          <EasyBox emoji="⚡" title="MongoDB Indexes" color="#14b8a6">MongoDB indexes work exactly like PostgreSQL indexes — B-trees under the hood. Without an index, MongoDB does a collection scan (reads every document). Use explain() to see what MongoDB is doing.</EasyBox>
+          <CodeBlock label="creating and managing indexes" code={`// Single field
+db.users.createIndex({ email: 1 });           // 1 = ascending, -1 = descending
+
+// Compound index — order matters
+db.orders.createIndex({ userId: 1, createdAt: -1 });
+
+// Unique index
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// Sparse index — only indexes documents where field exists
+db.users.createIndex({ phone: 1 }, { sparse: true });
+
+// TTL index — auto-delete documents after N seconds
+db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 });
+
+// Text index — full text search
+db.posts.createIndex({ title: 'text', content: 'text' });
+db.posts.find({ $text: { $search: 'mongodb aggregation' } });
+
+// List indexes
+db.users.getIndexes();
+
+// Check query plan — does it use an index?
+db.users.find({ email: 'alice@example.com' }).explain('executionStats');`} />
+          <CodeBlock label="Mongoose index syntax" code={`// In schema definition
+const userSchema = new mongoose.Schema({
+  email:     { type: String, index: true, unique: true },
+  createdAt: { type: Date, index: true },
+});
+
+// Compound index on schema
+userSchema.index({ lastName: 1, firstName: 1 });
+userSchema.index({ createdAt: -1, role: 1 });
+
+// TTL index in Mongoose
+sessionSchema.index({ createdAt: 1 }, { expires: '1h' });`} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "10px 0" }}>
+            <div style={{ padding: "10px 12px", background: D.green + "0a", border: `1px solid ${D.green}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.green, fontFamily: mono, marginBottom: 6 }}>✅ ALWAYS INDEX THESE</div>
+              {["Fields in find() / match() filters", "Fields used in sort()", "Foreign key ref fields (_id, userId)", "Fields used in $lookup joins", "TTL fields (session expiry)"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+            <div style={{ padding: "10px 12px", background: D.red + "0a", border: `1px solid ${D.red}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.red, fontFamily: mono, marginBottom: 6 }}>⚠️ WATCH OUT</div>
+              {["Too many indexes slow writes", "Index field order matters in compound", "High write collections: index selectively", "Arrays of arrays — multikey index overhead", "Indexes take disk space"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+          </div>
+        </div>
+      )}
+      {tab === "populate" && (
+        <div>
+          <EasyBox emoji="🔗" title="References and Population" color="#3b82f6">When you store ObjectId references instead of embedded documents, you use populate() to fetch the referenced documents. It's MongoDB's equivalent of a JOIN — but done in application code (two separate queries under the hood).</EasyBox>
+          <CodeBlock label="schema with references" code={`const postSchema = new mongoose.Schema({
+  title:   { type: String, required: true },
+  content: String,
+  author:  { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  tags:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+  comments: [{
+    user:    { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    body:    String,
+    postedAt:{ type: Date, default: Date.now }
+  }]
+});`} />
+          <CodeBlock label="populate — basic to advanced" code={`// Basic populate
+const post = await Post.findById(id).populate('author');
+
+// Select only specific fields from populated doc
+const post = await Post.findById(id)
+  .populate('author', 'name email -_id');
+
+// Populate multiple paths
+const post = await Post.findById(id)
+  .populate('author', 'name')
+  .populate('tags', 'name color');
+
+// Nested populate — populate inside populated doc
+const post = await Post.findById(id).populate({
+  path: 'comments.user',
+  select: 'name avatar'
+});
+
+// Populate with filter
+const post = await Post.findById(id).populate({
+  path: 'comments',
+  match: { approved: true },
+  options: { limit: 5, sort: { postedAt: -1 } }
+});`} />
+          <Tip icon="⚠️" color="#f43f5e" title="populate() is 2 queries, not 1">populate() fires a second query to fetch the referenced documents. For large result sets, this can cause the N+1 problem. Use aggregation $lookup instead when querying many documents — it resolves in a single pipeline.</Tip>
+          <CodeBlock label="$lookup vs populate — when to use which" code={`// Use populate: fetching a single document's relations
+const user = await User.findById(id).populate('orders'); // fine
+
+// Use $lookup in aggregation: bulk queries, analytics, reports
+db.posts.aggregate([
+  { $match: { status: 'published' } },
+  { $lookup: { from: 'users', localField: 'author', foreignField: '_id', as: 'author' }},
+  { $unwind: '$author' }
+]); // one query, always`} />
+        </div>
+      )}
+      {tab === "hooks" && (
+        <div>
+          <EasyBox emoji="🪝" title="Mongoose Middleware (Hooks)" color="#8b5cf6">Mongoose middleware (hooks) are functions that run before or after certain operations. Use them for hashing passwords, logging, cascading deletes, updating timestamps, and input sanitization — without polluting your route handlers.</EasyBox>
+          <CodeBlock label="pre and post hooks" code={`const userSchema = new mongoose.Schema({ ... });
+
+// pre('save') — runs before .save() and .create()
+userSchema.pre('save', async function(next) {
+  // 'this' refers to the document being saved
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
+  next(); // must call next() or the operation hangs
+});
+
+// pre('save') — set slug from title
+postSchema.pre('save', function(next) {
+  if (this.isModified('title')) {
+    this.slug = this.title.toLowerCase().replace(/\s+/g, '-');
+  }
+  next();
+});
+
+// post('save') — runs after save completes
+userSchema.post('save', function(doc, next) {
+  console.log(\`User \${doc.email} saved\`);
+  // send welcome email, update analytics, etc.
+  next();
+});
+
+// pre('findOneAndUpdate') — hooks for update queries
+userSchema.pre('findOneAndUpdate', function(next) {
+  this.set({ updatedAt: new Date() });
+  next();
+});
+
+// pre('deleteOne') — cascade delete
+userSchema.pre('deleteOne', { document: true }, async function(next) {
+  await Post.deleteMany({ author: this._id });
+  next();
+});
+
+// Query middleware — 'this' is the Query, not the document
+userSchema.pre(/^find/, function(next) {
+  this.find({ isActive: { $ne: false } }); // always exclude soft-deleted
+  next();
+});`} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "10px 0" }}>
+            <div style={{ padding: "10px 12px", background: "#8b5cf60a", border: "1px solid #8b5cf633", borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: "#8b5cf6", fontFamily: mono, marginBottom: 6 }}>DOCUMENT MIDDLEWARE</div>
+              {["save, validate, remove, updateOne, deleteOne"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: mono, padding: "2px 0" }}>{x}</div>)}
+            </div>
+            <div style={{ padding: "10px 12px", background: "#3b82f60a", border: "1px solid #3b82f633", borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: "#3b82f6", fontFamily: mono, marginBottom: 6 }}>QUERY MIDDLEWARE</div>
+              {["find, findOne, findOneAndUpdate,", "findOneAndDelete, updateMany, deleteMany"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: mono, padding: "2px 0" }}>{x}</div>)}
+            </div>
+          </div>
+          <Tip icon="⚠️" color="#f59e0b" title="Hook gotcha">updateMany() and findByIdAndUpdate() do NOT trigger 'save' hooks. Use pre('findOneAndUpdate') or pre('updateMany') for those. This trips up most developers.</Tip>
+        </div>
+      )}
+      {tab === "patterns" && (
+        <div>
+          <EasyBox emoji="🏗️" title="Real-world MongoDB patterns" color="#14b8a6">These are the patterns interviewers ask about and production systems actually use.</EasyBox>
+          <CaseStudy title="Soft Delete Pattern" color="#f43f5e" scenario="Never permanently delete user data" problem="Hard deletes are irreversible. Compliance may require retaining records." solution="Add deletedAt field; filter it out in all queries via a global hook">
+            <CodeBlock label="soft delete implementation" code={`userSchema.add({ deletedAt: { type: Date, default: null } });
+
+// Global pre-find hook to exclude soft-deleted docs
+userSchema.pre(/^find/, function(next) {
+  this.where({ deletedAt: null });
+  next();
+});
+
+// Soft delete method
+userSchema.methods.softDelete = function() {
+  this.deletedAt = new Date();
+  return this.save();
+};`} />
+          </CaseStudy>
+          <CaseStudy title="Pagination Pattern" color="#3b82f6" scenario="Infinite scroll or paginated API" problem="OFFSET-based pagination gets slow at large offsets (MongoDB scans skipped docs)" solution="Cursor-based pagination using _id or createdAt">
+            <CodeBlock label="cursor-based pagination" code={`// Request: GET /posts?cursor=<lastId>&limit=20
+async function getPosts(cursor, limit = 20) {
+  const query = cursor
+    ? { _id: { $lt: new mongoose.Types.ObjectId(cursor) } }
+    : {};
+
+  const posts = await Post
+    .find(query)
+    .sort({ _id: -1 })
+    .limit(limit + 1);      // fetch one extra to know if there's a next page
+
+  const hasMore = posts.length > limit;
+  return {
+    data: posts.slice(0, limit),
+    nextCursor: hasMore ? posts[limit - 1]._id : null,
+  };
+}`} />
+          </CaseStudy>
+          <CaseStudy title="Optimistic Concurrency" color="#8b5cf6" scenario="Two users edit the same document simultaneously" problem="Last-write-wins corrupts data when concurrent edits happen" solution="Version field (__v) — reject update if document changed since last read">
+            <CodeBlock label="optimistic locking with version" code={`const result = await Post.findOneAndUpdate(
+  { _id: postId, __v: clientVersion },  // only update if version matches
+  { $set: { content: newContent }, $inc: { __v: 1 } },
+  { new: true }
+);
+
+if (!result) {
+  throw new Error('Document was modified by another user. Please refresh.');
+}`} />
+          </CaseStudy>
+          <Tip icon="🎤" color="#ec4899" title="Interview: when NOT to use MongoDB">Say: 'MongoDB is great for flexible schemas and horizontal scaling, but I would NOT use it for complex multi-document transactions (bank transfers), heavy JOINs across many collections, or when strong schema enforcement is critical. For those cases PostgreSQL is a better fit.'</Tip>
         </div>
       )}
       {tab === "quiz" && (
         <div>
-          <QuizCard question="What data format does MongoDB store?" options={["CSV", "XML", "JSON-like documents", "Binary files"]} correct={2} explain="MongoDB stores data as BSON (Binary JSON) documents — flexible, nested objects that map directly to JavaScript objects." />
-          <QuizCard question="What does Mongoose add to MongoDB?" options={["A SQL interface", "Schemas, validation, and middleware", "A GUI admin panel", "Automatic backups"]} correct={1} explain="Mongoose is an ODM that adds schemas, validation, type casting, query building, and middleware hooks to MongoDB." />
-          <QuizCard question="When should you EMBED data vs REFERENCE it?" options={["Always embed", "Always reference", "Embed when read together, reference when shared", "It does not matter"]} correct={2} explain="Embed related data that is always read together (faster reads). Reference data that is shared across many documents (avoids duplication and inconsistency)." />
+          <QuizCard question="What data format does MongoDB store internally?" options={["JSON", "XML", "BSON (Binary JSON)", "CSV"]} correct={2} explain="MongoDB stores data as BSON (Binary JSON) — a binary-encoded format that supports extra types like ObjectId, Date, and Decimal128 that plain JSON does not support." />
+          <QuizCard question="What does Mongoose add to MongoDB?" options={["A SQL interface", "Schemas, validation, and middleware hooks", "A GUI admin panel", "Automatic backups"]} correct={1} explain="Mongoose is an ODM that adds schemas, validation, type casting, query building, virtuals, and middleware hooks to MongoDB." />
+          <QuizCard question="When should you EMBED data vs REFERENCE it?" options={["Always embed", "Always reference", "Embed when read together, reference when shared", "It does not matter"]} correct={2} explain="Embed related data that is always read together (faster reads, one query). Reference data that is shared across many documents to avoid duplication." />
+          <QuizCard question="What does .lean() do in Mongoose?" options={["Prevents memory leaks", "Returns plain JS objects instead of Mongoose documents", "Enables lazy loading", "Validates schema before query"]} correct={1} explain=".lean() skips Mongoose document wrapping — no virtuals, no methods, no change tracking. This makes read queries about 2x faster. Use it for read-only data." />
+          <QuizCard question="Which aggregation stage acts like SQL's WHERE clause?" options={["$group", "$project", "$match", "$filter"]} correct={2} explain="$match filters documents — equivalent to WHERE in SQL. Always place $match early in the pipeline to reduce the number of documents flowing through subsequent stages." />
+          <QuizCard question="Does findByIdAndUpdate() trigger a 'save' middleware hook?" options={["Yes, always", "Only if you pass { save: true }", "No — use pre('findOneAndUpdate') instead", "Only for pre hooks, not post"]} correct={2} explain="findByIdAndUpdate() bypasses 'save' hooks entirely. You must use pre('findOneAndUpdate') to intercept query-based updates. This is a common source of bugs when hashing passwords." />
+          <QuizCard question="What is the N+1 problem in the context of populate()?" options={["Fetching N documents requires N+1 queries", "Documents grow by N+1 on each update", "Indexes slow after N+1 entries", "populate() fails on N+1 references"]} correct={0} explain="If you fetch N posts and populate their authors, Mongoose fires 1 query for posts + 1 query for each author = N+1 total queries. Fix with $lookup in aggregation (1 query) or by batching." />
         </div>
       )}
+      {tab === "demo" && <MongoQueryDemo />}
     </div>
   );
 }
@@ -2503,62 +4170,255 @@ function SectionPostgreSQL() {
   const tabs = [
     { id: "basics", label: "📐 Basics" },
     { id: "joins", label: "🔗 JOINs" },
+    { id: "advanced", label: "🚀 Advanced SQL" },
+    { id: "indexes", label: "⚡ Indexes" },
     { id: "node", label: "🟢 Node.js" },
+    { id: "perf", label: "📊 Performance" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
+  const color = "#3b82f6";
   return (
     <div>
-      <p style={para}>PostgreSQL is the gold standard of open-source relational databases. It is ACID-compliant, feature-rich, and handles complex queries better than any other database.</p>
+      <p style={para}>PostgreSQL is the gold standard of open-source relational databases. It is ACID-compliant, feature-rich, and handles complex queries better than any other database. At 2.5yr exp you're expected to know CTEs, window functions, indexes, and query optimization.</p>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
-        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? "#3b82f622" : "transparent", border: `1px solid ${tab === t.id ? "#3b82f6" : D.outline}`, color: tab === t.id ? "#3b82f6" : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? color + "22" : "transparent", border: `1px solid ${tab === t.id ? color : D.outline}`, color: tab === t.id ? color : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
       </div>
       {tab === "basics" && (
         <div>
-          <CodeBlock label="SQL fundamentals" code={`-- Create table
+          <CodeBlock label="SQL fundamentals" code={`-- Create table with constraints
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  email VARCHAR(100) UNIQUE NOT NULL,
-  age INTEGER CHECK (age >= 0),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id         SERIAL PRIMARY KEY,
+  name       VARCHAR(100) NOT NULL,
+  email      VARCHAR(100) UNIQUE NOT NULL,
+  age        INTEGER CHECK (age >= 0),
+  role       VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user','admin')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP                         -- soft delete
 );
 
--- Insert
+-- Insert single / multiple
 INSERT INTO users (name, email, age) VALUES ('Alice', 'alice@example.com', 30);
+INSERT INTO users (name, email) VALUES ('Bob', 'bob@example.com'), ('Carol', 'carol@example.com');
 
--- Query
-SELECT name, email FROM users WHERE age > 18 ORDER BY created_at DESC LIMIT 10;
+-- Query with filter, sort, paginate
+SELECT name, email FROM users
+WHERE age > 18 AND deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT 10 OFFSET 20;
 
 -- Update
-UPDATE users SET age = 31 WHERE id = 1;
+UPDATE users SET age = 31, updated_at = NOW() WHERE id = 1;
 
--- Delete
-DELETE FROM users WHERE id = 1;
+-- Soft delete
+UPDATE users SET deleted_at = NOW() WHERE id = 1;
 
 -- Aggregation
-SELECT COUNT(*) as total, AVG(age) as avg_age FROM users;`} />
-          <Tip icon="🔑" color={D.yellow} title="Primary keys">SERIAL auto-increments. But for distributed systems, use UUID ( Universally Unique Identifier ) to avoid collision when merging databases.</Tip>
+SELECT
+  COUNT(*)          AS total,
+  AVG(age)          AS avg_age,
+  MIN(created_at)   AS first_joined,
+  MAX(created_at)   AS last_joined
+FROM users WHERE deleted_at IS NULL;`} />
+          <EasyBox emoji="🔑" title="Data types you must know" color={color}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {[["SERIAL / BIGSERIAL", "Auto-increment integer PK"],["UUID", "Distributed-safe unique ID"],["VARCHAR(n) / TEXT", "String — TEXT has no limit"],["INTEGER / BIGINT", "Whole numbers"],["NUMERIC(p,s)", "Exact decimal (money!)"],["TIMESTAMP / TIMESTAMPTZ", "Time with/without timezone"],["BOOLEAN", "true / false"],["JSONB", "Queryable JSON column"]].map(([t, d], i) => (
+                <div key={i} style={{ padding: "4px 8px", background: D.surface, borderRadius: 5 }}>
+                  <div style={{ fontSize: 10, color, fontFamily: mono }}>{t}</div>
+                  <div style={{ fontSize: 10, color: D.muted, fontFamily: serif }}>{d}</div>
+                </div>
+              ))}
+            </div>
+          </EasyBox>
+          <Tip icon="🔑" color={D.yellow} title="SERIAL vs UUID">SERIAL auto-increments (1,2,3…). Use UUID (gen_random_uuid()) for distributed systems where multiple databases merge or IDs are exposed in URLs — sequential IDs are enumerable and predictable.</Tip>
         </div>
       )}
       {tab === "joins" && (
         <div>
-          <CodeBlock label="JOIN types" code={`-- INNER JOIN: only matching rows
-SELECT users.name, orders.total
-FROM users
-INNER JOIN orders ON users.id = orders.user_id;
+          <CodeBlock label="all JOIN types" code={`-- INNER JOIN: only rows that match in BOTH tables
+SELECT u.name, o.total
+FROM users u
+INNER JOIN orders o ON u.id = o.user_id;
 
--- LEFT JOIN: all users, even without orders
-SELECT users.name, orders.total
-FROM users
-LEFT JOIN orders ON users.id = orders.user_id;
+-- LEFT JOIN: ALL users, NULL if no matching order
+SELECT u.name, o.total
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id;
 
--- Multiple joins
+-- RIGHT JOIN: ALL orders, NULL if no matching user (rare)
+SELECT u.name, o.total
+FROM users u
+RIGHT JOIN orders o ON u.id = o.user_id;
+
+-- FULL OUTER JOIN: all rows from both, NULL where no match
+SELECT u.name, o.total
+FROM users u
+FULL OUTER JOIN orders o ON u.id = o.user_id;
+
+-- CROSS JOIN: every combination (Cartesian product)
+SELECT u.name, p.name as plan
+FROM users u CROSS JOIN plans p;
+
+-- Self JOIN: join a table to itself
+SELECT e.name AS employee, m.name AS manager
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.id;
+
+-- Multiple JOINs
 SELECT u.name, o.total, p.title
 FROM users u
-JOIN orders o ON u.id = o.user_id
-JOIN products p ON o.product_id = p.id
-WHERE o.total > 100;`} />
-          <EasyBox emoji="🔗" title="JOIN visualization" color="#3b82f6"><strong>INNER JOIN</strong> = intersection (only matches). <strong>LEFT JOIN</strong> = all from left table + matches from right (NULL if no match). <strong>RIGHT JOIN</strong> = opposite of LEFT. <strong>FULL OUTER JOIN</strong> = union of both (all rows from both tables).</EasyBox>
+JOIN orders o     ON u.id = o.user_id
+JOIN products p   ON o.product_id = p.id
+WHERE o.total > 100
+ORDER BY o.total DESC;`} />
+          <EasyBox emoji="🔗" title="JOIN cheatsheet" color={color}>
+            {[["INNER JOIN","Only matching rows — NULL rows excluded"],["LEFT JOIN","All left rows + matches from right (NULL if no match)"],["RIGHT JOIN","All right rows + matches from left (rare)"],["FULL OUTER JOIN","All rows from both, NULL where unmatched"],["CROSS JOIN","Every combination (n × m rows)"],["SELF JOIN","Table joined to itself — hierarchies, managers"]].map(([j, d], i) => (
+              <div key={i} style={{ display: "flex", gap: 10, padding: "3px 0", borderBottom: i < 5 ? `1px solid ${D.outline}` : "none" }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color, fontFamily: mono, minWidth: 140 }}>{j}</span>
+                <span style={{ fontSize: 11, color: D.muted, fontFamily: serif }}>{d}</span>
+              </div>
+            ))}
+          </EasyBox>
+          <Tip icon="💡" color={D.yellow} title="JOIN order doesn't affect results, but affects performance">The query planner decides the join order. But explicit LEFT vs INNER changes which rows appear. Never assume a LEFT JOIN equals an INNER JOIN — missing data is invisible with INNER.</Tip>
+        </div>
+      )}
+      {tab === "advanced" && (
+        <div>
+          <BigIdea number="1" title="CTEs — Common Table Expressions" color={color}>CTEs (WITH clause) let you name a subquery and reference it like a table. They make complex queries readable and can be referenced multiple times. Recursive CTEs handle hierarchical data (org charts, file trees).</BigIdea>
+          <CodeBlock label="CTE examples" code={`-- Basic CTE — readable subquery
+WITH active_users AS (
+  SELECT id, name, email
+  FROM users
+  WHERE deleted_at IS NULL AND last_login > NOW() - INTERVAL '30 days'
+),
+order_counts AS (
+  SELECT user_id, COUNT(*) AS total_orders, SUM(amount) AS total_spent
+  FROM orders
+  GROUP BY user_id
+)
+SELECT u.name, u.email, o.total_orders, o.total_spent
+FROM active_users u
+LEFT JOIN order_counts o ON u.id = o.user_id
+ORDER BY o.total_spent DESC NULLS LAST;
+
+-- Recursive CTE — org chart (employee → manager)
+WITH RECURSIVE org AS (
+  -- base case: CEO (no manager)
+  SELECT id, name, manager_id, 1 AS depth
+  FROM employees WHERE manager_id IS NULL
+
+  UNION ALL
+
+  -- recursive: employees whose manager is in the CTE
+  SELECT e.id, e.name, e.manager_id, o.depth + 1
+  FROM employees e
+  JOIN org o ON e.manager_id = o.id
+)
+SELECT * FROM org ORDER BY depth;`} />
+          <BigIdea number="2" title="Window Functions — ranking without grouping" color="#8b5cf6">Window functions compute values across rows related to the current row WITHOUT collapsing them into a group. You keep all rows but add rank, running total, lag/lead, etc. This is a senior-level SQL skill that interviewers love.</BigIdea>
+          <CodeBlock label="window functions" code={`-- ROW_NUMBER, RANK, DENSE_RANK
+SELECT
+  name,
+  salary,
+  department,
+  ROW_NUMBER()  OVER (PARTITION BY department ORDER BY salary DESC) AS row_num,
+  RANK()        OVER (PARTITION BY department ORDER BY salary DESC) AS rank,
+  DENSE_RANK()  OVER (PARTITION BY department ORDER BY salary DESC) AS dense_rank
+FROM employees;
+-- RANK skips numbers after ties; DENSE_RANK does not
+
+-- Running total
+SELECT
+  date,
+  revenue,
+  SUM(revenue) OVER (ORDER BY date) AS running_total
+FROM daily_sales;
+
+-- Moving average (last 7 days)
+SELECT
+  date,
+  revenue,
+  AVG(revenue) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS moving_avg_7d
+FROM daily_sales;
+
+-- LAG / LEAD — compare to previous/next row
+SELECT
+  date,
+  revenue,
+  LAG(revenue,  1) OVER (ORDER BY date) AS prev_day,
+  LEAD(revenue, 1) OVER (ORDER BY date) AS next_day,
+  revenue - LAG(revenue, 1) OVER (ORDER BY date) AS day_over_day_change
+FROM daily_sales;
+
+-- NTILE — split into buckets (quartiles, deciles)
+SELECT name, salary,
+  NTILE(4) OVER (ORDER BY salary) AS quartile
+FROM employees;`} />
+          <Tip icon="🎯" color="#8b5cf6" title="PARTITION BY vs GROUP BY">GROUP BY collapses rows — you lose individual row data. PARTITION BY in a window function keeps every row and just adds a column. Use GROUP BY when you want one row per group; use window functions when you want all rows with group context.</Tip>
+          <CodeBlock label="JSONB — querying JSON columns" code={`-- Create table with JSONB
+CREATE TABLE products (
+  id      SERIAL PRIMARY KEY,
+  name    TEXT,
+  attrs   JSONB          -- queryable JSON
+);
+
+INSERT INTO products (name, attrs) VALUES
+('Laptop', '{"brand":"Dell","ram":16,"tags":["work","portable"]}');
+
+-- Query JSONB
+SELECT name, attrs->>'brand' AS brand       -- text value
+FROM products WHERE attrs->>'brand' = 'Dell';
+
+SELECT name FROM products
+WHERE attrs @> '{"ram": 16}';               -- contains
+
+SELECT name FROM products
+WHERE attrs->'tags' ? 'portable';           -- array contains element
+
+-- Index JSONB for fast queries
+CREATE INDEX idx_products_attrs ON products USING GIN(attrs);`} />
+        </div>
+      )}
+      {tab === "indexes" && (
+        <div>
+          <EasyBox emoji="⚡" title="PostgreSQL Index Types" color={color}>PostgreSQL supports multiple index types. B-tree is the default and handles most cases. Choosing the wrong index type wastes space and doesn't speed up queries.</EasyBox>
+          <CodeBlock label="index types and creation" code={`-- B-tree (default) — =, <, >, BETWEEN, ORDER BY, LIKE 'prefix%'
+CREATE INDEX idx_users_email ON users(email);
+
+-- Composite index — left-prefix rule applies
+CREATE INDEX idx_orders_user_date ON orders(user_id, created_at DESC);
+-- This index helps: WHERE user_id = 1
+-- This index helps: WHERE user_id = 1 AND created_at > ...
+-- This does NOT help: WHERE created_at > ... (no user_id filter)
+
+-- Partial index — only index rows that match a condition
+CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
+
+-- Unique index
+CREATE UNIQUE INDEX idx_users_email_unique ON users(email);
+
+-- GIN index — JSONB, arrays, full-text search
+CREATE INDEX idx_products_attrs ON products USING GIN(attrs);
+CREATE INDEX idx_posts_fts ON posts USING GIN(to_tsvector('english', title || ' ' || content));
+
+-- GiST index — geometric data, range types, full-text
+CREATE INDEX idx_events_range ON events USING GIST(daterange);
+
+-- BRIN index — very large tables with natural sort order (time-series)
+CREATE INDEX idx_logs_created ON logs USING BRIN(created_at);
+
+-- Check if query uses index
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'alice@example.com';`} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "10px 0" }}>
+            <div style={{ padding: "10px 12px", background: D.green + "0a", border: `1px solid ${D.green}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.green, fontFamily: mono, marginBottom: 6 }}>✅ INDEX THESE</div>
+              {["Foreign keys (user_id, order_id)", "WHERE / JOIN / ORDER BY columns", "Columns in UNIQUE constraints", "JSONB columns queried with @> or ?", "High-cardinality columns (email, UUID)"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+            <div style={{ padding: "10px 12px", background: D.red + "0a", border: `1px solid ${D.red}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.red, fontFamily: mono, marginBottom: 6 }}>⚠️ AVOID / WATCH</div>
+              {["Low-cardinality (boolean, status with 2 values)", "Over-indexing slows INSERT/UPDATE/DELETE", "Unused indexes waste disk space", "Wrong index type (B-tree on JSONB)","Violating left-prefix rule on composites"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+          </div>
         </div>
       )}
       {tab === "node" && (
@@ -2566,31 +4426,143 @@ WHERE o.total > 100;`} />
           <CodeBlock label="pg driver with Pool" code={`const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: 'localhost', user: 'postgres',
-  password: 'secret', database: 'myapp', port: 5432
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  port: 5432,
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 });
 
-// Parameterized query — prevents SQL injection!
-const result = await pool.query(
+// Parameterized query — prevents SQL injection
+const { rows } = await pool.query(
   'SELECT * FROM users WHERE email = $1 AND age > $2',
   ['alice@example.com', 18]
 );
-console.log(result.rows);
 
-// Transaction
-const client = await pool.connect();
-try {
-  await client.query('BEGIN');
-  await client.query('UPDATE accounts SET balance = balance - 100 WHERE id = 1');
-  await client.query('UPDATE accounts SET balance = balance + 100 WHERE id = 2');
-  await client.query('COMMIT');
-} catch (err) {
-  await client.query('ROLLBACK');
-  throw err;
-} finally {
-  client.release();
+// Named query with multiple params
+const { rows: orders } = await pool.query(
+  'SELECT * FROM orders WHERE user_id = $1 AND status = $2 ORDER BY created_at DESC LIMIT $3',
+  [userId, 'completed', 10]
+);`} />
+          <CodeBlock label="transaction with error handling" code={`async function transferMoney(fromId, toId, amount) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const { rows } = await client.query(
+      'SELECT balance FROM accounts WHERE id = $1 FOR UPDATE',
+      [fromId]
+    );
+    if (rows[0].balance < amount) throw new Error('Insufficient funds');
+
+    await client.query(
+      'UPDATE accounts SET balance = balance - $1 WHERE id = $2',
+      [amount, fromId]
+    );
+    await client.query(
+      'UPDATE accounts SET balance = balance + $1 WHERE id = $2',
+      [amount, toId]
+    );
+
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release(); // ALWAYS release!
+  }
 }`} />
-          <Tip icon="⚠️" color={D.red} title="NEVER concatenate SQL">`SELECT * FROM users WHERE email = '${email}'` is vulnerable to SQL injection. Always use parameterized queries with `$1, $2` placeholders.</Tip>
+          <Tip icon="⚠️" color={D.red} title="NEVER concatenate SQL">{"SELECT * FROM users WHERE email = '${email}'"} is vulnerable to SQL injection. Always use parameterized queries ($1, $2). The pg driver handles escaping — you never need to sanitize manually.</Tip>
+          <CodeBlock label="helper — query builder pattern" code={`// Build dynamic WHERE clauses safely
+function buildFilter(filters) {
+  const conditions = [];
+  const values = [];
+  let idx = 1;
+
+  if (filters.email) {
+    conditions.push(\`email = $\${idx++}\`);
+    values.push(filters.email);
+  }
+  if (filters.role) {
+    conditions.push(\`role = $\${idx++}\`);
+    values.push(filters.role);
+  }
+  if (filters.minAge) {
+    conditions.push(\`age >= $\${idx++}\`);
+    values.push(filters.minAge);
+  }
+
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  return { where, values };
+}
+
+const { where, values } = buildFilter({ role: 'admin', minAge: 25 });
+const { rows } = await pool.query(\`SELECT * FROM users \${where}\`, values);`} />
+        </div>
+      )}
+      {tab === "perf" && (
+        <div>
+          <EasyBox emoji="📊" title="Query Performance — EXPLAIN ANALYZE" color={color}>EXPLAIN shows the query plan PostgreSQL will use. EXPLAIN ANALYZE actually runs it and shows real timings. Always use this before adding indexes or optimizing slow queries.</EasyBox>
+          <CodeBlock label="reading EXPLAIN ANALYZE output" code={`EXPLAIN ANALYZE
+SELECT u.name, COUNT(o.id) AS order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.created_at > '2024-01-01'
+GROUP BY u.id;
+
+-- Output to look for:
+-- Seq Scan   → no index used (bad for large tables)
+-- Index Scan → index used (good)
+-- Bitmap Heap Scan → index used for range (ok)
+-- Hash Join vs Nested Loop vs Merge Join → join strategy
+
+-- Key metrics:
+-- actual time=X..Y  → X = startup, Y = total ms
+-- rows=N           → actual rows processed
+-- loops=N          → how many times this node ran`} />
+          <CodeBlock label="common performance fixes" code={`-- 1. Missing index on foreign key
+-- Symptom: Seq Scan on a large table in a JOIN
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+
+-- 2. SELECT * fetches unused columns — use explicit columns
+-- Bad:
+SELECT * FROM orders JOIN users ON orders.user_id = users.id;
+-- Good:
+SELECT o.id, o.total, u.name FROM orders o JOIN users u ON o.user_id = u.id;
+
+-- 3. COUNT(*) is fast in PostgreSQL (uses index)
+-- COUNT(column) skips NULLs — use COUNT(*) unless you need to skip NULLs
+
+-- 4. LIMIT without ORDER BY is non-deterministic
+-- Always ORDER BY when using LIMIT for pagination
+
+-- 5. N+1 — fix with JOIN instead of multiple queries
+-- Bad: query user then query each user's orders in a loop
+-- Good:
+SELECT u.name, array_agg(o.id) AS order_ids
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id;
+
+-- 6. VACUUM ANALYZE — update statistics after bulk changes
+VACUUM ANALYZE users;`} />
+          <CaseStudy title="Slow pagination at scale" color={color} scenario="Page 500 of results takes 30 seconds" problem="LIMIT 10 OFFSET 5000 scans and discards 5000 rows — gets slower as offset grows" solution="Cursor-based pagination using the last seen id">
+            <CodeBlock label="keyset / cursor pagination" code={`-- Bad: OFFSET pagination (slows down at high pages)
+SELECT * FROM posts ORDER BY created_at DESC LIMIT 10 OFFSET 5000;
+
+-- Good: Cursor-based (constant speed regardless of page)
+-- First page:
+SELECT * FROM posts ORDER BY created_at DESC, id DESC LIMIT 10;
+
+-- Next page — pass last row's (created_at, id) as cursor:
+SELECT * FROM posts
+WHERE (created_at, id) < ('2024-03-15 10:00:00', 1234)
+ORDER BY created_at DESC, id DESC
+LIMIT 10;`} />
+          </CaseStudy>
         </div>
       )}
       {tab === "quiz" && (
@@ -2598,8 +4570,12 @@ try {
           <QuizCard question="What does SQL stand for?" options={["Structured Query Language", "Simple Query Language", "System Query Logic", "Schema Query Language"]} correct={0} explain="SQL = Structured Query Language. It is the standard language for interacting with relational databases." />
           <QuizCard question="Which JOIN returns only rows that exist in BOTH tables?" options={["LEFT JOIN", "RIGHT JOIN", "INNER JOIN", "FULL JOIN"]} correct={2} explain="INNER JOIN returns only rows where the join condition matches in both tables. LEFT JOIN returns all rows from the left table regardless of matches." />
           <QuizCard question="Why use parameterized queries ($1, $2)?" options={["They are faster", "They prevent SQL injection", "They look cleaner", "They support more data types"]} correct={1} explain="Parameterized queries separate code from data. The database treats parameters as data, not executable code, preventing attackers from injecting malicious SQL." />
+          <QuizCard question="What does a CTE (WITH clause) do?" options={["Creates a permanent table", "Names a subquery for use within the same statement", "Caches query results permanently", "Defines a stored procedure"]} correct={1} explain="A CTE (Common Table Expression) names a subquery that you can reference within the same SELECT, INSERT, UPDATE, or DELETE. It improves readability and can be referenced multiple times." />
+          <QuizCard question="What is the difference between RANK() and DENSE_RANK()?" options={["RANK is faster", "DENSE_RANK skips numbers after ties, RANK does not", "RANK skips numbers after ties, DENSE_RANK does not", "They are identical"]} correct={2} explain="If two rows tie for rank 2, RANK() gives both rank 2 and skips rank 3 (next is rank 4). DENSE_RANK() gives both rank 2 and the next row is rank 3 — no gaps." />
+          <QuizCard question="Why is OFFSET pagination slow at scale?" options={["It uses too much RAM", "PostgreSQL must scan and discard all skipped rows", "It does not work with indexes", "It creates a full table lock"]} correct={1} explain="OFFSET N tells PostgreSQL to find N rows and discard them. At OFFSET 10000 the database physically scans 10000 rows to throw them away. Cursor-based pagination avoids this — it jumps directly to the last seen row using an index." />
         </div>
       )}
+      {tab === "demo" && <SqlQueryDemo />}
     </div>
   );
 }
@@ -2609,18 +4585,21 @@ function SectionPrisma() {
   const tabs = [
     { id: "schema", label: "📝 Schema" },
     { id: "queries", label: "🔍 Queries" },
+    { id: "relations", label: "🔗 Relations" },
     { id: "migrate", label: "🔄 Migrations" },
+    { id: "advanced", label: "🚀 Advanced" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
+  const color = "#8b5cf6";
   return (
     <div>
-      <p style={para}>Prisma is a modern ORM for Node.js and TypeScript. Unlike traditional ORMs, Prisma uses a declarative schema file and generates a type-safe client.</p>
+      <p style={para}>Prisma is a modern ORM for Node.js and TypeScript. Unlike traditional ORMs, Prisma uses a declarative schema file and generates a fully type-safe client. At 2.5yr exp you're expected to know relations, advanced queries, transactions, and raw SQL fallbacks.</p>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
-        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? "#8b5cf622" : "transparent", border: `1px solid ${tab === t.id ? "#8b5cf6" : D.outline}`, color: tab === t.id ? "#8b5cf6" : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? color + "22" : "transparent", border: `1px solid ${tab === t.id ? color : D.outline}`, color: tab === t.id ? color : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
       </div>
       {tab === "schema" && (
         <div>
-          <CodeBlock label="schema.prisma" code={`generator client {
+          <CodeBlock label="schema.prisma — full example" code={`generator client {
   provider = "prisma-client-js"
 }
 
@@ -2630,101 +4609,291 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
   name      String
+  role      Role     @default(USER)
   posts     Post[]
   profile   Profile?
+  orders    Order[]
   createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
+  @@index([createdAt])
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
 }
 
 model Post {
-  id       Int    @id @default(autoincrement())
-  title    String
-  content  String
-  published Boolean @default(false)
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId Int    @map("author_id")
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  slug      String   @unique
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String   @map("author_id")
+  tags      Tag[]
+  createdAt DateTime @default(now())
+
+  @@map("posts")
+  @@index([authorId, published])
 }
 
 model Profile {
-  id     Int    @id @default(autoincrement())
+  id     Int     @id @default(autoincrement())
   bio    String?
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int    @unique
-}`} />
-          <Tip icon="🎯" color={D.yellow} title="Prisma advantages">Type-safe queries, auto-generated migrations, excellent VS Code extension, raw SQL fallback when needed, and support for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB.</Tip>
+  avatar String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId String  @unique @map("user_id")
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
+
+model Order {
+  id     Int         @id @default(autoincrement())
+  total  Decimal     @db.Decimal(10, 2)
+  status OrderStatus @default(PENDING)
+  user   User        @relation(fields: [userId], references: [id])
+  userId String      @map("user_id")
+}
+
+enum OrderStatus { PENDING PAID SHIPPED DELIVERED CANCELLED }`} />
+          <EasyBox emoji="✨" title="Key schema features" color={color}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+              {[["@id","Primary key"],["@unique","Unique constraint"],["@default(now())","Timestamp default"],["@updatedAt","Auto-update timestamp"],["@map('col_name')","Map to different DB column"],["@@map('table')","Map model to DB table name"],["@@index([...])","Composite index"],["onDelete: Cascade","Cascade delete on relation"]].map(([k, v], i) => (
+                <div key={i} style={{ padding: "4px 8px", background: D.surface, borderRadius: 5 }}>
+                  <div style={{ fontSize: 10, color, fontFamily: mono }}>{k}</div>
+                  <div style={{ fontSize: 10, color: D.muted, fontFamily: serif }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </EasyBox>
         </div>
       )}
       {tab === "queries" && (
         <div>
-          <CodeBlock label="Prisma Client queries" code={`const { PrismaClient } = require('@prisma/client');
+          <CodeBlock label="CRUD — full patterns" code={`const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Create with relation
+// CREATE
+const user = await prisma.user.create({
+  data: { email: 'alice@example.com', name: 'Alice' },
+  select: { id: true, email: true }   // return only these fields
+});
+
+// CREATE MANY
+await prisma.user.createMany({
+  data: [{ email: 'b@x.com', name: 'Bob' }, { email: 'c@x.com', name: 'Carol' }],
+  skipDuplicates: true,
+});
+
+// UPSERT — create or update
+await prisma.user.upsert({
+  where:  { email: 'alice@example.com' },
+  update: { name: 'Alice Updated' },
+  create: { email: 'alice@example.com', name: 'Alice' },
+});
+
+// READ — various patterns
+const user  = await prisma.user.findUnique({ where: { id: '...' } });
+const user2 = await prisma.user.findUniqueOrThrow({ where: { id: '...' } }); // throws if not found
+const first = await prisma.user.findFirst({ where: { role: 'ADMIN' }, orderBy: { createdAt: 'asc' } });
+
+// READ MANY with filter, sort, paginate, select
+const users = await prisma.user.findMany({
+  where: {
+    role: 'USER',
+    createdAt: { gt: new Date('2024-01-01') },
+    email: { endsWith: '@company.com' },
+    OR: [{ name: { contains: 'Ali' } }, { name: { startsWith: 'Bob' } }],
+  },
+  select: { id: true, name: true, email: true, _count: { select: { posts: true } } },
+  orderBy: [{ createdAt: 'desc' }, { name: 'asc' }],
+  take:   10,
+  skip:   20,
+});
+
+// UPDATE
+await prisma.user.update({
+  where: { id: '...' },
+  data:  { name: 'Updated', role: 'ADMIN' },
+});
+
+// UPDATE MANY
+await prisma.user.updateMany({
+  where: { role: 'USER', createdAt: { lt: cutoffDate } },
+  data:  { role: 'MODERATOR' },
+});
+
+// DELETE
+await prisma.user.delete({ where: { id: '...' } });
+await prisma.user.deleteMany({ where: { createdAt: { lt: cutoffDate } } });`} />
+          <Tip icon="⚡" color={color} title="select vs include">select specifies exactly which fields to return (like SQL SELECT). include fetches related models. Never use both at the top level — they conflict. Use select with nested select to control related model fields.</Tip>
+        </div>
+      )}
+      {tab === "relations" && (
+        <div>
+          <EasyBox emoji="🔗" title="Relation types in Prisma" color={color}>Prisma supports one-to-one, one-to-many, and many-to-many. Relations are defined bidirectionally in the schema. The foreign key side has @relation(fields, references).</EasyBox>
+          <CodeBlock label="querying with include (eager loading)" code={`// Include related records
+const user = await prisma.user.findUnique({
+  where: { id: userId },
+  include: {
+    posts: {
+      where:   { published: true },
+      orderBy: { createdAt: 'desc' },
+      take:    5,
+      select:  { id: true, title: true, slug: true }
+    },
+    profile: true,
+    _count: { select: { posts: true, orders: true } }  // count relations
+  }
+});
+
+// Nested writes — create user + profile + posts in one query
 const user = await prisma.user.create({
   data: {
-    email: 'alice@example.com',
-    name: 'Alice',
-    profile: { create: { bio: 'Full-stack dev' } },
+    email:   'alice@example.com',
+    name:    'Alice',
+    profile: { create: { bio: 'Full-stack dev', avatar: 'https://...' } },
     posts: {
       create: [
-        { title: 'Hello World', content: 'First post' },
-        { title: 'Why Prisma', content: 'Type safety rocks' }
+        { title: 'Post 1', slug: 'post-1', content: '...' },
+        { title: 'Post 2', slug: 'post-2', content: '...' }
       ]
     }
   }
 });
 
-// Read with nested include
-const users = await prisma.user.findMany({
-  where: { email: { endsWith: '@example.com' } },
-  include: {
-    posts: { where: { published: true } },
-    profile: true
-  },
-  orderBy: { createdAt: 'desc' },
-  take: 10
-});
-
-// Update
-await prisma.user.update({
-  where: { id: 1 },
-  data: { name: 'Alice Updated' }
-});
-
-// Transaction
-await prisma.$transaction([
-  prisma.post.create({ data: { title: 'A', authorId: 1 } }),
-  prisma.post.create({ data: { title: 'B', authorId: 1 } })
-]);`} />
-          <EasyBox emoji="✨" title="Type safety" color="#8b5cf6">Prisma generates TypeScript types from your schema. If you rename a field, your code breaks at compile time — not at runtime. No more typos in query field names.</EasyBox>
+// Connect existing records (many-to-many)
+await prisma.post.update({
+  where: { id: postId },
+  data: {
+    tags: {
+      connect:    [{ id: tag1Id }, { id: tag2Id }],  // add tags
+      disconnect: [{ id: oldTagId }],                 // remove tag
+      set:        [{ id: tag1Id }],                   // replace all
+    }
+  }
+});`} />
+          <Tip icon="💡" color={D.yellow} title="Fluent API — alternative relation traversal">{"prisma.user.findUnique({where:{id}}).posts() — chains relation methods instead of include. Returns the related records directly. Less common but useful for conditional loading."}</Tip>
         </div>
       )}
       {tab === "migrate" && (
         <div>
-          <CodeBlock label="Prisma workflow" code={`# 1. Update schema.prisma
-# 2. Generate migration
+          <CodeBlock label="Prisma migration workflow" code={`# ── DEVELOPMENT ──────────────────────────────────────────
+# 1. Edit schema.prisma
+
+# 2. Create + apply migration (dev only)
 npx prisma migrate dev --name add_user_role
+# → creates prisma/migrations/20240315_add_user_role/migration.sql
+# → applies it to your local DB
+# → regenerates Prisma Client
 
-# 3. Generate client (updates types)
-npx prisma generate
+# 3. Open visual DB browser
+npx prisma studio
 
-# 4. Deploy to production
+# ── PRODUCTION ────────────────────────────────────────────
+# Apply pending migrations (no schema changes, no client regen)
 npx prisma migrate deploy
 
-# 5. Studio — visual database admin
-npx prisma studio`} />
-          <Tip icon="💡" color={D.yellow} title="Migrations are version control for your database">Every migration is a SQL file that can be reviewed, tested, and rolled back. Never modify production databases manually — always use migrations.</Tip>
+# ── TROUBLESHOOTING ───────────────────────────────────────
+# Check migration status
+npx prisma migrate status
+
+# Reset DB (dev only — DROPS ALL DATA)
+npx prisma migrate reset
+
+# Push schema without migrations (prototyping only — never production)
+npx prisma db push
+
+# Pull schema from existing DB (introspect)
+npx prisma db pull
+
+# Regenerate client after schema edit
+npx prisma generate`} />
+          <EasyBox emoji="📁" title="Migration files are SQL you can read" color={color}>Every migration is stored as a plain SQL file in prisma/migrations/. Commit them to git. Review them in PRs. Never delete them — they are the history of your database schema. In production, migrations run in the deploy pipeline, not on developer machines.</EasyBox>
+          <Tip icon="⚠️" color={D.red} title="Never use db push in production">db push changes the database schema directly without creating a migration file. You lose the history, can't roll back, and your team can't reproduce the change. Always use migrate dev → migrate deploy.</Tip>
+        </div>
+      )}
+      {tab === "advanced" && (
+        <div>
+          <BigIdea number="1" title="Transactions" color={color}>Prisma supports two transaction modes: sequential (array) for simple cases and interactive (callback) for complex logic with conditional branching.</BigIdea>
+          <CodeBlock label="transactions — both modes" code={`// Sequential transaction — runs in order, all-or-nothing
+await prisma.$transaction([
+  prisma.order.create({ data: { userId, total: 99.99, status: 'PENDING' } }),
+  prisma.user.update({ where: { id: userId }, data: { orderCount: { increment: 1 } } }),
+]);
+
+// Interactive transaction — full control with try/catch inside
+await prisma.$transaction(async (tx) => {
+  const account = await tx.account.findUnique({ where: { id: fromId } });
+  if (account.balance < amount) throw new Error('Insufficient funds');
+
+  await tx.account.update({ where: { id: fromId }, data: { balance: { decrement: amount } } });
+  await tx.account.update({ where: { id: toId },   data: { balance: { increment: amount } } });
+  await tx.transfer.create({ data: { fromId, toId, amount } });
+  // any error auto-rolls back the entire transaction
+}, { timeout: 10000 }); // optional timeout`} />
+          <BigIdea number="2" title="Raw SQL fallback" color="#14b8a6">When Prisma's query builder can't express what you need (CTEs, window functions, JSONB operations), drop to raw SQL. You still get parameter safety.</BigIdea>
+          <CodeBlock label="raw SQL in Prisma" code={`// $queryRaw — returns typed rows
+const users = await prisma.$queryRaw\`
+  SELECT u.id, u.name, COUNT(o.id)::int AS order_count
+  FROM users u
+  LEFT JOIN orders o ON u.id = o.user_id
+  WHERE u.role = \${role}
+  GROUP BY u.id
+  HAVING COUNT(o.id) > \${minOrders}
+\`;
+
+// $executeRaw — for INSERT/UPDATE/DELETE, returns rowCount
+const count = await prisma.$executeRaw\`
+  UPDATE users SET last_login = NOW() WHERE id = \${userId}
+\`;
+
+// Raw with Prisma.sql template tag for safety
+import { Prisma } from '@prisma/client';
+const result = await prisma.$queryRaw(
+  Prisma.sql\`SELECT * FROM users WHERE email = \${email}\`
+);`} />
+          <CodeBlock label="middleware — logging, soft delete" code={`// Prisma Client extensions (v5+)
+const prisma = new PrismaClient().$extends({
+  query: {
+    $allModels: {
+      async findMany({ model, operation, args, query }) {
+        // Automatically exclude soft-deleted rows
+        args.where = { ...args.where, deletedAt: null };
+        return query(args);
+      }
+    }
+  }
+});
+
+// Legacy middleware (before extensions)
+prisma.$use(async (params, next) => {
+  const start = Date.now();
+  const result = await next(params);
+  console.log(\`\${params.model}.\${params.action} took \${Date.now() - start}ms\`);
+  return result;
+});`} />
         </div>
       )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What file does Prisma use to define your data model?" options={["database.json", "schema.prisma", "models.js", "prisma.config"]} correct={1} explain="Prisma uses schema.prisma — a declarative file where you define models, fields, relations, and database connection settings." />
-          <QuizCard question="What does prisma.$transaction() do?" options={["Connects to multiple databases", "Runs multiple operations atomically", "Caches query results", "Creates a backup"]} correct={1} explain="$transaction runs multiple Prisma operations in a single database transaction. Either all succeed, or all are rolled back." />
-          <QuizCard question="Why is Prisma considered 'type-safe'?" options={["It uses TypeScript for the schema file", "It generates types from the schema, catching errors at compile time", "It validates data at runtime", "It only works with TypeScript"]} correct={1} explain="Prisma generates TypeScript types from schema.prisma. If you mistype a field name or pass wrong types, TypeScript catches it before you even run the code." />
+          <QuizCard question="What does prisma.$transaction([...]) do?" options={["Connects to multiple databases", "Runs multiple operations atomically — all succeed or all roll back", "Caches query results", "Creates a backup"]} correct={1} explain="$transaction runs multiple Prisma operations in a single database transaction. Either all succeed or all are rolled back together." />
+          <QuizCard question="Why is Prisma considered 'type-safe'?" options={["It uses TypeScript for the schema file", "It generates types from the schema, catching errors at compile time", "It validates data at runtime only", "It only works with TypeScript projects"]} correct={1} explain="Prisma generates TypeScript types from schema.prisma. Mistyped field names or wrong argument types are caught by the TypeScript compiler before the code runs." />
+          <QuizCard question="What is the difference between select and include in Prisma?" options={["They are the same", "select picks fields, include fetches related models", "include is faster than select", "select only works on root model"]} correct={1} explain="select controls which fields of the model are returned. include fetches entire related models. They cannot both appear at the top level of a query." />
+          <QuizCard question="Why should you never use 'prisma db push' in production?" options={["It is too slow", "It changes the DB without creating a migration file — no history, no rollback", "It requires admin privileges", "It only works with SQLite"]} correct={1} explain="db push bypasses the migration system. The change is applied but not recorded. Your team can't reproduce it, and you can't roll it back. Always use migrate dev → migrate deploy." />
+          <QuizCard question="When would you use $queryRaw instead of the Prisma query builder?" options={["For simple CRUD", "For window functions, CTEs, or complex SQL the query builder can't express", "For all production queries", "Only for SELECT queries"]} correct={1} explain="The Prisma query builder covers most CRUD. For advanced SQL like window functions (RANK, ROW_NUMBER), CTEs (WITH clause), or complex JSONB operations, use $queryRaw with template literals for safe parameterization." />
         </div>
       )}
     </div>
@@ -2736,100 +4905,295 @@ function SectionRedis() {
   const tabs = [
     { id: "usecases", label: "🎯 Use Cases" },
     { id: "commands", label: "⌨️ Commands" },
-    { id: "caching", label: "💾 Caching Pattern" },
+    { id: "caching", label: "💾 Caching" },
+    { id: "ratelimit", label: "🚦 Rate Limiting" },
+    { id: "pubsub", label: "📡 Pub/Sub" },
+    { id: "patterns", label: "🏗️ Patterns" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
+  const color = "#f43f5e";
   return (
     <div>
-      <p style={para}>Redis is an in-memory data structure store used as a database, cache, message broker, and streaming engine. It is incredibly fast because everything lives in RAM.</p>
+      <p style={para}>Redis is an in-memory data structure store used as a database, cache, message broker, and streaming engine. It is incredibly fast because everything lives in RAM. At 2.5yr exp you're expected to know caching strategies, rate limiting, Pub/Sub, and distributed locking.</p>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
-        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? "#f43f5e22" : "transparent", border: `1px solid ${tab === t.id ? "#f43f5e" : D.outline}`, color: tab === t.id ? "#f43f5e" : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
+        {tabs.map(t => <button key={t.id} onClick={() => setTab(t.id)} style={{ padding: "5px 12px", fontSize: 11, fontFamily: mono, background: tab === t.id ? color + "22" : "transparent", border: `1px solid ${tab === t.id ? color : D.outline}`, color: tab === t.id ? color : D.muted, borderRadius: 5, cursor: "pointer" }}>{t.label}</button>)}
       </div>
       {tab === "usecases" && (
         <div>
           {[
-            { title: "Session storage", color: "#f43f5e", icon: "🔑", desc: "Store user login sessions in Redis with TTL (time-to-live). When a user logs out or the session expires, Redis automatically removes it." },
-            { title: "API response caching", color: "#f59e0b", icon: "⚡", desc: "Cache expensive database query results. A complex report that takes 2 seconds to generate from PostgreSQL can be served from Redis in 2 milliseconds." },
-            { title: "Rate limiting", color: "#3b82f6", icon: "🚦", desc: "Track request counts per IP address using Redis counters with expiry. Block IPs that exceed 100 requests per minute." },
-            { title: "Real-time leaderboards", color: "#8b5cf6", icon: "🏆", desc: "Redis Sorted Sets (ZADD, ZRANGE) are perfect for leaderboards. Add scores in O(log n) and fetch top 10 in O(log n + m)." },
-            { title: "Pub/Sub messaging", color: "#14b8a6", icon: "📡", desc: "Redis Pub/Sub enables real-time messaging between servers. Perfect for WebSocket broadcasts, notifications, and chat systems." },
+            { title: "Session storage", color: "#f43f5e", icon: "🔑", desc: "Store user login sessions in Redis with TTL. When a user logs out or the session expires, Redis automatically removes it. Far faster than querying a DB on every request." },
+            { title: "API response caching", color: "#f59e0b", icon: "⚡", desc: "Cache expensive DB query results. A complex report that takes 2s to generate from PostgreSQL can be served from Redis in 2ms — a 1000x improvement." },
+            { title: "Rate limiting", color: "#3b82f6", icon: "🚦", desc: "Track request counts per IP/user using Redis INCR + EXPIRE. Block clients that exceed limits. Redis's atomic INCR makes this race-condition-free." },
+            { title: "Real-time leaderboards", color: "#8b5cf6", icon: "🏆", desc: "Redis Sorted Sets (ZADD/ZRANGE) maintain ranked order automatically. Add scores in O(log n), fetch top N in O(log n + m). Perfect for games, dashboards." },
+            { title: "Pub/Sub + real-time events", color: "#14b8a6", icon: "📡", desc: "Redis Pub/Sub broadcasts messages to all subscribers instantly. Power WebSocket notifications, chat systems, and live dashboards across multiple server instances." },
+            { title: "Distributed locking", color: "#ec4899", icon: "🔒", desc: "RedLock algorithm prevents race conditions across multiple servers. When two instances try to send the same email or process the same job, a Redis lock ensures only one proceeds." },
+            { title: "Job queues", color: "#f59e0b", icon: "📬", desc: "Redis Lists (LPUSH/BRPOP) or Redis Streams power background job queues. Libraries like Bull/BullMQ use Redis to queue emails, image processing, and webhooks." },
           ].map((item, i) => (
-            <div key={i} style={{ marginBottom: 10, padding: "13px 16px", background: item.color + "08", border: `1px solid ${item.color}25`, borderRadius: 9 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 7 }}>{item.icon} {item.title}</div>
-              <p style={{ ...para, marginBottom: 0 }}>{item.desc}</p>
+            <div key={i} style={{ marginBottom: 8, padding: "11px 14px", background: item.color + "08", border: `1px solid ${item.color}25`, borderRadius: 9 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: item.color, fontFamily: mono, marginBottom: 5 }}>{item.icon} {item.title}</div>
+              <p style={{ ...para, marginBottom: 0, fontSize: 12 }}>{item.desc}</p>
             </div>
           ))}
         </div>
       )}
       {tab === "commands" && (
         <div>
-          <CodeBlock label="essential Redis commands" code={`// Strings
-SET user:1 '{"name":"Alice"}'
-GET user:1
-SETEX session:abc 3600 'logged_in'  // set with expiry (seconds)
+          <CodeBlock label="Redis data types & commands" code={`# ── STRINGS ───────────────────────────────────────────────
+SET  user:1 '{"name":"Alice"}'
+GET  user:1
+SETEX session:abc 3600 'token_value'   # set + expiry in one command
+INCR page:views                         # atomic counter (thread-safe)
+INCRBY counter 5
+EXPIRE key 600                          # set expiry on existing key
+TTL  key                                # check remaining seconds (-1 = no TTL)
 
-// Hashes (objects)
-HSET user:1 name Alice email alice@example.com
+# ── HASHES ────────────────────────────────────────────────
+HSET  user:1 name Alice email alice@x.com age 30
+HGET  user:1 name
+HMGET user:1 name email
 HGETALL user:1
+HDEL  user:1 age
+HINCRBY user:1 loginCount 1
 
-// Lists (queues)
-LPUSH queue:jobs 'send_email'
-RPOP queue:jobs
+# ── LISTS ─────────────────────────────────────────────────
+LPUSH queue:emails 'job1' 'job2'        # push to left (head)
+RPUSH queue:emails 'job3'               # push to right (tail)
+LPOP  queue:emails                      # pop from left
+RPOP  queue:emails                      # pop from right
+BRPOP queue:emails 0                    # blocking pop (wait for item)
+LLEN  queue:emails                      # list length
+LRANGE queue:emails 0 -1               # all items
 
-// Sets (unique items)
-SADD tags:post:1 'javascript' 'nodejs'
-SMEMBERS tags:post:1
+# ── SETS ──────────────────────────────────────────────────
+SADD    online:users 'alice' 'bob'
+SREM    online:users 'alice'
+SMEMBERS online:users
+SISMEMBER online:users 'bob'           # O(1) membership check
+SCARD   online:users                   # count
+SUNION  set1 set2                       # union of sets
 
-// Sorted Sets (leaderboards)
-ZADD leaderboard 1500 'Alice'
-ZADD leaderboard 2300 'Bob'
-ZRANGE leaderboard 0 2 WITHSCORES  // top 3
-
-// Pub/Sub
-PUBLISH notifications 'New message!'
-SUBSCRIBE notifications`} />
-          <Tip icon="💡" color={D.yellow} title="TTL is your friend">Always set an expiry (EXPIRE, SETEX) on cache keys. Without TTL, your Redis memory fills up until it crashes. A good default: cache for 5-15 minutes.</Tip>
+# ── SORTED SETS ───────────────────────────────────────────
+ZADD  leaderboard 1500 'Alice'
+ZADD  leaderboard 2300 'Bob'
+ZINCRBY leaderboard 200 'Alice'        # increment score
+ZRANGE leaderboard 0 2 WITHSCORES     # lowest to highest
+ZREVRANGE leaderboard 0 2 WITHSCORES  # highest to lowest (top 3)
+ZRANK leaderboard 'Alice'             # rank (0-based)
+ZSCORE leaderboard 'Alice'            # get score`} />
+          <Tip icon="💡" color={D.yellow} title="Key naming convention">Use colon-separated namespaces: user:1, session:abc, rate:ip:192.168.1.1, cache:posts:page:2. This keeps keys organized and makes bulk operations (SCAN, DEL by pattern) predictable.</Tip>
         </div>
       )}
       {tab === "caching" && (
         <div>
-          <CodeBlock label="cache-aside pattern" code={`const redis = require('redis');
-const client = redis.createClient();
+          <EasyBox emoji="💾" title="Caching strategies" color={color}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {[
+                ["Cache-Aside (Lazy)", "App checks cache first. Miss → query DB → populate cache. Most common. App controls cache.", "#f59e0b"],
+                ["Write-Through", "Write to cache AND DB simultaneously. Cache always fresh. Doubles write latency.", "#3b82f6"],
+                ["Write-Behind (Write-Back)", "Write to cache immediately, async flush to DB later. Fast writes, risk of data loss.", "#8b5cf6"],
+                ["Read-Through", "Cache sits in front of DB. Cache automatically fetches from DB on miss. Less app code.", "#14b8a6"],
+              ].map(([name, desc, c], i) => (
+                <div key={i} style={{ padding: "7px 10px", background: c + "0d", border: `1px solid ${c}33`, borderRadius: 6 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: c, fontFamily: mono }}>{name}</div>
+                  <div style={{ fontSize: 11, color: D.muted, fontFamily: serif }}>{desc}</div>
+                </div>
+              ))}
+            </div>
+          </EasyBox>
+          <CodeBlock label="cache-aside pattern — full implementation" code={`const { createClient } = require('redis');
+const client = createClient({ url: process.env.REDIS_URL });
 await client.connect();
 
 async function getUser(id) {
-  const cacheKey = \`user:\${id}\`;
-  
-  // 1. Check cache
-  const cached = await client.get(cacheKey);
-  if (cached) {
-    console.log('Cache hit!');
-    return JSON.parse(cached);
-  }
-  
-  // 2. Cache miss — fetch from database
-  console.log('Cache miss — querying DB');
-  const user = await db.findUser(id);
-  
-  // 3. Store in cache with TTL
-  await client.setEx(cacheKey, 300, JSON.stringify(user));
-  
+  const key = \`user:\${id}\`;
+
+  // 1. Try cache
+  const cached = await client.get(key);
+  if (cached) return JSON.parse(cached);  // cache hit
+
+  // 2. Cache miss — hit DB
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) return null;
+
+  // 3. Populate cache — 5 min TTL
+  await client.setEx(key, 300, JSON.stringify(user));
   return user;
+}
+
+// Invalidate on write
+async function updateUser(id, data) {
+  const user = await prisma.user.update({ where: { id }, data });
+  await client.del(\`user:\${id}\`);    // bust cache
+  return user;
+}
+
+// Cache list with shorter TTL
+async function getTopPosts(page) {
+  const key = \`posts:top:page:\${page}\`;
+  const cached = await client.get(key);
+  if (cached) return JSON.parse(cached);
+
+  const posts = await prisma.post.findMany({ orderBy: { views: 'desc' }, take: 10, skip: page * 10 });
+  await client.setEx(key, 60, JSON.stringify(posts)); // 1 min — list changes often
+  return posts;
 }`} />
-          <EasyBox emoji="🎯" title="Cache invalidation" color="#f43f5e">There are only two hard things in Computer Science: cache invalidation and naming things. When a user updates their profile, you MUST delete or update the cache key — or stale data will be served.</EasyBox>
-          <CodeBlock label="invalidate on update" code={`async function updateUser(id, data) {
-  await db.updateUser(id, data);
-  await client.del(\`user:\${id}\`); // invalidate cache
+          <Tip icon="⚠️" color="#f43f5e" title="Cache stampede">When a popular cache key expires, hundreds of requests all miss simultaneously and all hit the DB. Fix with probabilistic early expiry or a distributed lock that allows only one request to refresh the cache while others wait.</Tip>
+        </div>
+      )}
+      {tab === "ratelimit" && (
+        <div>
+          <EasyBox emoji="🚦" title="Rate Limiting with Redis" color="#3b82f6">Redis INCR is atomic — guaranteed no race conditions even across multiple server instances. This is why Redis is the standard tool for distributed rate limiting.</EasyBox>
+          <CodeBlock label="sliding window rate limiter" code={`// Fixed window: allow 100 requests per minute per IP
+async function rateLimitFixed(ip) {
+  const key = \`rate:\${ip}:\${Math.floor(Date.now() / 60000)}\`; // window key per minute
+  const count = await client.incr(key);
+  if (count === 1) await client.expire(key, 60);  // set TTL on first request
+  return count <= 100;  // true = allowed, false = blocked
+}
+
+// Sliding window: more accurate, uses Sorted Set
+async function rateLimitSliding(ip, limit = 100, windowMs = 60000) {
+  const now = Date.now();
+  const key = \`rate:sliding:\${ip}\`;
+
+  const [, , count] = await client
+    .multi()
+    .zRemRangeByScore(key, 0, now - windowMs)  // remove old requests
+    .zAdd(key, { score: now, value: \`\${now}\` }) // add current request
+    .zCard(key)                                  // count in window
+    .expire(key, Math.ceil(windowMs / 1000))     // auto-cleanup
+    .exec();
+
+  return count <= limit;
+}
+
+// Express middleware
+async function rateLimitMiddleware(req, res, next) {
+  const allowed = await rateLimitSliding(req.ip);
+  if (!allowed) {
+    return res.status(429).json({ error: 'Too many requests. Try again in a minute.' });
+  }
+  next();
 }`} />
+          <Tip icon="🎯" color={D.yellow} title="Libraries that handle this for you">express-rate-limit + rate-limit-redis does all of this automatically. In production, prefer a battle-tested library over rolling your own rate limiter.</Tip>
+        </div>
+      )}
+      {tab === "pubsub" && (
+        <div>
+          <EasyBox emoji="📡" title="Redis Pub/Sub" color="#14b8a6">Pub/Sub decouples publishers (senders) from subscribers (receivers). A publisher sends to a channel without knowing who is listening. All subscribers on that channel receive the message instantly. Perfect for broadcasting events across multiple server instances.</EasyBox>
+          <CodeBlock label="pub/sub with node-redis" code={`// publisher.js — sends events
+const publisher = createClient({ url: process.env.REDIS_URL });
+await publisher.connect();
+
+await publisher.publish('notifications', JSON.stringify({
+  type: 'NEW_MESSAGE',
+  userId: 'user:123',
+  message: 'You have a new message from Alice',
+  timestamp: Date.now()
+}));
+
+// subscriber.js — listens to events
+const subscriber = createClient({ url: process.env.REDIS_URL });
+await subscriber.connect();
+
+await subscriber.subscribe('notifications', (message) => {
+  const event = JSON.parse(message);
+  console.log('Received:', event);
+  // Broadcast to WebSocket clients, send push notification, etc.
+});
+
+// Pattern subscribe — listen to multiple channels
+await subscriber.pSubscribe('user:*', (message, channel) => {
+  console.log(\`Event on \${channel}:\`, message);
+});`} />
+          <Tip icon="⚠️" color="#f43f5e" title="Pub/Sub limitations">Redis Pub/Sub is fire-and-forget. If a subscriber is offline when a message is published, the message is LOST. For reliable message delivery (guaranteed processing), use Redis Streams or BullMQ instead of plain Pub/Sub.</Tip>
+          <CodeBlock label="BullMQ — production job queue" code={`const { Queue, Worker } = require('bullmq');
+
+// Producer — add jobs to queue
+const emailQueue = new Queue('emails', { connection: { host: 'localhost', port: 6379 } });
+
+await emailQueue.add('welcome', { to: 'alice@example.com', name: 'Alice' });
+await emailQueue.add('reset-password', { to: 'bob@example.com', token: 'abc123' }, {
+  delay: 5000,    // send after 5 seconds
+  attempts: 3,    // retry up to 3 times on failure
+  backoff: { type: 'exponential', delay: 1000 }
+});
+
+// Worker — process jobs
+const worker = new Worker('emails', async (job) => {
+  if (job.name === 'welcome') {
+    await sendWelcomeEmail(job.data);
+  }
+}, { connection: { host: 'localhost', port: 6379 } });`} />
+        </div>
+      )}
+      {tab === "patterns" && (
+        <div>
+          <CaseStudy title="Distributed Lock (RedLock)" color="#ec4899" scenario="Two servers try to send the same notification simultaneously" problem="Without locking, both servers send duplicate emails or process the same job twice" solution="Acquire a Redis lock before processing — only one server holds the lock at a time">
+            <CodeBlock label="distributed lock pattern" code={`async function withLock(key, ttlMs, fn) {
+  const lockKey = \`lock:\${key}\`;
+  const lockVal = crypto.randomUUID(); // unique value to identify our lock
+
+  // Try to acquire lock (NX = only set if not exists)
+  const acquired = await client.set(lockKey, lockVal, { NX: true, PX: ttlMs });
+  if (!acquired) throw new Error('Could not acquire lock — another process is running');
+
+  try {
+    return await fn(); // do the work
+  } finally {
+    // Only release if we still own the lock (Lua script = atomic)
+    const script = \`
+      if redis.call("get", KEYS[1]) == ARGV[1] then
+        return redis.call("del", KEYS[1])
+      else return 0 end\`;
+    await client.eval(script, { keys: [lockKey], arguments: [lockVal] });
+  }
+}
+
+// Usage
+await withLock(\`invoice:\${invoiceId}\`, 5000, async () => {
+  await generateAndSendInvoice(invoiceId);
+});`} />
+          </CaseStudy>
+          <CaseStudy title="Session Store" color="#f43f5e" scenario="Stateless JWT alternative with revocability" problem="JWTs cannot be revoked before expiry — logout doesn't actually log out" solution="Store session in Redis with TTL; delete key on logout = instant revocation">
+            <CodeBlock label="session management" code={`// On login
+const sessionId = crypto.randomUUID();
+await client.setEx(
+  \`session:\${sessionId}\`,
+  86400,                                  // 24h TTL
+  JSON.stringify({ userId: user.id, role: user.role })
+);
+res.cookie('sessionId', sessionId, { httpOnly: true, secure: true });
+
+// On each request (middleware)
+async function requireAuth(req, res, next) {
+  const sessionId = req.cookies.sessionId;
+  const session = await client.get(\`session:\${sessionId}\`);
+  if (!session) return res.status(401).json({ error: 'Not authenticated' });
+  req.user = JSON.parse(session);
+  // Slide the TTL — reset to 24h on activity
+  await client.expire(\`session:\${sessionId}\`, 86400);
+  next();
+}
+
+// On logout — instant revocation
+await client.del(\`session:\${req.cookies.sessionId}\`);`} />
+          </CaseStudy>
+          <Tip icon="🎤" color="#ec4899" title="Interview: Redis vs in-memory (Node.js Map/object)">Say: 'Node.js memory is per-process. With multiple servers or PM2 cluster mode, each process has its own memory — sessions stored in one process are invisible to others. Redis is shared across all instances, making it essential for any stateful operation in a multi-server environment.'</Tip>
         </div>
       )}
       {tab === "quiz" && (
         <div>
-          <QuizCard question="Why is Redis so fast?" options={["It uses a faster programming language", "All data lives in RAM (memory)", "It compresses all data", "It has fewer features"]} correct={1} explain="Redis stores everything in RAM (random access memory). RAM is ~100,000x faster than SSD disk access. That's why Redis can handle millions of operations per second." />
-          <QuizCard question="What happens if you don't set TTL on cache keys?" options={["Nothing — Redis handles it", "Memory fills up until Redis crashes", "Keys automatically expire in 1 hour", "Data becomes corrupted"]} correct={1} explain="Without TTL (time-to-live), cache keys accumulate forever. Redis runs out of RAM and either crashes or starts evicting random keys. Always set expiries." />
-          <QuizCard question="Which Redis data structure is best for a leaderboard?" options={["List", "Hash", "Sorted Set", "String"]} correct={2} explain="Sorted Sets (ZADD, ZRANGE) maintain elements in ranked order by score. They're perfect for leaderboards, priority queues, and time-series data." />
+          <QuizCard question="Why is Redis so fast compared to a database?" options={["It uses a faster programming language", "All data lives in RAM — no disk I/O", "It compresses all data", "It has fewer features"]} correct={1} explain="Redis stores everything in RAM. RAM access is ~100,000x faster than SSD disk access. That's why Redis handles millions of operations per second with sub-millisecond latency." />
+          <QuizCard question="What happens if you don't set TTL on cache keys?" options={["Nothing — Redis handles it", "Memory fills up until Redis crashes or evicts data", "Keys automatically expire in 1 hour", "Data becomes corrupted"]} correct={1} explain="Without TTL, cache keys accumulate forever. Redis runs out of RAM and either crashes or starts evicting random keys based on the eviction policy. Always set expiries on cache keys." />
+          <QuizCard question="Which Redis data structure is best for a leaderboard?" options={["List", "Hash", "Sorted Set", "String"]} correct={2} explain="Sorted Sets (ZADD, ZRANGE) maintain elements in ranked order by score automatically. Add/update scores in O(log n), fetch top N in O(log n + m). Perfect for leaderboards." />
+          <QuizCard question="Why use Redis for rate limiting instead of in-memory counters?" options={["Redis is faster than memory", "Redis INCR is atomic and shared across all server instances", "In-memory counters don't support numbers", "Redis counters never reset"]} correct={1} explain="In-memory counters are per-process — 10 server instances each have their own counter, so a client can make 10x the limit. Redis INCR is atomic and shared across all instances, making rate limiting accurate in a distributed environment." />
+          <QuizCard question="What is the key limitation of Redis Pub/Sub?" options={["It only supports one subscriber", "Messages are lost if subscriber is offline — fire-and-forget", "It requires a separate Redis instance", "It only works with strings"]} correct={1} explain="Redis Pub/Sub is fire-and-forget. If a subscriber disconnects, any messages published while it's offline are permanently lost. For reliable delivery with retries, use Redis Streams or BullMQ." />
+          <QuizCard question="Why store sessions in Redis instead of JWT alone?" options={["Redis is more secure than JWT signing", "Redis sessions can be instantly revoked; JWTs cannot be invalidated before expiry", "Redis uses less bandwidth", "JWTs cannot store user data"]} correct={1} explain="A signed JWT is valid until it expires — you can't 'un-sign' it. Storing sessions in Redis means logout = delete the key. The next request finds no session and is rejected immediately. This solves the JWT revocation problem." />
         </div>
       )}
+      {tab === "demo" && <RedisCacheDemo />}
     </div>
   );
 }
@@ -2838,7 +5202,9 @@ function SectionConnectionPooling() {
   const [tab, setTab] = useState("concept");
   const tabs = [
     { id: "concept", label: "🧠 Concept" },
-    { id: "config", label: "⚙️ Configuration" },
+    { id: "config", label: "⚙️ Config" },
+    { id: "sizing", label: "📐 Pool Sizing" },
+    { id: "pgbouncer", label: "🏗️ PgBouncer" },
     { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
@@ -2917,12 +5283,85 @@ try {
           <Tip icon="⚠️" color={D.red} title="Always release">If you acquire a connection from the pool for a transaction, you MUST call `client.release()` in a finally block. Otherwise the connection leaks and the pool eventually empties — all requests start failing.</Tip>
         </div>
       )}
+      {tab === "sizing" && (
+        <div>
+          <EasyBox emoji="📐" title="How big should your pool be?" color="#06b6d4">The famous Hikari (Java) formula: pool size = (core_count × 2) + effective_spindle_count. For most Node.js apps on modern cloud: 10-20 connections is the sweet spot. Bigger is NOT always better.</EasyBox>
+          <BigIdea number="1" title="More connections ≠ more throughput" color="#f43f5e">PostgreSQL creates one OS process per connection. 500 connections = 500 processes consuming RAM, context switching, and competing for CPU. Throughput peaks around 100-300 connections for most workloads and then degrades. PgBouncer solves this at the infrastructure level.</BigIdea>
+          <CodeBlock label="finding the right pool size" code={`// Formula starting point:
+// pool_size = num_cores * 2 + 1
+// On a 4-core server: pool_size = 9
+
+// But also consider:
+// - How many Node.js processes? (PM2 cluster × pool_size = total DB connections)
+// - What is your DB server's max_connections? (default PostgreSQL = 100)
+// - 10 PM2 workers × 20 pool = 200 connections — you'd exhaust the DB!
+
+// Safe calculation:
+const totalConnections = pm2Workers * poolMax;
+// Must be < DB max_connections (default 100 in PostgreSQL)
+
+// Example: 4 PM2 workers, DB max = 100
+// Pool max per worker = (100 - 5 reserved) / 4 ≈ 23
+
+// Monitor pool health
+pool.on('connect', () => console.log('New connection created'));
+pool.on('error', (err) => console.error('Pool error:', err));
+pool.on('remove', () => console.log('Connection removed from pool'));`} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "10px 0" }}>
+            <div style={{ padding: "10px 12px", background: "#f59e0b0a", border: "1px solid #f59e0b33", borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: "#f59e0b", fontFamily: mono, marginBottom: 6 }}>⚠️ POOL TOO SMALL</div>
+              {["Requests queue up waiting for connections", "connectionTimeoutMillis errors under load", "Throughput limited below server capacity", "High latency spikes during traffic bursts"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+            <div style={{ padding: "10px 12px", background: D.red + "0a", border: `1px solid ${D.red}33`, borderRadius: 7 }}>
+              <div style={{ fontSize: 10, color: D.red, fontFamily: mono, marginBottom: 6 }}>⚠️ POOL TOO LARGE</div>
+              {["PostgreSQL context switching overhead", "DB RAM exhausted by connection overhead", "Can exceed DB max_connections limit", "Increased GC pressure in Node.js"].map((x, i) => <div key={i} style={{ fontSize: 11, color: D.muted, fontFamily: serif, padding: "2px 0" }}>• {x}</div>)}
+            </div>
+          </div>
+          <Tip icon="🎯" color="#06b6d4" title="Production defaults to start with">pg pool: max=20, idleTimeout=30s, connectionTimeout=2s. Mongoose: maxPoolSize=20, minPoolSize=5. Tune based on EXPLAIN ANALYZE query times, not guesswork. Use pg_stat_activity to observe real connection usage.</Tip>
+        </div>
+      )}
+      {tab === "pgbouncer" && (
+        <div>
+          <EasyBox emoji="🏗️" title="PgBouncer — connection pooler at the infrastructure level" color="#8b5cf6">PgBouncer sits between your app and PostgreSQL. Your app thinks it's connecting to Postgres, but it's actually connecting to PgBouncer. PgBouncer maintains a small pool of real PostgreSQL connections and multiplexes thousands of app connections onto them.</EasyBox>
+          <BigIdea number="1" title="Why PgBouncer?" color="#8b5cf6">In serverless (Lambda, Vercel) or microservices, each function instance opens its own pool. 1000 Lambda invocations × 10 connections = 10,000 DB connections — PostgreSQL crashes. PgBouncer caps real connections to whatever PostgreSQL can handle (e.g., 100) regardless of how many app instances connect.</BigIdea>
+          <CodeBlock label="PgBouncer modes" code={`# pgbouncer.ini
+[pgbouncer]
+pool_mode = transaction   # recommended for most apps
+max_client_conn = 10000   # app connections PgBouncer accepts
+default_pool_size = 25    # real PostgreSQL connections per database
+
+# Pool modes:
+# session    — one PG connection per client session (least efficient)
+# transaction — connection released after each transaction ✅ RECOMMENDED
+# statement   — connection released after each statement (most efficient but restrictive)
+
+# In transaction mode:
+# 10,000 app connections → 25 real PostgreSQL connections
+# App must not use: SET, LISTEN, NOTIFY, WITH HOLD CURSORS`} />
+          <CodeBlock label="connecting through PgBouncer in Node.js" code={`// App code is identical — just change the host/port
+const pool = new Pool({
+  host: 'localhost',
+  port: 6432,        // PgBouncer port (not 5432)
+  database: 'myapp',
+  user: 'app_user',
+  password: 'secret',
+  max: 10,           // pool per app instance (PgBouncer handles the real limit)
+});
+
+// Prisma with PgBouncer
+// DATABASE_URL="postgresql://user:pass@localhost:6432/myapp?pgbouncer=true&connection_limit=10"
+// The ?pgbouncer=true disables prepared statements (not supported in transaction mode)`} />
+          <Tip icon="🎤" color="#ec4899" title="Interview: when would you use PgBouncer?">Say: 'In a serverless environment (AWS Lambda, Vercel) where each function invocation can create its own DB connections. Without PgBouncer, 500 concurrent Lambda calls could open 5000 connections and crash PostgreSQL. PgBouncer sits in front and limits real connections to a safe number while handling all the app connections.'</Tip>
+        </div>
+      )}
       {tab === "demo" && <PoolDemo />}
       {tab === "quiz" && (
         <div>
-          <QuizCard question="Why is opening a database connection expensive?" options={["It uses a lot of CPU", "TCP handshake + auth + memory allocation", "It requires reading from disk", "It blocks the event loop"]} correct={1} explain="Each connection requires TCP handshake, TLS negotiation, authentication, and server-side memory allocation. This takes 50-100ms — an eternity for a web request." />
-          <QuizCard question="What happens if you forget client.release() in a transaction?" options={["Nothing — the pool auto-releases", "The connection leaks and the pool eventually empties", "The transaction auto-commits", "The query runs twice"]} correct={1} explain="Failing to release a connection removes it from the pool permanently. After enough leaks, the pool has zero available connections and every new request times out." />
-          <QuizCard question="How many requests can a 20-connection pool handle?" options={["Exactly 20", "About 50-100", "Thousands per second", "It depends on the database size"]} correct={2} explain="A single connection can handle 50+ requests/second (each query takes ~1-5ms). 20 connections × 50 = 1,000+ requests/second. The pool queues excess requests." />
+          <QuizCard question="Why is opening a database connection expensive?" options={["It uses a lot of CPU", "TCP handshake + TLS + auth + memory allocation (~50-100ms)", "It requires reading from disk", "It blocks the event loop"]} correct={1} explain="Each connection requires TCP handshake, TLS negotiation, authentication, and server-side memory allocation. This takes 50-100ms — an eternity for a web request. Pools pay this cost once." />
+          <QuizCard question="What happens if you forget client.release() after a transaction?" options={["Nothing — the pool auto-releases", "The connection leaks — pool eventually empties and all requests fail", "The transaction auto-commits", "The query runs twice"]} correct={1} explain="Failing to release a connection removes it from the pool permanently. After enough leaks, the pool has zero available connections and every new request times out with connectionTimeoutMillis." />
+          <QuizCard question="How many requests can a 20-connection pool handle per second?" options={["Exactly 20", "About 50-100", "Thousands per second", "It depends on the database size"]} correct={2} explain="A single connection handles 50+ requests/second (each query ~1-5ms). 20 connections × 50 = 1,000+ requests/second. The pool queues excess requests and serves them as connections free up." />
+          <QuizCard question="Why does increasing pool size beyond a point reduce performance?" options={["It fills up RAM", "PostgreSQL creates one OS process per connection — too many causes context switching overhead", "Node.js can't handle more than 20 connections", "More connections disable indexing"]} correct={1} explain="PostgreSQL is process-based — each connection is an OS process. At hundreds of connections, the OS spends more time switching between processes than running queries. Throughput peaks and then degrades. PgBouncer solves this by multiplexing." />
+          <QuizCard question="What problem does PgBouncer solve in serverless environments?" options={["It speeds up individual queries", "It prevents thousands of Lambda invocations from each opening DB connections and overwhelming PostgreSQL", "It replicates data across regions", "It caches query results"]} correct={1} explain="Each serverless function invocation can open its own connections. Without PgBouncer, 1000 Lambda calls × 10 connections = 10,000 DB connections. PgBouncer sits in front and limits real PostgreSQL connections to a safe number (e.g., 25) regardless of how many app instances connect." />
         </div>
       )}
     </div>
@@ -3205,6 +5644,8 @@ function SectionWhatIsTesting() {
     { id: "story", label: "📖 Why Test?" },
     { id: "pyramid", label: "🔺 Test Pyramid" },
     { id: "types", label: "📋 Test Types" },
+    { id: "coverage", label: "📊 Coverage" },
+    { id: "ci", label: "🚀 CI Pipeline" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -3267,11 +5708,115 @@ await page.fill('[name="email"]', 'alice@example.com');`} />
           <EasyBox emoji="🎯" title="TDD: Test-Driven Development" color={D.green}>Write the test FIRST, watch it fail, then write the minimum code to make it pass, then refactor. TDD forces you to think about requirements before implementation and guarantees every line of code has a test.</EasyBox>
         </div>
       )}
+      {tab === "coverage" && (
+        <div>
+          <BigIdea number="1" title="Code coverage measures what is tested, not test quality" color="#f59e0b">100% coverage does not mean your code is correct. It means every line was executed during tests. You can have 100% coverage with useless tests. Coverage is a floor, not a ceiling.</BigIdea>
+          <CodeBlock label="Jest coverage configuration" code={`// jest.config.js
+module.exports = {
+  collectCoverageFrom: [
+    'src/**/*.{js,ts}',
+    '!src/**/*.test.{js,ts}',
+    '!src/index.{js,ts}',  // entry point
+  ],
+  coverageThresholds: {
+    global: {
+      branches: 80,    // if/else branches covered
+      functions: 85,   // functions called
+      lines: 85,       // lines executed
+      statements: 85,  // statements executed
+    },
+    // Per-file enforcement for critical code
+    './src/services/auth.ts': {
+      branches: 95,
+      functions: 100,
+    },
+  },
+  coverageReporters: ['text', 'lcov', 'html'],
+};
+
+// Run coverage
+// npm test -- --coverage`} />
+          <CodeBlock label="what to focus coverage on" code={`// HIGH coverage priority:
+// - Service layer (business logic)
+// - Utility functions (pure functions)
+// - Auth middleware (security critical)
+// - Error handlers
+
+// MEDIUM priority:
+// - Route handlers (covered by integration tests)
+// - Validators
+
+// LOW priority — often skip:
+// - Database migrations
+// - Server bootstrap (index.ts)
+// - Generated code`} />
+          <Tip icon="🎯" color={D.yellow} title="MNC PR standard">Most MNCs enforce a 80% minimum coverage gate in CI. PRs that reduce coverage get blocked. Focus on testing the core business logic, not chasing 100% on every line.</Tip>
+        </div>
+      )}
+      {tab === "ci" && (
+        <div>
+          <BigIdea number="1" title="Tests must run in CI on every commit" color="#f59e0b">Local tests are optional — you can skip them. CI tests are mandatory. Every commit to every branch should trigger the full test suite. If tests fail, the PR cannot be merged. This is the core of Continuous Integration.</BigIdea>
+          <CodeBlock label="GitHub Actions CI pipeline" code={`# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci  # faster than npm install, uses package-lock
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4`} />
+          <Tip icon="🔑" color={D.yellow} title="npm ci vs npm install in CI">Always use <code>npm ci</code> in CI pipelines. It installs exactly what is in package-lock.json, fails if there is a mismatch, and is faster. <code>npm install</code> can modify the lock file which causes non-reproducible builds.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What is the main purpose of tests?" options={["To find bugs after they happen", "To prevent bugs and enable confident refactoring", "To make code run faster", "To replace documentation"]} correct={1} explain="Tests primarily prevent bugs by catching them before they reach production. They also give developers confidence to refactor and change code without fear." />
           <QuizCard question="According to the test pyramid, what percentage should be unit tests?" options={["10%", "30%", "70%", "90%"]} correct={2} explain="The test pyramid recommends ~70% unit tests (fast, cheap), ~20% integration tests, and ~10% E2E tests (slow, expensive)." />
           <QuizCard question="What does AAA stand for in test structure?" options={["Always Assert Always", "Arrange, Act, Assert", "Async, Await, Assert", "Add, Apply, Assert"]} correct={1} explain="AAA = Arrange (set up), Act (execute), Assert (verify). This structure makes tests readable and maintainable." />
+          <QuizCard question="Why use npm ci instead of npm install in CI?" options={["It is slower but more thorough", "It installs exactly from the lock file and fails on mismatch", "It updates all dependencies to latest", "It only installs production dependencies"]} correct={1} explain="npm ci reads package-lock.json exactly and fails if the lock file doesn't match package.json. This ensures reproducible builds — every CI run gets the exact same dependencies." />
         </div>
       )}
     </div>
@@ -3284,6 +5829,7 @@ function SectionJest() {
     { id: "basics", label: "📝 Basics" },
     { id: "matchers", label: "✅ Matchers" },
     { id: "mocking", label: "🎭 Mocking" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -3372,6 +5918,7 @@ beforeEach(() => {
           <QuizCard question="Which command runs tests and watches for file changes?" options={["npx jest --run", "npx jest --watch", "npx jest --dev", "npx jest --live"]} correct={1} explain="npx jest --watch enters watch mode, automatically rerunning tests when files change. It's the standard workflow during development." />
         </div>
       )}
+      {tab === "demo" && <TestRunnerLiveDemo />}
     </div>
   );
 }
@@ -4058,6 +6605,7 @@ function SectionDocker() {
     { id: "dockerfile", label: "🐳 Dockerfile" },
     { id: "compose", label: "🎼 Compose" },
     { id: "commands", label: "⌨️ Commands" },
+    { id: "demo", label: "🧪 Live Demo" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -4165,6 +6713,7 @@ docker system prune -f               # clean unused images`} />
           <QuizCard question="Why should containers NOT run as root?" options={["Root is slower", "A compromised root container can access the host system", "Root uses more memory", "Root cannot bind to ports"]} correct={1} explain="Running as root inside a container is a security risk. If an attacker breaks into the container, they have root access to the host system. Always use a non-root user." />
         </div>
       )}
+      {tab === "demo" && <DockerBuildDemo />}
     </div>
   );
 }
@@ -4779,55 +7328,6 @@ proxy_pass http://old-version:3000;` },
 // TYPESCRIPT WITH NODE SECTIONS
 // ══════════════════════════════════════════════════════════════════════════════
 
-function TypeCheckerDemo() {
-  const [step, setStep] = useState(0);
-  const [running, setRunning] = useState(false);
-
-  const steps = [
-    { label: "Writing code with a typo", js: "const user = { name: 'Alice' };\nconsole.log(user.nmae);", ts: "const user = { name: 'Alice' };\nconsole.log(user.nmae);\n// ❌ Property 'nmae' does not exist on type", type: "js", result: "error" },
-    { label: "JavaScript runtime error", js: "undefined\n// Runtime crash at line 2", ts: "", type: "js-only", result: "runtime" },
-    { label: "TypeScript compile-time catch", js: "", ts: "Property 'nmae' does not exist.\nDid you mean 'name'?\n\n// Fixed before deployment ✅", type: "ts-only", result: "compile" },
-    { label: "TypeScript with correct code", js: "", ts: "const user = { name: 'Alice' };\nconsole.log(user.name);\n// ✅ Compiles successfully", type: "ts-only", result: "success" },
-  ];
-
-  const run = async () => {
-    setRunning(true); setStep(0);
-    for (let i = 1; i <= steps.length; i++) {
-      await new Promise(r => setTimeout(r, 900));
-      setStep(i);
-    }
-    setRunning(false);
-  };
-
-  return (
-    <div style={{ padding: 14, background: D.surfaceLowest, border: `1px solid ${D.outline}`, borderRadius: 10 }}>
-      <div style={{ fontSize: 10, color: D.muted, fontFamily: mono, letterSpacing: 1, marginBottom: 10 }}>🧪 LIVE — see TypeScript catch bugs before runtime</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
-        {steps.map((s, i) => (
-          <div key={i} style={{ display: "flex", gap: 10, padding: "8px 12px", background: step > i ? (s.result === "error" || s.result === "runtime" ? D.red + "08" : s.result === "compile" ? D.yellow + "08" : D.greenBg) : D.surface, border: `1px solid ${step >= i ? (s.result === "error" || s.result === "runtime" ? D.red : s.result === "compile" ? D.yellow : D.green) + "40" : D.outline}`, borderRadius: 7, transition: "all 0.4s", opacity: step >= i ? 1 : 0.4 }}>
-            <span style={{ fontSize: 14, flexShrink: 0, marginTop: 2 }}>{step > i ? (s.result === "error" || s.result === "runtime" ? "❌" : s.result === "compile" ? "⚠️" : "✅") : step === i ? "⏳" : "○"}</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 11, color: step >= i ? (s.result === "error" || s.result === "runtime" ? D.red : s.result === "compile" ? D.yellow : D.greenText) : D.muted, fontFamily: mono, fontWeight: step === i ? 700 : 400, marginBottom: 4 }}>{s.label}</div>
-              {step >= i && (
-                <pre style={{ margin: 0, fontSize: 10, lineHeight: 1.7, color: D.muted, fontFamily: mono, whiteSpace: "pre-wrap" }}>{s.js || s.ts}</pre>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-        <button onClick={run} disabled={running}
-          style={{ padding: "6px 16px", background: running ? D.muted + "18" : D.greenBg, border: `1px solid ${running ? D.outline : D.green}`, color: running ? D.muted : D.greenText, borderRadius: 5, cursor: running ? "default" : "pointer", fontSize: 11, fontFamily: mono }}>
-          {running ? "● checking..." : "▶ See TypeScript in action"}
-        </button>
-        <span style={{ fontSize: 10, color: D.muted, fontFamily: mono }}>
-          {step === 0 ? "TypeScript catches typos at compile time" : step >= steps.length ? "Bug prevented before deployment! ✅" : `step ${step} of ${steps.length}`}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function SectionWhatIsTypeScript() {
   const [tab, setTab] = useState("story");
   const tabs = [
@@ -4869,7 +7369,7 @@ function SectionWhatIsTypeScript() {
           <Tip icon="🎯" color={D.yellow} title="When NOT to use TypeScript">For tiny scripts, one-off tools, or rapid prototyping where speed matters more than correctness, plain JavaScript is fine. For production applications, APIs, and team projects, TypeScript pays for itself within days.</Tip>
         </div>
       )}
-      {tab === "demo" && <TypeCheckerDemo />}
+      {tab === "demo" && <TypeScriptErrorDemo />}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What does TypeScript compile to?" options={["Java bytecode", "Plain JavaScript", "WebAssembly", "Python"]} correct={1} explain="The TypeScript compiler (tsc) strips all type annotations and outputs plain JavaScript. TypeScript is a compile-time layer — it does not exist at runtime." />
@@ -5127,6 +7627,7 @@ function SectionGenerics() {
     { id: "functions", label: "⚙️ Functions" },
     { id: "constraints", label: "🔗 Constraints" },
     { id: "interfaces", label: "📐 Interfaces" },
+    { id: "utility", label: "🛠️ Utility Types" },
     { id: "quiz", label: "🧠 Quiz" },
   ];
   return (
@@ -5219,14 +7720,72 @@ class Repository<T> {
           <EasyBox emoji="🎯" title="Real-world pattern" color="#8b5cf6">`ApiResponse&lt;T&gt;` is used in virtually every TypeScript API client. One interface handles all endpoints — users, posts, orders — while keeping every response fully typed.</EasyBox>
         </div>
       )}
+      {tab === "utility" && (
+        <div>
+          <BigIdea number="1" title="Built-in utility types transform existing types" color="#8b5cf6">TypeScript ships with generic utility types that let you derive new types from existing ones. These eliminate boilerplate and are used constantly in MNC codebases.</BigIdea>
+          <CodeBlock label="Partial, Required, Readonly, Pick, Omit" code={`interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+}
+
+// Partial<T> — all fields optional (great for PATCH updates)
+type UpdateUserDto = Partial<User>;
+// { id?: number; name?: string; email?: string; age?: number }
+
+// Required<T> — all fields required (removes optional)
+type CompleteUser = Required<User>;
+// { id: number; name: string; email: string; age: number }
+
+// Readonly<T> — all fields read-only
+const user: Readonly<User> = { id: 1, name: 'Alice', email: 'a@b.com' };
+// user.name = 'Bob'; // ❌ Error!
+
+// Pick<T, K> — keep only named fields
+type UserPreview = Pick<User, 'id' | 'name'>;
+// { id: number; name: string }
+
+// Omit<T, K> — remove named fields
+type PublicUser = Omit<User, 'email' | 'age'>;
+// { id: number; name: string }`} />
+          <CodeBlock label="Record, Extract, Exclude, ReturnType" code={`// Record<K, V> — typed object map
+type RolePermissions = Record<'admin' | 'editor' | 'viewer', string[]>;
+const perms: RolePermissions = {
+  admin: ['read', 'write', 'delete'],
+  editor: ['read', 'write'],
+  viewer: ['read'],
+};
+
+// Extract and Exclude work on unions
+type AllStatus = 'pending' | 'active' | 'banned' | 'deleted';
+type VisibleStatus = Extract<AllStatus, 'pending' | 'active'>;  // 'pending' | 'active'
+type HiddenStatus = Exclude<AllStatus, 'pending' | 'active'>;   // 'banned' | 'deleted'
+
+// ReturnType<T> — extract function return type
+async function fetchUser(id: number) {
+  return { id, name: 'Alice', email: 'a@b.com' };
+}
+type FetchUserResult = Awaited<ReturnType<typeof fetchUser>>;
+// { id: number; name: string; email: string }
+
+// Parameters<T> — extract function parameter types
+function createUser(name: string, role: 'admin' | 'user') {}
+type CreateUserParams = Parameters<typeof createUser>;
+// [string, 'admin' | 'user']`} />
+          <Tip icon="🎯" color={D.yellow} title="MNC code review tip">If you see a function that manually re-declares fields from an existing interface, suggest Partial, Pick, or Omit instead. These are the first things TypeScript reviewers look for. Never duplicate types when a utility type can derive it.</Tip>
+        </div>
+      )}
       {tab === "quiz" && (
         <div>
           <QuizCard question="What do generics allow you to do?" options={["Make code run faster", "Write reusable code that preserves type safety", "Replace interfaces entirely", "Disable type checking"]} correct={1} explain="Generics let you write functions, interfaces, and classes that work with multiple types while preserving type information. No need for any." />
           <QuizCard question="What does T extends { length: number } mean?" options={["T must be a number", "T must have a length property", "T must be an array", "T must be a string"]} correct={1} explain="extends constrains the generic type. T must be a type that has a length property — this includes strings, arrays, and any custom object with length." />
-          <QuizCard question="What is the type of const x = wrap(42) if wrap is generic?" options={["any", "number[]", "unknown", "It requires an explicit type"]} correct={1} explain="TypeScript infers the generic type from the argument. wrap(42) infers T as number, so the return type is number[]." />
+          <QuizCard question="Which utility type makes all fields optional?" options={["Required<T>", "Partial<T>", "Optional<T>", "Maybe<T>"]} correct={1} explain="Partial<T> makes all properties of T optional. It's commonly used for PATCH/update DTOs where you only send the fields you want to change." />
+          <QuizCard question="How do you derive a type with only 'id' and 'name' from a full User interface?" options={["Exclude<User, 'id' | 'name'>", "Pick<User, 'id' | 'name'>", "Partial<User>", "Extract<User, string>"]} correct={1} explain="Pick<T, K> constructs a type with only the specified fields K from type T. Pick<User, 'id' | 'name'> gives { id: number; name: string }." />
         </div>
       )}
     </div>
+    
   );
 }
 
@@ -5777,10 +8336,10 @@ function Dashboard({ onSelectModule }) {
       <div style={{ display: "flex", gap: 16, padding: "16px 28px", background: D.surface, borderBottom: `1px solid ${D.outline}`, flexWrap: "wrap" }}>
         {[
           { label: "Active Modules", value: "6", color: D.green },
-          { label: "Total Lessons", value: "46", color: "#3b82f6" },
-          { label: "Quizzes", value: "60+", color: "#f59e0b" },
-          { label: "Live Demos", value: "7", color: "#ec4899" },
-          { label: "Interview Qs", value: "37", color: "#14b8a6" },
+          { label: "Total Lessons", value: "52", color: "#3b82f6" },
+          { label: "Quizzes", value: "80+", color: "#f59e0b" },
+          { label: "Live Demos", value: "12", color: "#ec4899" },
+          { label: "Interview Qs", value: "50+", color: "#14b8a6" },
         ].map(stat => (
           <div key={stat.label} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", background: D.surfaceLowest, borderRadius: 6 }}>
             <span style={{ fontSize: 16, fontWeight: 800, color: stat.color, fontFamily: mono }}>{stat.value}</span>
@@ -5929,13 +8488,12 @@ export default function App() {
   const [selectedModule, setSelectedModule] = useState(null);
   const [chatBotOpen, setChatBotOpen] = useState(false);
 
-  if (selectedModule) {
-    return <ModuleView module={selectedModule} onBack={() => setSelectedModule(null)} />;
-  }
-
   return (
     <>
-      <Dashboard onSelectModule={setSelectedModule} />
+      {selectedModule
+        ? <ModuleView module={selectedModule} onBack={() => setSelectedModule(null)} />
+        : <Dashboard onSelectModule={setSelectedModule} />
+      }
 
       {/* Floating Chat Bot Button */}
       <button
